@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xuanpian"
+version = "0.1.0"
+description = "AI-powered photo selection assistant"
+license = "GPL-3.0-only"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md", "packaging/licenses/**/*.txt", "packaging/licenses/*.txt", "packaging/notice-manifest.json", "packaging/third-party-components.json"]
+requires-python = ">=3.11"
+dependencies = [
+    "opencv-contrib-python",
+    "numpy",
+    "mediapipe",
+    "rawpy",
+    "Pillow",
+    "PyQt6",
+    "scikit-image",
+]
+
+[project.optional-dependencies]
+formats = ["pillow-heif"]
+test = ["pytest", "pytest-qt"]
+
+[project.scripts]
+xuanpian = "src.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.setuptools.package-data]
+"src.xuanpian.resources" = ["icons/*.png", "models/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

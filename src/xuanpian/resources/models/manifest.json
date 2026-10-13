@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "models": {
+    "face_detector": {
+      "filename": "face_detector.tflite",
+      "url": "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite",
+      "version": "blaze_face_short_range/float16/1",
+      "sha256": "b4578f35940bf5a1a655214a1cce5cab13eba73c1297cd78e1a04c2380b0152f",
+      "license": "Apache-2.0"
+    },
+    "pose_landmarker": {
+      "filename": "pose_landmarker.task",
+      "url": "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+      "version": "pose_landmarker_lite/float16/1",
+      "sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
+      "license": "Apache-2.0"
+    },
+    "object_detector": {
+      "filename": "object_detector.tflite",
+      "url": "https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float32/1/efficientdet_lite0.tflite",
+      "version": "efficientdet_lite0/float32/1",
+      "sha256": "40338edf5ec70d43e318b0a716a84d4564cd1802759a7a07170c7e43796dbf58",
+      "license": "Apache-2.0"
+    }
+  }
+}

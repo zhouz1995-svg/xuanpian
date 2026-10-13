@@ -1,0 +1,890 @@
+{
+  "schema_version": 1,
+  "release_status": "blocked",
+  "scope": "Known notice snapshot, not redistribution clearance or a complete native closure. Wheel notices cover build/test inputs as well as runtime candidates.",
+  "files": {
+    "LICENSE": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+    "THIRD_PARTY_NOTICES.md": "ad03ff933786737256cc535a6e03b76bb6261cc55460667d86a2169200033397",
+    "packaging/third-party-components.json": "46841cd1f1247cd22db81150a05654570fa1690cf675b30873c62edf5520ee77",
+    "packaging/licenses/PyQt6_sip-BSD-2-Clause.txt": "3e6f5b427c36f94ecf86bc01698af7030a1ed6eb3748110d5dbb8d142d804611",
+    "packaging/licenses/Qt-LGPL-3.0.txt": "6c671e2912ec69c0832f32066c0313cee5fdc3bbcbce237822e89f3da58edd4e",
+    "packaging/licenses/runtime/CPython-3.11.15-LICENSE.txt": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
+    "packaging/licenses/runtime/ExifTool-13.59-README.txt": "e13005e5431c89910feba2309710d844f1bf4fd97df1236284e6475161bc14da",
+    "packaging/licenses/runtime/Perl-5.44.0-Artistic.txt": "dd90d4f42e4dcadf5a7c09eea0189d93c7b37ae560c91f0f6d5233ed3b9292a2",
+    "packaging/licenses/runtime/Perl-5.44.0-Copying.txt": "8979e6dd61852041643c5c5c40ea63b2bd1b438a67d114e62cbaef808c514315",
+    "packaging/licenses/wheels/05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6.txt": "4a765ceefcddd40d6518f2f22f0fe2c6d532890be821d8bb1f2c21ebafed8817",
+    "packaging/licenses/wheels/09d719058e782ac7bc71ba21c944e1136cde2bb957c0e888121f0218d6b5f02c.txt": "094e7000e3d4d93d58a5fb1adddd2f40a0f2bdc6bc7c3d327c033d9230dc0273",
+    "packaging/licenses/wheels/09f1c8c9e941af3e584d59641ea9b87d83c0cb0fd007eb5ef391a7e2643c1a46.txt": "09f1c8c9e941af3e584d59641ea9b87d83c0cb0fd007eb5ef391a7e2643c1a46",
+    "packaging/licenses/wheels/0c846399369ea76ddd7b5c44fe6d16497415fcf015f5cbb508c24bf98b81c5b1.txt": "0c846399369ea76ddd7b5c44fe6d16497415fcf015f5cbb508c24bf98b81c5b1",
+    "packaging/licenses/wheels/0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594.txt": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+    "packaging/licenses/wheels/0db603a5f4499f690c4425477ff664c166da325d3acc3b5a8d4de3db072443d0.txt": "0db603a5f4499f690c4425477ff664c166da325d3acc3b5a8d4de3db072443d0",
+    "packaging/licenses/wheels/0e111337b25494a773106695f0e799f642b8567aaacca4f116a74a8177179156.txt": "ef21afaad4bb20d2020491dc27ed55ba0d042f1b9487911a57f28b46b407a2b7",
+    "packaging/licenses/wheels/103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f.txt": "103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f",
+    "packaging/licenses/wheels/106d55c931fd6a84822e5345d900273d059f1c27310d02567ccb313c5d18c55d.txt": "106d55c931fd6a84822e5345d900273d059f1c27310d02567ccb313c5d18c55d",
+    "packaging/licenses/wheels/200ce164421a7ec6f0742dcacf100551847ad7b16ac58e6f30dd0f36fd8fcf7e.txt": "200ce164421a7ec6f0742dcacf100551847ad7b16ac58e6f30dd0f36fd8fcf7e",
+    "packaging/licenses/wheels/211e7d737d6179a08f791ebb0a99897ce7cd2457410c542876d125576edfe910.txt": "211e7d737d6179a08f791ebb0a99897ce7cd2457410c542876d125576edfe910",
+    "packaging/licenses/wheels/2537f5653345db7231ff12f307bcfa4c89807d45ed1c4bb8ebfb6f26f61b160a.txt": "2537f5653345db7231ff12f307bcfa4c89807d45ed1c4bb8ebfb6f26f61b160a",
+    "packaging/licenses/wheels/268b0ca06759d31ea3ca68dd35f20e877916e927b1c2a835e4592a3c4354b1f9.txt": "82606ac1b37d264a2260639f8a1646f2a66b713941447e01362e1fef587b73a8",
+    "packaging/licenses/wheels/29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6.txt": "29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6",
+    "packaging/licenses/wheels/2cc0e98a169e1a9927dee3c82d59dfac898a2aad5a1fcdd295db40c2f2fed516.txt": "2cc0e98a169e1a9927dee3c82d59dfac898a2aad5a1fcdd295db40c2f2fed516",
+    "packaging/licenses/wheels/2dddf08818297a3b89d43d95ff659d8da85741108c9136dfa3a4d856c0623bd8.txt": "2dddf08818297a3b89d43d95ff659d8da85741108c9136dfa3a4d856c0623bd8",
+    "packaging/licenses/wheels/30c23618679108f3e8ea1d2a658c7ca417bdfc891c98ef1a89fa4ff0c9828654.txt": "30c23618679108f3e8ea1d2a658c7ca417bdfc891c98ef1a89fa4ff0c9828654",
+    "packaging/licenses/wheels/3409fa91f7ace557894632676656e32264fe5ef7581535725dc9a23774551bd4.txt": "3409fa91f7ace557894632676656e32264fe5ef7581535725dc9a23774551bd4",
+    "packaging/licenses/wheels/34170979fc64f4f5e6dfa66ef27dec314ffffc5852000c60f4836ec1dfbf156e.txt": "34170979fc64f4f5e6dfa66ef27dec314ffffc5852000c60f4836ec1dfbf156e",
+    "packaging/licenses/wheels/3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf.txt": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
+    "packaging/licenses/wheels/3cf7c3a179d817b23b8b8568211769fefdf93797d207d984b8b2fa24d0220b33.txt": "3cf7c3a179d817b23b8b8568211769fefdf93797d207d984b8b2fa24d0220b33",
+    "packaging/licenses/wheels/3e6f5b427c36f94ecf86bc01698af7030a1ed6eb3748110d5dbb8d142d804611.txt": "3e6f5b427c36f94ecf86bc01698af7030a1ed6eb3748110d5dbb8d142d804611",
+    "packaging/licenses/wheels/3f2c1ffa76383a55ae0aac01c9737cd70050dff63e1f026694fbe9d662573c98.txt": "3f2c1ffa76383a55ae0aac01c9737cd70050dff63e1f026694fbe9d662573c98",
+    "packaging/licenses/wheels/4375ba20e2b9c6c4e7cad2940a628fd90e95cc3d50ee92aae755715d8ba1fbd0.txt": "4375ba20e2b9c6c4e7cad2940a628fd90e95cc3d50ee92aae755715d8ba1fbd0",
+    "packaging/licenses/wheels/469778be8f33d54e1bcaab28c281cc472916d2d273f835e55bc487d30503face.txt": "5f6ed77cd0326d7a2598962550123657845db4e8095ee29904f70e2717c0816e",
+    "packaging/licenses/wheels/47082ab2bc0184123ec9f10fdf80c70723ee68f07d44382e17615c2a6ba70b09.txt": "47082ab2bc0184123ec9f10fdf80c70723ee68f07d44382e17615c2a6ba70b09",
+    "packaging/licenses/wheels/529c40e5f67f2f88904657a9f7879ae2f8dc76bc9bfef9cb10d988b48804ed61.txt": "529c40e5f67f2f88904657a9f7879ae2f8dc76bc9bfef9cb10d988b48804ed61",
+    "packaging/licenses/wheels/5ba24ddc57067f9249add644c3afc41a5d6dc37e23433ef759d95df370b0af63.txt": "f3a02ef2790342c40f2e8670d9991524b89d3aa29431aac0a56eb64b1f3127ea",
+    "packaging/licenses/wheels/5d300dbfa643138b013b75ac9caeee591f951b8b0ee24288c34ccd926c4780c8.txt": "5d300dbfa643138b013b75ac9caeee591f951b8b0ee24288c34ccd926c4780c8",
+    "packaging/licenses/wheels/60a7d05d729ed5c763852a324a1cb4223d665d4ad3f4b8a0c130ae5c60c93e49.txt": "60a7d05d729ed5c763852a324a1cb4223d665d4ad3f4b8a0c130ae5c60c93e49",
+    "packaging/licenses/wheels/611d3207504dcb4a808df209d2e7c9b4f2e89fe690f84735c0d548160966b527.txt": "611d3207504dcb4a808df209d2e7c9b4f2e89fe690f84735c0d548160966b527",
+    "packaging/licenses/wheels/6163f7987dfb38d6bc320ce2b70b2f02b862bc41126516d552ef1cd43247e758.txt": "6163f7987dfb38d6bc320ce2b70b2f02b862bc41126516d552ef1cd43247e758",
+    "packaging/licenses/wheels/6282ee76cca569083b5b998b9f816ba1032e127b8dc7c46942b86477fc6fbfa5.txt": "6282ee76cca569083b5b998b9f816ba1032e127b8dc7c46942b86477fc6fbfa5",
+    "packaging/licenses/wheels/649a589ab31076e79e9ce62ba24eae9959598124176640dbc95f87bd10f34fcf.txt": "649a589ab31076e79e9ce62ba24eae9959598124176640dbc95f87bd10f34fcf",
+    "packaging/licenses/wheels/65e641f17cfce25ed2c02f0d53c94cfa2382cc8817eca649a7fff2b890114aa4.txt": "3cf196b1625812d2d119518294043e71017fe858355a58eb48e1e35b61213ce9",
+    "packaging/licenses/wheels/6787208f83f659ccbc2223b2fde952ffa6f7e8aca62f1a8a2bf5bc51bb1b2383.txt": "6787208f83f659ccbc2223b2fde952ffa6f7e8aca62f1a8a2bf5bc51bb1b2383",
+    "packaging/licenses/wheels/6c194d6db0c64d45535d10c95142b9b0cda7b7dcc7f1ddee302b3d536f3dbe46.txt": "6c194d6db0c64d45535d10c95142b9b0cda7b7dcc7f1ddee302b3d536f3dbe46",
+    "packaging/licenses/wheels/6c671e2912ec69c0832f32066c0313cee5fdc3bbcbce237822e89f3da58edd4e.txt": "6c671e2912ec69c0832f32066c0313cee5fdc3bbcbce237822e89f3da58edd4e",
+    "packaging/licenses/wheels/6f5828a57223d4cc7f8ea505a2623e7b978b242752c1515e355f46ba2cec1800.txt": "6f5828a57223d4cc7f8ea505a2623e7b978b242752c1515e355f46ba2cec1800",
+    "packaging/licenses/wheels/797b6937a4f976836efbbbb3ae333d7866ddc3eb3cb152972b2be348d3529372.txt": "797b6937a4f976836efbbbb3ae333d7866ddc3eb3cb152972b2be348d3529372",
+    "packaging/licenses/wheels/822e8e528147569a41975592aee19c11992ab667ba50451cd929031d5fc74491.txt": "822e8e528147569a41975592aee19c11992ab667ba50451cd929031d5fc74491",
+    "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+    "packaging/licenses/wheels/8707eef0533987efc5b155d64761eeb6e20793f50b9bd1a68dad1cf4719d0ed8.txt": "8707eef0533987efc5b155d64761eeb6e20793f50b9bd1a68dad1cf4719d0ed8",
+    "packaging/licenses/wheels/8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903.txt": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+    "packaging/licenses/wheels/91d0baaff00773038e72c0a1fc9d5d2d38706b7a2b9c04f34296608f931b9cd0.txt": "91d0baaff00773038e72c0a1fc9d5d2d38706b7a2b9c04f34296608f931b9cd0",
+    "packaging/licenses/wheels/94a83aaee0729a0f302d34acc4acecbd9d58366f262429075fe557e4a54b2e69.txt": "94a83aaee0729a0f302d34acc4acecbd9d58366f262429075fe557e4a54b2e69",
+    "packaging/licenses/wheels/9d4098846018319cd68e228ee6220361787f73bccbf00237a85e4fc9621b998f.txt": "9d4098846018319cd68e228ee6220361787f73bccbf00237a85e4fc9621b998f",
+    "packaging/licenses/wheels/9e2635f155b00af5a46cb2f2c9b052072ec546d59837ee74efc9cba2cbb83f3d.txt": "9e2635f155b00af5a46cb2f2c9b052072ec546d59837ee74efc9cba2cbb83f3d",
+    "packaging/licenses/wheels/a14cc25e10d40a3aa705b7de2fb764a6535d8ee9b2db4e1724900585457dfd55.txt": "a14cc25e10d40a3aa705b7de2fb764a6535d8ee9b2db4e1724900585457dfd55",
+    "packaging/licenses/wheels/a5425f9dc14ac74d4c5f0b679e941f2442e32cca7452a4418d5b1a49893ebe4e.txt": "a5425f9dc14ac74d4c5f0b679e941f2442e32cca7452a4418d5b1a49893ebe4e",
+    "packaging/licenses/wheels/a85ca13fdf90160b64a0698215868c13b74d835ad0a4e2ba44713b8c5058a056.txt": "a85ca13fdf90160b64a0698215868c13b74d835ad0a4e2ba44713b8c5058a056",
+    "packaging/licenses/wheels/a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17.txt": "a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17",
+    "packaging/licenses/wheels/ade78d04982d69972d444a8e14a94f87a2334dd3855cc80348ea8e240aa0df2d.txt": "6557adc4bc1d59232e27567a185dd70cf2ecca3154018b0be61ea29cf9e814e2",
+    "packaging/licenses/wheels/b6eea21bbafbaf7a2177e492f1be6b5efc6f4e708b1980773de51cdaa52f8211.txt": "b6eea21bbafbaf7a2177e492f1be6b5efc6f4e708b1980773de51cdaa52f8211",
+    "packaging/licenses/wheels/b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5.txt": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5",
+    "packaging/licenses/wheels/b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe.txt": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe",
+    "packaging/licenses/wheels/ba00f51a0d92823b5a1cde27d8b5b9d2321e67ed8da9bc163eff96d5e17e577e.txt": "9313256b27c4a1b7666c433acbf70a447383df0ea8c4b59bee0b6e412a281f92",
+    "packaging/licenses/wheels/bab3d31dfef07f483624f2f65f2711e76065b8e7273278b1c071ede1041c9959.txt": "bab3d31dfef07f483624f2f65f2711e76065b8e7273278b1c071ede1041c9959",
+    "packaging/licenses/wheels/c17011467b4fe6e20fbfbeda4df09e58c2bca5480a063e55735a4000a379aad9.txt": "c17011467b4fe6e20fbfbeda4df09e58c2bca5480a063e55735a4000a379aad9",
+    "packaging/licenses/wheels/c254b2b5fd30ae3c89d36ba061730563b9760fca04f1b746a1b2c3157da2c789.txt": "c254b2b5fd30ae3c89d36ba061730563b9760fca04f1b746a1b2c3157da2c789",
+    "packaging/licenses/wheels/c453cf1368bb9e009e4d7e5334fc78511e665316a612ef54ee4fe1245678fe2c.txt": "246aae8eea14923e415b2f0eed0fbf1e70451feb48592b5683851c71df1e05b0",
+    "packaging/licenses/wheels/c80c39b5fce06ba4897e14e0b0a88b54458334d951eb1361402ffad2cfb863b4.txt": "c80c39b5fce06ba4897e14e0b0a88b54458334d951eb1361402ffad2cfb863b4",
+    "packaging/licenses/wheels/ca836a5f9ecca3b2f350230faa20a48fb8b145653b5568d784862df864706b9b.txt": "ca836a5f9ecca3b2f350230faa20a48fb8b145653b5568d784862df864706b9b",
+    "packaging/licenses/wheels/cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48.txt": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48",
+    "packaging/licenses/wheels/cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30.txt": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "packaging/licenses/wheels/d6b65e6c213a5d0b577911d34d6e5949b9f59d76c238c5071a2f3fc16cfb2606.txt": "d6b65e6c213a5d0b577911d34d6e5949b9f59d76c238c5071a2f3fc16cfb2606",
+    "packaging/licenses/wheels/d75938dec098f06f0ac3c00853065d94f020be1c3c62ef1dc2975ba15b4d9b0e.txt": "d75938dec098f06f0ac3c00853065d94f020be1c3c62ef1dc2975ba15b4d9b0e",
+    "packaging/licenses/wheels/dcf75fdb959db1e3b41c0f8505069d2ece781b5ec6b3d0a4d30975cfc6580245.txt": "dcf75fdb959db1e3b41c0f8505069d2ece781b5ec6b3d0a4d30975cfc6580245",
+    "packaging/licenses/wheels/dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce.txt": "dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce",
+    "packaging/licenses/wheels/ddb94f90ceb2ebb3d88d5354fa635c1d7404d6624b15ed1954a14255f348f119.txt": "01d0a88938b17135b68a9f90eb672f87667853727a8cb35d57ea4c8e7ef29bac",
+    "packaging/licenses/wheels/e340270d4f64384569a91d546acb5b094d69ce47f0c015db77abb74dc6f815af.txt": "b8b1fae5894cfbe213b47f1378bb2269cf82de18b34447e871c0225ace0d3ad7",
+    "packaging/licenses/wheels/e7d4f4fb20358f314210a892ae17351e04993813646f697ec387385ca2a36918.txt": "e7d4f4fb20358f314210a892ae17351e04993813646f697ec387385ca2a36918",
+    "packaging/licenses/wheels/e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7.txt": "e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7",
+    "packaging/licenses/wheels/ed9bf58c6d74d3fad9d92d1d67d9bff8141d8ab60de784516b0711364fd43357.txt": "ed9bf58c6d74d3fad9d92d1d67d9bff8141d8ab60de784516b0711364fd43357",
+    "packaging/licenses/wheels/eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449.txt": "eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449",
+    "packaging/licenses/wheels/f1218143d766da3fea66f13396b7f15df46a83303f29bf96ba6e98eb4d42f408.txt": "7eec27ee66da53ba5912cb00b3521ac4428834bb37d0691080bf5d543b0cbb31",
+    "packaging/licenses/wheels/fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec.txt": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec"
+  },
+  "wheel_origins": [
+    {
+      "wheel": "absl_py-2.5.0-py3-none-any.whl",
+      "wheel_sha256": "0f17b89f2a4eaaedc4f28c622998aa690564b3012a396a4ffad0821007fe03ba",
+      "member": "absl_py-2.5.0.dist-info/licenses/AUTHORS",
+      "sha256": "6282ee76cca569083b5b998b9f816ba1032e127b8dc7c46942b86477fc6fbfa5",
+      "path": "packaging/licenses/wheels/6282ee76cca569083b5b998b9f816ba1032e127b8dc7c46942b86477fc6fbfa5.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "absl_py-2.5.0-py3-none-any.whl",
+      "wheel_sha256": "0f17b89f2a4eaaedc4f28c622998aa690564b3012a396a4ffad0821007fe03ba",
+      "member": "absl_py-2.5.0.dist-info/licenses/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "path": "packaging/licenses/wheels/cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "altgraph-0.17.5-py2.py3-none-any.whl",
+      "wheel_sha256": "f3a22400bce1b0c701683820ac4f3b159cd301acab067c51c653e06961600597",
+      "member": "altgraph-0.17.5.dist-info/LICENSE",
+      "sha256": "6c194d6db0c64d45535d10c95142b9b0cda7b7dcc7f1ddee302b3d536f3dbe46",
+      "path": "packaging/licenses/wheels/6c194d6db0c64d45535d10c95142b9b0cda7b7dcc7f1ddee302b3d536f3dbe46.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "certifi-2026.7.22-py3-none-any.whl",
+      "wheel_sha256": "62f22742b58a1a33014a2b6b706588a8d7e2a88ae7bd1a6ebe8c992928483775",
+      "member": "certifi-2026.7.22.dist-info/licenses/LICENSE",
+      "sha256": "e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7",
+      "path": "packaging/licenses/wheels/e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "cffi-2.1.0-cp311-cp311-macosx_11_0_arm64.whl",
+      "wheel_sha256": "f5bce581e6b8c235e566a14768a943b172ada3ed73537bb0c0be1edee312d4e7",
+      "member": "cffi-2.1.0.dist-info/licenses/LICENSE",
+      "sha256": "5ba24ddc57067f9249add644c3afc41a5d6dc37e23433ef759d95df370b0af63",
+      "path": "packaging/licenses/wheels/5ba24ddc57067f9249add644c3afc41a5d6dc37e23433ef759d95df370b0af63.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "contourpy-1.3.3-cp311-cp311-macosx_11_0_arm64.whl",
+      "wheel_sha256": "23416f38bfd74d5d28ab8429cc4d63fa67d5068bd711a85edb1c3fb0c3e2f381",
+      "member": "contourpy-1.3.3.dist-info/LICENSE",
+      "sha256": "34170979fc64f4f5e6dfa66ef27dec314ffffc5852000c60f4836ec1dfbf156e",
+      "path": "packaging/licenses/wheels/34170979fc64f4f5e6dfa66ef27dec314ffffc5852000c60f4836ec1dfbf156e.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "cycler-0.12.1-py3-none-any.whl",
+      "wheel_sha256": "85cef7cff222d8644161529808465972e51340599459b8ac3ccbac5a854e0d30",
+      "member": "cycler-0.12.1.dist-info/LICENSE",
+      "sha256": "f1218143d766da3fea66f13396b7f15df46a83303f29bf96ba6e98eb4d42f408",
+      "path": "packaging/licenses/wheels/f1218143d766da3fea66f13396b7f15df46a83303f29bf96ba6e98eb4d42f408.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "fonttools-4.63.0-cp311-cp311-macosx_10_9_universal2.whl",
+      "wheel_sha256": "2b8ae05d9eacf6081414d759c0a352769ac28ce31280d6bb8e77b03f9e3c449f",
+      "member": "fonttools-4.63.0.dist-info/licenses/LICENSE",
+      "sha256": "6787208f83f659ccbc2223b2fde952ffa6f7e8aca62f1a8a2bf5bc51bb1b2383",
+      "path": "packaging/licenses/wheels/6787208f83f659ccbc2223b2fde952ffa6f7e8aca62f1a8a2bf5bc51bb1b2383.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "fonttools-4.63.0-cp311-cp311-macosx_10_9_universal2.whl",
+      "wheel_sha256": "2b8ae05d9eacf6081414d759c0a352769ac28ce31280d6bb8e77b03f9e3c449f",
+      "member": "fonttools-4.63.0.dist-info/licenses/LICENSE.external",
+      "sha256": "94a83aaee0729a0f302d34acc4acecbd9d58366f262429075fe557e4a54b2e69",
+      "path": "packaging/licenses/wheels/94a83aaee0729a0f302d34acc4acecbd9d58366f262429075fe557e4a54b2e69.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "imageio-2.37.4-py3-none-any.whl",
+      "wheel_sha256": "1ab2e22c8debf700f24c3ac43e8f95f3b3a8110c83b93411e97b4b0b2cd1c7e6",
+      "member": "imageio-2.37.4.dist-info/licenses/LICENSE",
+      "sha256": "c453cf1368bb9e009e4d7e5334fc78511e665316a612ef54ee4fe1245678fe2c",
+      "path": "packaging/licenses/wheels/c453cf1368bb9e009e4d7e5334fc78511e665316a612ef54ee4fe1245678fe2c.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "iniconfig-2.3.0-py3-none-any.whl",
+      "wheel_sha256": "f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12",
+      "member": "iniconfig-2.3.0.dist-info/licenses/LICENSE",
+      "sha256": "3409fa91f7ace557894632676656e32264fe5ef7581535725dc9a23774551bd4",
+      "path": "packaging/licenses/wheels/3409fa91f7ace557894632676656e32264fe5ef7581535725dc9a23774551bd4.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "kiwisolver-1.5.0-cp311-cp311-macosx_11_0_arm64.whl",
+      "wheel_sha256": "0df54df7e686afa55e6f21fb86195224a6d9beb71d637e8d7920c95cf0f89aac",
+      "member": "kiwisolver-1.5.0.dist-info/licenses/LICENSE",
+      "sha256": "529c40e5f67f2f88904657a9f7879ae2f8dc76bc9bfef9cb10d988b48804ed61",
+      "path": "packaging/licenses/wheels/529c40e5f67f2f88904657a9f7879ae2f8dc76bc9bfef9cb10d988b48804ed61.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "lazy_loader-0.5-py3-none-any.whl",
+      "wheel_sha256": "ab0ea149e9c554d4ffeeb21105ac60bed7f3b4fd69b1d2360a4add51b170b005",
+      "member": "lazy_loader-0.5.dist-info/licenses/LICENSE.md",
+      "sha256": "797b6937a4f976836efbbbb3ae333d7866ddc3eb3cb152972b2be348d3529372",
+      "path": "packaging/licenses/wheels/797b6937a4f976836efbbbb3ae333d7866ddc3eb3cb152972b2be348d3529372.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "macholib-1.16.4-py2.py3-none-any.whl",
+      "wheel_sha256": "da1a3fa8266e30f0ce7e97c6a54eefaae8edd1e5f86f3eb8b95457cae90265ea",
+      "member": "macholib-1.16.4.dist-info/LICENSE",
+      "sha256": "47082ab2bc0184123ec9f10fdf80c70723ee68f07d44382e17615c2a6ba70b09",
+      "path": "packaging/licenses/wheels/47082ab2bc0184123ec9f10fdf80c70723ee68f07d44382e17615c2a6ba70b09.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "matplotlib-3.11.1-cp311-cp311-macosx_11_0_arm64.whl",
+      "wheel_sha256": "d2ace7273b9a5061a3b420918a16fae1f2dc5dfee1abcc13aba71b5d94b1820c",
+      "member": "matplotlib-3.11.1.dist-info/LICENSE",
+      "sha256": "822e8e528147569a41975592aee19c11992ab667ba50451cd929031d5fc74491",
+      "path": "packaging/licenses/wheels/822e8e528147569a41975592aee19c11992ab667ba50451cd929031d5fc74491.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "matplotlib-3.11.1-cp311-cp311-macosx_11_0_arm64.whl",
+      "wheel_sha256": "d2ace7273b9a5061a3b420918a16fae1f2dc5dfee1abcc13aba71b5d94b1820c",
+      "member": "matplotlib/mpl-data/fonts/ttf/LICENSE_STIX",
+      "sha256": "bab3d31dfef07f483624f2f65f2711e76065b8e7273278b1c071ede1041c9959",
+      "path": "packaging/licenses/wheels/bab3d31dfef07f483624f2f65f2711e76065b8e7273278b1c071ede1041c9959.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "matplotlib-3.11.1-cp311-cp311-macosx_11_0_arm64.whl",
+      "wheel_sha256": "d2ace7273b9a5061a3b420918a16fae1f2dc5dfee1abcc13aba71b5d94b1820c",
+      "member": "matplotlib/mpl-data/fonts/ttf/LICENSE_DEJAVU",
+      "sha256": "d75938dec098f06f0ac3c00853065d94f020be1c3c62ef1dc2975ba15b4d9b0e",
+      "path": "packaging/licenses/wheels/d75938dec098f06f0ac3c00853065d94f020be1c3c62ef1dc2975ba15b4d9b0e.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "mediapipe-0.10.35-py3-none-macosx_11_0_arm64.whl",
+      "wheel_sha256": "3b31376f34ca3665e34b834565996464cd66c9c91316e914fa7f149c891ce7ac",
+      "member": "mediapipe-0.10.35.dist-info/licenses/LICENSE",
+      "sha256": "8707eef0533987efc5b155d64761eeb6e20793f50b9bd1a68dad1cf4719d0ed8",
+      "path": "packaging/licenses/wheels/8707eef0533987efc5b155d64761eeb6e20793f50b9bd1a68dad1cf4719d0ed8.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "networkx-3.6.1-py3-none-any.whl",
+      "wheel_sha256": "d47fbf302e7d9cbbb9e2555a0d267983d2aa476bac30e90dfbe5669bd57f3762",
+      "member": "networkx-3.6.1.dist-info/licenses/LICENSE.txt",
+      "sha256": "3cf7c3a179d817b23b8b8568211769fefdf93797d207d984b8b2fa24d0220b33",
+      "path": "packaging/licenses/wheels/3cf7c3a179d817b23b8b8568211769fefdf93797d207d984b8b2fa24d0220b33.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/LICENSE.txt",
+      "sha256": "649a589ab31076e79e9ce62ba24eae9959598124176640dbc95f87bd10f34fcf",
+      "path": "packaging/licenses/wheels/649a589ab31076e79e9ce62ba24eae9959598124176640dbc95f87bd10f34fcf.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/linalg/lapack_lite/LICENSE.txt",
+      "sha256": "a14cc25e10d40a3aa705b7de2fb764a6535d8ee9b2db4e1724900585457dfd55",
+      "path": "packaging/licenses/wheels/a14cc25e10d40a3aa705b7de2fb764a6535d8ee9b2db4e1724900585457dfd55.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/ma/LICENSE",
+      "sha256": "05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6",
+      "path": "packaging/licenses/wheels/05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/_core/include/numpy/libdivide/LICENSE.txt",
+      "sha256": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec",
+      "path": "packaging/licenses/wheels/fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/_core/src/npysort/x86-simd-sort/LICENSE.md",
+      "sha256": "211e7d737d6179a08f791ebb0a99897ce7cd2457410c542876d125576edfe910",
+      "path": "packaging/licenses/wheels/211e7d737d6179a08f791ebb0a99897ce7cd2457410c542876d125576edfe910.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/_core/src/highway/LICENSE",
+      "sha256": "e340270d4f64384569a91d546acb5b094d69ce47f0c015db77abb74dc6f815af",
+      "path": "packaging/licenses/wheels/e340270d4f64384569a91d546acb5b094d69ce47f0c015db77abb74dc6f815af.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/_core/src/common/pythoncapi-compat/COPYING",
+      "sha256": "3f2c1ffa76383a55ae0aac01c9737cd70050dff63e1f026694fbe9d662573c98",
+      "path": "packaging/licenses/wheels/3f2c1ffa76383a55ae0aac01c9737cd70050dff63e1f026694fbe9d662573c98.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/_core/src/umath/svml/LICENSE",
+      "sha256": "c17011467b4fe6e20fbfbeda4df09e58c2bca5480a063e55735a4000a379aad9",
+      "path": "packaging/licenses/wheels/c17011467b4fe6e20fbfbeda4df09e58c2bca5480a063e55735a4000a379aad9.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/fft/pocketfft/LICENSE.md",
+      "sha256": "a85ca13fdf90160b64a0698215868c13b74d835ad0a4e2ba44713b8c5058a056",
+      "path": "packaging/licenses/wheels/a85ca13fdf90160b64a0698215868c13b74d835ad0a4e2ba44713b8c5058a056.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/random/LICENSE.md",
+      "sha256": "103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f",
+      "path": "packaging/licenses/wheels/103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/random/src/mt19937/LICENSE.md",
+      "sha256": "0e111337b25494a773106695f0e799f642b8567aaacca4f116a74a8177179156",
+      "path": "packaging/licenses/wheels/0e111337b25494a773106695f0e799f642b8567aaacca4f116a74a8177179156.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/random/src/sfc64/LICENSE.md",
+      "sha256": "9d4098846018319cd68e228ee6220361787f73bccbf00237a85e4fc9621b998f",
+      "path": "packaging/licenses/wheels/9d4098846018319cd68e228ee6220361787f73bccbf00237a85e4fc9621b998f.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/random/src/pcg64/LICENSE.md",
+      "sha256": "e7d4f4fb20358f314210a892ae17351e04993813646f697ec387385ca2a36918",
+      "path": "packaging/licenses/wheels/e7d4f4fb20358f314210a892ae17351e04993813646f697ec387385ca2a36918.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/random/src/philox/LICENSE.md",
+      "sha256": "6f5828a57223d4cc7f8ea505a2623e7b978b242752c1515e355f46ba2cec1800",
+      "path": "packaging/licenses/wheels/6f5828a57223d4cc7f8ea505a2623e7b978b242752c1515e355f46ba2cec1800.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/random/src/splitmix64/LICENSE.md",
+      "sha256": "268b0ca06759d31ea3ca68dd35f20e877916e927b1c2a835e4592a3c4354b1f9",
+      "path": "packaging/licenses/wheels/268b0ca06759d31ea3ca68dd35f20e877916e927b1c2a835e4592a3c4354b1f9.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy-2.4.6.dist-info/licenses/numpy/random/src/distributions/LICENSE.md",
+      "sha256": "469778be8f33d54e1bcaab28c281cc472916d2d273f835e55bc487d30503face",
+      "path": "packaging/licenses/wheels/469778be8f33d54e1bcaab28c281cc472916d2d273f835e55bc487d30503face.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy/ma/LICENSE",
+      "sha256": "05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6",
+      "path": "packaging/licenses/wheels/05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy/_core/include/numpy/random/LICENSE.txt",
+      "sha256": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec",
+      "path": "packaging/licenses/wheels/fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+      "member": "numpy/random/LICENSE.md",
+      "sha256": "103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f",
+      "path": "packaging/licenses/wheels/103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "opencv_contrib_python-5.0.0.93-cp37-abi3-macosx_13_0_arm64.whl",
+      "wheel_sha256": "3ebb8e0506573f36f54038116321a086c97aeda8ef154198931f3ea18b435cc7",
+      "member": "cv2/LICENSE-3RD-PARTY.txt",
+      "sha256": "2537f5653345db7231ff12f307bcfa4c89807d45ed1c4bb8ebfb6f26f61b160a",
+      "path": "packaging/licenses/wheels/2537f5653345db7231ff12f307bcfa4c89807d45ed1c4bb8ebfb6f26f61b160a.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "opencv_contrib_python-5.0.0.93-cp37-abi3-macosx_13_0_arm64.whl",
+      "wheel_sha256": "3ebb8e0506573f36f54038116321a086c97aeda8ef154198931f3ea18b435cc7",
+      "member": "cv2/LICENSE.txt",
+      "sha256": "09d719058e782ac7bc71ba21c944e1136cde2bb957c0e888121f0218d6b5f02c",
+      "path": "packaging/licenses/wheels/09d719058e782ac7bc71ba21c944e1136cde2bb957c0e888121f0218d6b5f02c.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "opencv_contrib_python-5.0.0.93-cp37-abi3-macosx_13_0_arm64.whl",
+      "wheel_sha256": "3ebb8e0506573f36f54038116321a086c97aeda8ef154198931f3ea18b435cc7",
+      "member": "opencv_contrib_python-5.0.0.93.dist-info/LICENSE-3RD-PARTY.txt",
+      "sha256": "2537f5653345db7231ff12f307bcfa4c89807d45ed1c4bb8ebfb6f26f61b160a",
+      "path": "packaging/licenses/wheels/2537f5653345db7231ff12f307bcfa4c89807d45ed1c4bb8ebfb6f26f61b160a.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "opencv_contrib_python-5.0.0.93-cp37-abi3-macosx_13_0_arm64.whl",
+      "wheel_sha256": "3ebb8e0506573f36f54038116321a086c97aeda8ef154198931f3ea18b435cc7",
+      "member": "opencv_contrib_python-5.0.0.93.dist-info/LICENSE.txt",
+      "sha256": "09d719058e782ac7bc71ba21c944e1136cde2bb957c0e888121f0218d6b5f02c",
+      "path": "packaging/licenses/wheels/09d719058e782ac7bc71ba21c944e1136cde2bb957c0e888121f0218d6b5f02c.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "packaging-26.2-py3-none-any.whl",
+      "wheel_sha256": "5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e",
+      "member": "packaging-26.2.dist-info/licenses/LICENSE",
+      "sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48",
+      "path": "packaging/licenses/wheels/cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "packaging-26.2-py3-none-any.whl",
+      "wheel_sha256": "5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e",
+      "member": "packaging-26.2.dist-info/licenses/LICENSE.APACHE",
+      "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+      "path": "packaging/licenses/wheels/0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "packaging-26.2-py3-none-any.whl",
+      "wheel_sha256": "5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e",
+      "member": "packaging-26.2.dist-info/licenses/LICENSE.BSD",
+      "sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5",
+      "path": "packaging/licenses/wheels/b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pillow-12.3.0-cp311-cp311-macosx_11_0_arm64.whl",
+      "wheel_sha256": "37d6d0a00072fd2948eb22bce7e1475f34569d90c87c59f7a2ec59541b77f7a6",
+      "member": "pillow-12.3.0.dist-info/licenses/LICENSE",
+      "sha256": "dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce",
+      "path": "packaging/licenses/wheels/dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pillow_heif-1.5.0-cp311-cp311-macosx_11_0_arm64.whl",
+      "wheel_sha256": "88d74a74b144c2e6e99e18e23a1637aef5f63ad32c718c8358da87ea81f94194",
+      "member": "pillow_heif-1.5.0.dist-info/licenses/LICENSES_bundled.txt",
+      "sha256": "200ce164421a7ec6f0742dcacf100551847ad7b16ac58e6f30dd0f36fd8fcf7e",
+      "path": "packaging/licenses/wheels/200ce164421a7ec6f0742dcacf100551847ad7b16ac58e6f30dd0f36fd8fcf7e.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pillow_heif-1.5.0-cp311-cp311-macosx_11_0_arm64.whl",
+      "wheel_sha256": "88d74a74b144c2e6e99e18e23a1637aef5f63ad32c718c8358da87ea81f94194",
+      "member": "pillow_heif-1.5.0.dist-info/licenses/LICENSE.txt",
+      "sha256": "9e2635f155b00af5a46cb2f2c9b052072ec546d59837ee74efc9cba2cbb83f3d",
+      "path": "packaging/licenses/wheels/9e2635f155b00af5a46cb2f2c9b052072ec546d59837ee74efc9cba2cbb83f3d.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pluggy-1.6.0-py3-none-any.whl",
+      "wheel_sha256": "e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746",
+      "member": "pluggy-1.6.0.dist-info/licenses/LICENSE",
+      "sha256": "d6b65e6c213a5d0b577911d34d6e5949b9f59d76c238c5071a2f3fc16cfb2606",
+      "path": "packaging/licenses/wheels/d6b65e6c213a5d0b577911d34d6e5949b9f59d76c238c5071a2f3fc16cfb2606.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pycparser-3.0-py3-none-any.whl",
+      "wheel_sha256": "b727414169a36b7d524c1c3e31839a521725078d7b2ff038656844266160a992",
+      "member": "pycparser-3.0.dist-info/licenses/LICENSE",
+      "sha256": "0c846399369ea76ddd7b5c44fe6d16497415fcf015f5cbb508c24bf98b81c5b1",
+      "path": "packaging/licenses/wheels/0c846399369ea76ddd7b5c44fe6d16497415fcf015f5cbb508c24bf98b81c5b1.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pygments-2.20.0-py3-none-any.whl",
+      "wheel_sha256": "81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176",
+      "member": "pygments-2.20.0.dist-info/licenses/AUTHORS",
+      "sha256": "0db603a5f4499f690c4425477ff664c166da325d3acc3b5a8d4de3db072443d0",
+      "path": "packaging/licenses/wheels/0db603a5f4499f690c4425477ff664c166da325d3acc3b5a8d4de3db072443d0.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pygments-2.20.0-py3-none-any.whl",
+      "wheel_sha256": "81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176",
+      "member": "pygments-2.20.0.dist-info/licenses/LICENSE",
+      "sha256": "a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17",
+      "path": "packaging/licenses/wheels/a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pyinstaller-6.21.0-py3-none-macosx_10_13_universal2.whl",
+      "wheel_sha256": "327d132389f37912609e01be62810cf96b5aa95b613903e4b8692e0d12fb0eda",
+      "member": "pyinstaller-6.21.0.dist-info/licenses/COPYING.txt",
+      "sha256": "dcf75fdb959db1e3b41c0f8505069d2ece781b5ec6b3d0a4d30975cfc6580245",
+      "path": "packaging/licenses/wheels/dcf75fdb959db1e3b41c0f8505069d2ece781b5ec6b3d0a4d30975cfc6580245.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pyinstaller_hooks_contrib-2026.6-py3-none-any.whl",
+      "wheel_sha256": "fd13b8ac126b35361175edacd41a0d97080b75dd5f4b594ecefefff969509dd3",
+      "member": "pyinstaller_hooks_contrib-2026.6.dist-info/licenses/LICENSE",
+      "sha256": "91d0baaff00773038e72c0a1fc9d5d2d38706b7a2b9c04f34296608f931b9cd0",
+      "path": "packaging/licenses/wheels/91d0baaff00773038e72c0a1fc9d5d2d38706b7a2b9c04f34296608f931b9cd0.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pyparsing-3.3.2-py3-none-any.whl",
+      "wheel_sha256": "850ba148bd908d7e2411587e247a1e4f0327839c40e2e5e6d05a007ecc69911d",
+      "member": "pyparsing-3.3.2.dist-info/licenses/LICENSE",
+      "sha256": "a5425f9dc14ac74d4c5f0b679e941f2442e32cca7452a4418d5b1a49893ebe4e",
+      "path": "packaging/licenses/wheels/a5425f9dc14ac74d4c5f0b679e941f2442e32cca7452a4418d5b1a49893ebe4e.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pyqt6-6.11.0-cp310-abi3-macosx_10_14_universal2.whl",
+      "wheel_sha256": "f7100bc7f72b12581ec479a733f4ad11b8002668e6786e8a445ab6f4d1c743d4",
+      "member": "pyqt6-6.11.0.dist-info/licenses/LICENSE",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "path": "packaging/licenses/wheels/8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pyqt6_qt6-6.11.1-py3-none-macosx_11_0_arm64.whl",
+      "wheel_sha256": "fd05b31a3c83111b6eb82bb472ccfe531ef823f70d085b82fd1edc5ad2553c54",
+      "member": "pyqt6_qt6-6.11.1.dist-info/LICENSE",
+      "sha256": "6c671e2912ec69c0832f32066c0313cee5fdc3bbcbce237822e89f3da58edd4e",
+      "path": "packaging/licenses/wheels/6c671e2912ec69c0832f32066c0313cee5fdc3bbcbce237822e89f3da58edd4e.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pyqt6_sip-13.11.1-cp311-cp311-macosx_10_9_universal2.whl",
+      "wheel_sha256": "c0ec2128c174db352bec1c8d23a437e970e8d5a78ac50315d8dfc671fcf7a7da",
+      "member": "pyqt6_sip-13.11.1.dist-info/licenses/LICENSE",
+      "sha256": "3e6f5b427c36f94ecf86bc01698af7030a1ed6eb3748110d5dbb8d142d804611",
+      "path": "packaging/licenses/wheels/3e6f5b427c36f94ecf86bc01698af7030a1ed6eb3748110d5dbb8d142d804611.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pytest-9.1.1-py3-none-any.whl",
+      "wheel_sha256": "37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c",
+      "member": "pytest-9.1.1.dist-info/licenses/LICENSE",
+      "sha256": "ca836a5f9ecca3b2f350230faa20a48fb8b145653b5568d784862df864706b9b",
+      "path": "packaging/licenses/wheels/ca836a5f9ecca3b2f350230faa20a48fb8b145653b5568d784862df864706b9b.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "pytest_qt-4.5.0-py3-none-any.whl",
+      "wheel_sha256": "ed21ea9b861247f7d18090a26bfbda8fb51d7a8a7b6f776157426ff2ccf26eff",
+      "member": "pytest_qt-4.5.0.dist-info/licenses/LICENSE",
+      "sha256": "ddb94f90ceb2ebb3d88d5354fa635c1d7404d6624b15ed1954a14255f348f119",
+      "path": "packaging/licenses/wheels/ddb94f90ceb2ebb3d88d5354fa635c1d7404d6624b15ed1954a14255f348f119.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "python_dateutil-2.9.0.post0-py2.py3-none-any.whl",
+      "wheel_sha256": "a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427",
+      "member": "python_dateutil-2.9.0.post0.dist-info/LICENSE",
+      "sha256": "ba00f51a0d92823b5a1cde27d8b5b9d2321e67ed8da9bc163eff96d5e17e577e",
+      "path": "packaging/licenses/wheels/ba00f51a0d92823b5a1cde27d8b5b9d2321e67ed8da9bc163eff96d5e17e577e.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "rawpy-0.27.0-cp311-cp311-macosx_11_0_arm64.whl",
+      "wheel_sha256": "e297fac04907328954ba2c9483d878b02afbbb1fd515f956acd6a7e3c0ce199b",
+      "member": "rawpy-0.27.0.dist-info/licenses/LICENSE.LibRaw",
+      "sha256": "eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449",
+      "path": "packaging/licenses/wheels/eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "rawpy-0.27.0-cp311-cp311-macosx_11_0_arm64.whl",
+      "wheel_sha256": "e297fac04907328954ba2c9483d878b02afbbb1fd515f956acd6a7e3c0ce199b",
+      "member": "rawpy-0.27.0.dist-info/licenses/LICENSE",
+      "sha256": "2cc0e98a169e1a9927dee3c82d59dfac898a2aad5a1fcdd295db40c2f2fed516",
+      "path": "packaging/licenses/wheels/2cc0e98a169e1a9927dee3c82d59dfac898a2aad5a1fcdd295db40c2f2fed516.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "scikit_image-0.26.0-cp311-cp311-macosx_11_0_arm64.whl",
+      "wheel_sha256": "7af7aa331c6846bd03fa28b164c18d0c3fd419dbb888fb05e958ac4257a78fdd",
+      "member": "scikit_image-0.26.0.dist-info/LICENSE.txt",
+      "sha256": "611d3207504dcb4a808df209d2e7c9b4f2e89fe690f84735c0d548160966b527",
+      "path": "packaging/licenses/wheels/611d3207504dcb4a808df209d2e7c9b4f2e89fe690f84735c0d548160966b527.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "scipy-1.17.1-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "a3472cfbca0a54177d0faa68f697d8ba4c80bbdc19908c3465556d9f7efce9ee",
+      "member": "scipy-1.17.1.dist-info/LICENSE.txt",
+      "sha256": "60a7d05d729ed5c763852a324a1cb4223d665d4ad3f4b8a0c130ae5c60c93e49",
+      "path": "packaging/licenses/wheels/60a7d05d729ed5c763852a324a1cb4223d665d4ad3f4b8a0c130ae5c60c93e49.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "scipy-1.17.1-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "a3472cfbca0a54177d0faa68f697d8ba4c80bbdc19908c3465556d9f7efce9ee",
+      "member": "scipy/integrate/LICENSE_DOP",
+      "sha256": "ed9bf58c6d74d3fad9d92d1d67d9bff8141d8ab60de784516b0711364fd43357",
+      "path": "packaging/licenses/wheels/ed9bf58c6d74d3fad9d92d1d67d9bff8141d8ab60de784516b0711364fd43357.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "scipy-1.17.1-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "a3472cfbca0a54177d0faa68f697d8ba4c80bbdc19908c3465556d9f7efce9ee",
+      "member": "scipy/_lib/_uarray/LICENSE",
+      "sha256": "c80c39b5fce06ba4897e14e0b0a88b54458334d951eb1361402ffad2cfb863b4",
+      "path": "packaging/licenses/wheels/c80c39b5fce06ba4897e14e0b0a88b54458334d951eb1361402ffad2cfb863b4.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "scipy-1.17.1-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "a3472cfbca0a54177d0faa68f697d8ba4c80bbdc19908c3465556d9f7efce9ee",
+      "member": "scipy/fft/_pocketfft/LICENSE.md",
+      "sha256": "c254b2b5fd30ae3c89d36ba061730563b9760fca04f1b746a1b2c3157da2c789",
+      "path": "packaging/licenses/wheels/c254b2b5fd30ae3c89d36ba061730563b9760fca04f1b746a1b2c3157da2c789.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "scipy-1.17.1-cp311-cp311-macosx_14_0_arm64.whl",
+      "wheel_sha256": "a3472cfbca0a54177d0faa68f697d8ba4c80bbdc19908c3465556d9f7efce9ee",
+      "member": "scipy/spatial/qhull_src/COPYING_QHULL.txt",
+      "sha256": "106d55c931fd6a84822e5345d900273d059f1c27310d02567ccb313c5d18c55d",
+      "path": "packaging/licenses/wheels/106d55c931fd6a84822e5345d900273d059f1c27310d02567ccb313c5d18c55d.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/platformdirs-4.2.2.dist-info/licenses/LICENSE",
+      "sha256": "29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6",
+      "path": "packaging/licenses/wheels/29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/wheel/vendored/packaging/LICENSE",
+      "sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48",
+      "path": "packaging/licenses/wheels/cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/wheel/vendored/packaging/LICENSE.APACHE",
+      "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+      "path": "packaging/licenses/wheels/0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/wheel/vendored/packaging/LICENSE.BSD",
+      "sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5",
+      "path": "packaging/licenses/wheels/b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/config/NOTICE",
+      "sha256": "2dddf08818297a3b89d43d95ff659d8da85741108c9136dfa3a4d856c0623bd8",
+      "path": "packaging/licenses/wheels/2dddf08818297a3b89d43d95ff659d8da85741108c9136dfa3a4d856c0623bd8.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/config/_validate_pyproject/NOTICE",
+      "sha256": "5d300dbfa643138b013b75ac9caeee591f951b8b0ee24288c34ccd926c4780c8",
+      "path": "packaging/licenses/wheels/5d300dbfa643138b013b75ac9caeee591f951b8b0ee24288c34ccd926c4780c8.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools-79.0.1.dist-info/licenses/LICENSE",
+      "sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+      "path": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/autocommand-2.2.2.dist-info/LICENSE",
+      "sha256": "ade78d04982d69972d444a8e14a94f87a2334dd3855cc80348ea8e240aa0df2d",
+      "path": "packaging/licenses/wheels/ade78d04982d69972d444a8e14a94f87a2334dd3855cc80348ea8e240aa0df2d.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/backports.tarfile-1.2.0.dist-info/LICENSE",
+      "sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+      "path": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/importlib_metadata-8.0.0.dist-info/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "path": "packaging/licenses/wheels/cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/inflect-7.3.1.dist-info/LICENSE",
+      "sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+      "path": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/jaraco.collections-5.1.0.dist-info/LICENSE",
+      "sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+      "path": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/jaraco.context-5.3.0.dist-info/LICENSE",
+      "sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+      "path": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/jaraco.functools-4.0.1.dist-info/LICENSE",
+      "sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+      "path": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/jaraco.text-3.12.1.dist-info/LICENSE",
+      "sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+      "path": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/more_itertools-10.3.0.dist-info/LICENSE",
+      "sha256": "09f1c8c9e941af3e584d59641ea9b87d83c0cb0fd007eb5ef391a7e2643c1a46",
+      "path": "packaging/licenses/wheels/09f1c8c9e941af3e584d59641ea9b87d83c0cb0fd007eb5ef391a7e2643c1a46.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/packaging-24.2.dist-info/LICENSE",
+      "sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48",
+      "path": "packaging/licenses/wheels/cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/packaging-24.2.dist-info/LICENSE.APACHE",
+      "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+      "path": "packaging/licenses/wheels/0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/packaging-24.2.dist-info/LICENSE.BSD",
+      "sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5",
+      "path": "packaging/licenses/wheels/b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/tomli-2.0.1.dist-info/LICENSE",
+      "sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe",
+      "path": "packaging/licenses/wheels/b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/typeguard-4.3.0.dist-info/LICENSE",
+      "sha256": "6163f7987dfb38d6bc320ce2b70b2f02b862bc41126516d552ef1cd43247e758",
+      "path": "packaging/licenses/wheels/6163f7987dfb38d6bc320ce2b70b2f02b862bc41126516d552ef1cd43247e758.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/typing_extensions-4.12.2.dist-info/LICENSE",
+      "sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
+      "path": "packaging/licenses/wheels/3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/wheel-0.45.1.dist-info/LICENSE.txt",
+      "sha256": "30c23618679108f3e8ea1d2a658c7ca417bdfc891c98ef1a89fa4ff0c9828654",
+      "path": "packaging/licenses/wheels/30c23618679108f3e8ea1d2a658c7ca417bdfc891c98ef1a89fa4ff0c9828654.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/zipp-3.19.2.dist-info/LICENSE",
+      "sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+      "path": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "six-1.17.0-py2.py3-none-any.whl",
+      "wheel_sha256": "4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274",
+      "member": "six-1.17.0.dist-info/LICENSE",
+      "sha256": "4375ba20e2b9c6c4e7cad2940a628fd90e95cc3d50ee92aae755715d8ba1fbd0",
+      "path": "packaging/licenses/wheels/4375ba20e2b9c6c4e7cad2940a628fd90e95cc3d50ee92aae755715d8ba1fbd0.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "sounddevice-0.5.5-py3-none-macosx_10_6_x86_64.macosx_10_6_universal2.whl",
+      "wheel_sha256": "05eb9fd6c54c38d67741441c19164c0dae8ce80453af2d8c4ad2e7823d15b722",
+      "member": "sounddevice-0.5.5.dist-info/licenses/LICENSE",
+      "sha256": "b6eea21bbafbaf7a2177e492f1be6b5efc6f4e708b1980773de51cdaa52f8211",
+      "path": "packaging/licenses/wheels/b6eea21bbafbaf7a2177e492f1be6b5efc6f4e708b1980773de51cdaa52f8211.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "tifffile-2026.3.3-py3-none-any.whl",
+      "wheel_sha256": "e8be15c94273113d31ecb7aa3a39822189dd11c4967e3cc88c178f1ad2fd1170",
+      "member": "tifffile-2026.3.3.dist-info/licenses/LICENSE",
+      "sha256": "65e641f17cfce25ed2c02f0d53c94cfa2382cc8817eca649a7fff2b890114aa4",
+      "path": "packaging/licenses/wheels/65e641f17cfce25ed2c02f0d53c94cfa2382cc8817eca649a7fff2b890114aa4.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "typing_extensions-4.16.0-py3-none-any.whl",
+      "wheel_sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+      "member": "typing_extensions-4.16.0.dist-info/licenses/LICENSE",
+      "sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
+      "path": "packaging/licenses/wheels/3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf.txt",
+      "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    }
+  ],
+  "runtime_origins": [
+    {
+      "path": "packaging/licenses/runtime/CPython-3.11.15-LICENSE.txt",
+      "source": "Installed CPython 3.11.15 lib/python3.11/LICENSE.txt; same interpreter used for the locked build environment",
+      "status": "notice_preserved; native closure unresolved"
+    },
+    {
+      "path": "packaging/licenses/runtime/Perl-5.44.0-Artistic.txt",
+      "source": "Verified Stage A runtime licenses/perl/Artistic; source pinned by packaging/runtime-sources.json"
+    },
+    {
+      "path": "packaging/licenses/runtime/Perl-5.44.0-Copying.txt",
+      "source": "Verified Stage A runtime licenses/perl/Copying; source pinned by packaging/runtime-sources.json"
+    },
+    {
+      "path": "packaging/licenses/runtime/ExifTool-13.59-README.txt",
+      "source": "Verified Stage A runtime licenses/exiftool/README; source pinned by packaging/runtime-sources.json"
+    }
+  ]
+}
