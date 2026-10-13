@@ -116,3 +116,36 @@ def test_spdx_metadata_requires_a_compatible_builder() -> None:
     config = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     assert config["project"]["license"] == "GPL-3.0-only"
     assert "setuptools>=77" in config["build-system"]["requires"]
+
+
+def test_public_contribution_docs_match_the_open_repository() -> None:
+    contributing = (ROOT / "CONTRIBUTING.md").read_text(encoding="utf-8")
+    security = (ROOT / "SECURITY.md").read_text(encoding="utf-8")
+
+    assert "This is a source candidate" not in contributing
+    assert "before opening a remote repository" not in contributing
+    assert "not approved for public distribution" not in security
+    assert "https://github.com/zhouz1995-svg/xuanpian/issues" in contributing
+    assert "https://github.com/zhouz1995-svg/xuanpian/security/advisories/new" in security
+
+
+def test_ci_runs_the_full_suite_on_arm64_with_minimal_permissions() -> None:
+    workflow = (ROOT / ".github/workflows/tests.yml").read_text(encoding="utf-8")
+
+    assert "pull_request_target" not in workflow
+    assert "pull_request:" in workflow
+    assert "push:" in workflow
+    assert "contents: read" in workflow
+    assert "runs-on: macos-15" in workflow
+    assert "3d3c42e5aac5ba805825da76410c181273ba90b1" in workflow
+    assert "5fda3b95a4ea91299a34e894583c3862153e4b97" in workflow
+    assert "pip install --require-hashes -r packaging/requirements-macos-arm64.lock" in workflow
+    assert "python -m pytest -q" in workflow
+
+
+def test_dependabot_keeps_github_actions_current() -> None:
+    config = (ROOT / ".github/dependabot.yml").read_text(encoding="utf-8")
+
+    assert 'package-ecosystem: "github-actions"' in config
+    assert 'directory: "/"' in config
+    assert 'interval: "weekly"' in config
