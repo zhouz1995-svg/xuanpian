@@ -137,6 +137,7 @@ def test_ci_runs_the_full_suite_on_arm64_with_minimal_permissions() -> None:
     assert "push:" in workflow
     assert "contents: read" in workflow
     assert "runs-on: macos-15" in workflow
+    assert 'python-version: "3.11.9"' in workflow
     assert "3d3c42e5aac5ba805825da76410c181273ba90b1" in workflow
     assert "5fda3b95a4ea91299a34e894583c3862153e4b97" in workflow
     assert "pip install --require-hashes -r packaging/requirements-macos-arm64.lock" in workflow
