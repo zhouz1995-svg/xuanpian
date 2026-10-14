@@ -460,6 +460,7 @@ class ThumbnailBrowser(QWidget):
         self._picks_only = False
         self._thumb_size = _THUMB_DEFAULT
         self._view_mode = "grid"
+        self._content_visible = False
         self.setFocusProxy(self._view)
         self.set_thumbnail_size(_THUMB_DEFAULT)
         self._show_empty_state()
@@ -468,6 +469,7 @@ class ThumbnailBrowser(QWidget):
         self,
         message: str = "导入图片文件夹开始选片",
     ) -> None:
+        self._content_visible = False
         self._empty_label.setText(message)
         self._empty_widget.setVisible(True)
         self._view.setVisible(False)
@@ -476,6 +478,7 @@ class ThumbnailBrowser(QWidget):
         self._loading_bar.setVisible(False)
 
     def _show_filtered_empty(self, message: str) -> None:
+        self._content_visible = False
         self._empty_label.setText(message)
         self._empty_widget.setVisible(True)
         self._view.setVisible(False)
@@ -484,6 +487,7 @@ class ThumbnailBrowser(QWidget):
         self._loading_bar.setVisible(False)
 
     def _show_grid(self) -> None:
+        self._content_visible = True
         self._empty_widget.setVisible(False)
         self._sidebar.setVisible(True)
         self._apply_view_visibility()
@@ -492,7 +496,9 @@ class ThumbnailBrowser(QWidget):
         return self._list_view if self._view_mode == "list" else self._view
 
     def _apply_view_visibility(self) -> None:
-        if self._empty_widget.isVisible():
+        if not self._content_visible:
+            self._view.setVisible(False)
+            self._list_view.setVisible(False)
             return
         self._view.setVisible(self._view_mode == "grid")
         self._list_view.setVisible(self._view_mode == "list")

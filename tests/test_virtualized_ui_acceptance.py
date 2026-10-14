@@ -83,9 +83,10 @@ def _valid_acceptance_report() -> dict[str, object]:
     }
 
 
-def test_main_window_toggle_click_shows_only_compact_list(qapp) -> None:
+def test_main_window_toggle_click_shows_only_compact_list(
+    qapp, monkeypatch
+) -> None:
     window = MainWindow()
-    window.thumbnail_browser.set_models(_models()[:3])
     window.resize(900, 650)
     window.show()
     qapp.processEvents()
@@ -94,6 +95,13 @@ def test_main_window_toggle_click_shows_only_compact_list(qapp) -> None:
         window._view_toggle._buttons["list"],
         Qt.MouseButton.LeftButton,
     )
+    qapp.processEvents()
+    monkeypatch.setattr(
+        window.thumbnail_browser._empty_widget,
+        "isVisible",
+        lambda: True,
+    )
+    window.thumbnail_browser.set_models(_models()[:3])
     qapp.processEvents()
 
     browser = window.thumbnail_browser
