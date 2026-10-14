@@ -738,6 +738,34 @@ class _FailingStore:
         )
 
 
+class _RecordingMarkStore:
+    def __init__(self) -> None:
+        self.saved_marks: list[tuple[tuple[str, str], ...]] = []
+
+    def save_marks(self, marks) -> None:
+        self.saved_marks.append(tuple(marks))
+
+
+def test_batch_mark_enables_for_selection_and_persists_atomically(qapp) -> None:
+    window = MainWindow()
+    first = ImageFileModel("/A.JPG", photo_id="p1")
+    second = ImageFileModel("/B.JPG", photo_id="p2")
+    store = _RecordingMarkStore()
+    window._project_store = store
+    window.thumbnail_browser.set_models([first, second])
+    window.select_all()
+
+    window._update_batch_mark_state()
+
+    assert window._batch_mark_btn.isEnabled()
+    assert all(
+        action.isEnabled() for action in window._batch_mark_menu.actions()
+    )
+    window._on_batch_mark("保留")
+    assert [first.mark, second.mark] == ["保留", "保留"]
+    assert store.saved_marks == [(("p1", "保留"), ("p2", "保留"))]
+
+
 def test_mark_failure_keeps_model_selection_and_visible_mark(
     qapp,
     monkeypatch,

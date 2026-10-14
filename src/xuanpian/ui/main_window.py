@@ -381,7 +381,9 @@ class MainWindow(QMainWindow):
         self._batch_mark_menu = QMenu(self._batch_mark_btn)
         for mark in ("保留", "待定", "舍弃"):
             action = self._batch_mark_menu.addAction(mark)
-            action.setEnabled(False)
+            action.triggered.connect(
+                lambda checked=False, value=mark: self._on_batch_mark(value)
+            )
         self._batch_mark_btn.setMenu(self._batch_mark_menu)
         self._batch_mark_btn.setEnabled(False)
         self._toolbar.addWidget(self._batch_mark_btn)
@@ -490,8 +492,21 @@ class MainWindow(QMainWindow):
         self._thumbnail_browser.thumbnail_size_changed.connect(self._on_browser_zoom)
 
     def _update_batch_mark_state(self) -> None:
-        self._batch_mark_btn.setEnabled(False)
-        self._batch_mark_btn.setToolTip("请在筛选工作台逐张标记并安全移动文件")
+        enabled = bool(self._thumbnail_browser.selected_photo_ids()) and (
+            self._project_store is not None
+            and self._active_project_id is not None
+            and not self._project_recovery_blocked
+            and self._active_culling_move is None
+            and all(job_id is None for job_id in self._active_job_ids.values())
+        )
+        self._batch_mark_btn.setEnabled(enabled)
+        for action in self._batch_mark_menu.actions():
+            action.setEnabled(enabled)
+        self._batch_mark_btn.setToolTip(
+            "批量设置选中照片的标记；不会移动原文件"
+            if enabled
+            else "请先选择照片"
+        )
 
     def _on_batch_mark(self, mark: str) -> None:
         photo_ids = self._thumbnail_browser.selected_photo_ids()
