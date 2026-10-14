@@ -126,6 +126,15 @@ class UndoCommand:
     plan: PhotoMoveTransaction
 
 
+@dataclass(frozen=True, slots=True)
+class _MarkUndoCommand:
+    """One database-only culling mark that can be restored once."""
+
+    photo_id: str
+    before_mark: PhotoMark
+    after_mark: PhotoMark
+
+
 @dataclass(slots=True)
 class _ActiveCullingMove:
     project_id: object
@@ -2142,26 +2151,45 @@ class MainWindow(QMainWindow):
         photo_id: str,
         mark: PhotoMark,
     ) -> None:
-        """Submit a current culling mark through the durable move pipeline."""
+        """Persist a culling decision without changing source files."""
         target = self._normal_culling_target(photo_id, mark)
         if target is None:
             return
         store, record, model = target
-        self._submit_culling_move(
-            store,
-            record,
-            model,
+        before_mark = normalize_legacy_mark(record.mark)
+        if before_mark is None:
+            return
+        try:
+            store.save_marks(((photo_id, mark.value),))
+        except Exception as error:
+            self._report_persistence_error("照片标记", error)
+            return
+        model.mark = mark.value
+        self._thumbnail_browser.refresh_photo(
+            photo_id,
+            [PhotoRoles.MARK],
+        )
+        self._undo_command = _MarkUndoCommand(
+            photo_id,
+            before_mark,
             mark,
-            is_undo=False,
-            undo_command=None,
+        )
+        if self._culling_session is not None:
+            self._culling_session.advance_after_mark(photo_id)
+        self._refresh_or_complete_culling()
+        self._culling_workspace.set_undo_available(True)
+        self._update_status_bar()
+        self._status_bar.showMessage(
+            "照片标记已保存；原文件未移动",
+            5000,
         )
 
     def request_culling_undo(self) -> None:
-        """Retry the one prior culling action through a reverse file move."""
+        """Restore the previous database-only culling mark once."""
         command = self._undo_command
         store = self._project_store
         if (
-            command is None
+            not isinstance(command, _MarkUndoCommand)
             or self._active_culling_move is not None
             or self._project_recovery_blocked
             or not self._move_event_processing_enabled
@@ -2184,17 +2212,33 @@ class MainWindow(QMainWindow):
             record is None
             or normalize_legacy_mark(record.mark) is not command.after_mark
             or not self._culling_model_matches_record(model, record)
-            or record != command.after_record
         ):
             self._status_bar.showMessage("当前照片状态已变化，无法撤销", 8000)
             return
-        self._submit_culling_move(
-            store,
-            record,
-            model,
-            command.before_mark,
-            is_undo=True,
-            undo_command=command,
+        try:
+            store.save_marks(
+                ((command.photo_id, command.before_mark.value),)
+            )
+        except Exception as error:
+            self._report_persistence_error("撤销标记", error)
+            return
+        model.mark = command.before_mark.value
+        self._thumbnail_browser.refresh_photo(
+            command.photo_id,
+            [PhotoRoles.MARK],
+        )
+        self._undo_command = None
+        session = self._culling_session
+        if session is not None:
+            if command.photo_id not in session.visible_ids():
+                session.set_filters(StatusFilter.ALL, AnalysisFilter.ALL)
+            session.select_photo_id(command.photo_id)
+        self._refresh_or_complete_culling()
+        self._culling_workspace.set_undo_available(False)
+        self._update_status_bar()
+        self._status_bar.showMessage(
+            "已撤销照片标记；原文件未移动",
+            5000,
         )
 
     def _submit_culling_move(
@@ -2652,18 +2696,6 @@ class MainWindow(QMainWindow):
         self._refresh_culling_eligibility()
         self._status_bar.showMessage(message, 0)
 
-    def _confirm_culling_notice(self) -> bool:
-        answer = QMessageBox.question(
-            self,
-            "开始照片筛选",
-            "筛选标记会移动原始文件；同一照片的 JPEG 和 RAW "
-            "配对文件会一起移动。是否继续？",
-            QMessageBox.StandardButton.Yes
-            | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No,
-        )
-        return answer is QMessageBox.StandardButton.Yes
-
     def enter_culling(self) -> None:
         """Enter culling with a fresh, capture-order stable-ID session."""
         self._refresh_culling_eligibility()
@@ -2671,26 +2703,6 @@ class MainWindow(QMainWindow):
             return
         store = self._project_store
         if store is None or self._active_project_id is None:
-            return
-        try:
-            notice_confirmed = store.culling_notice_confirmed()
-        except Exception:
-            logger.exception("Failed to read culling notice setting")
-            self._status_bar.showMessage("无法读取筛选提示设置", 8000)
-            return
-        if not notice_confirmed:
-            if not self._confirm_culling_notice():
-                return
-            try:
-                store.set_culling_notice_confirmed(True)
-            except Exception:
-                logger.exception("Failed to persist culling notice setting")
-                self._status_bar.showMessage("无法保存筛选提示设置", 8000)
-                return
-
-        # The modal confirmation may have allowed project/job state to change.
-        self._refresh_culling_eligibility()
-        if not self._cull_btn.isEnabled() or store is not self._project_store:
             return
         photo_ids = tuple(
             model.photo_id

@@ -3,14 +3,13 @@
 from __future__ import annotations
 
 import hashlib
-import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
 from uuid import uuid4
 
-from PyQt6.QtCore import QTimer, Qt
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QImage
 
 from src.xuanpian.domain.analysis import AnalysisStatus
@@ -21,7 +20,6 @@ from src.xuanpian.domain.photo import (
     PhotoAssetRecord,
     PhotoRecord,
 )
-from src.xuanpian.services.photo_move_service import PhotoMoveService
 from src.xuanpian.domain.technical_analysis import TechnicalAnalysisResult
 from src.xuanpian.services.analysis_service import (
     AnalyzerOutcome,
@@ -144,16 +142,12 @@ def _window(project: _Project, **kwargs) -> MainWindow:
     return window
 
 
-def _finish_move(qapp, window: MainWindow) -> None:
-    _wait(qapp, lambda: window._active_culling_move is None)
-    assert window._project_recovery_blocked is False
-
-
 def _submit_current(qapp, window: MainWindow, mark: PhotoMark) -> None:
     current_id = window._culling_session.current_id
     assert current_id is not None
     window.request_culling_mark(current_id, mark)
-    _finish_move(qapp, window)
+    qapp.processEvents()
+    assert window._active_culling_move is None
 
 
 def _assert_persisted_hashes(project: _Project, store: ProjectStore) -> None:
@@ -168,7 +162,113 @@ def _assert_persisted_hashes(project: _Project, store: ProjectStore) -> None:
             assert _sha256(path) == project.hashes[(photo_id, asset.kind)]
 
 
-def test_real_product_flow_moves_pair_and_raw_undoes_finishes_and_reopens(
+def test_culling_mark_persists_without_moving_source_files(
+    qapp,
+    tmp_path: Path,
+) -> None:
+    project = _make_project(tmp_path)
+    window = _window(project)
+    original = project.store.get_photo("pair")
+    assert original is not None
+    original_paths = tuple(
+        asset.fingerprint.path for asset in original.source_assets
+    )
+    original_hashes = {
+        path: _sha256(Path(path)) for path in original_paths
+    }
+    try:
+        window.enter_culling()
+        window.request_culling_mark("pair", PhotoMark.KEEP)
+
+        persisted = project.store.get_photo("pair")
+        assert persisted is not None
+        assert persisted.mark == PhotoMark.KEEP.value
+        assert tuple(
+            asset.fingerprint.path for asset in persisted.source_assets
+        ) == original_paths
+        assert project.models["pair"].source_paths == original_paths
+        assert {
+            path: _sha256(Path(path)) for path in original_paths
+        } == original_hashes
+        assert project.store.list_pending_photo_moves() == ()
+        assert window._active_culling_move is None
+        assert not any(path.is_dir() for path in project.root.iterdir())
+    finally:
+        window.close()
+        qapp.processEvents()
+
+
+def test_culling_undo_restores_mark_without_moving_source_files(
+    qapp,
+    tmp_path: Path,
+) -> None:
+    project = _make_project(tmp_path)
+    window = _window(project)
+    original = project.store.get_photo("pair")
+    assert original is not None
+    original_paths = tuple(
+        asset.fingerprint.path for asset in original.source_assets
+    )
+    try:
+        window.enter_culling()
+        window.request_culling_mark("pair", PhotoMark.DISCARD)
+
+        undo_error: Exception | None = None
+        try:
+            window.request_culling_undo()
+        except Exception as error:  # Assertion below records missing behavior.
+            undo_error = error
+
+        assert undo_error is None
+        persisted = project.store.get_photo("pair")
+        assert persisted is not None
+        assert persisted.mark == PhotoMark.UNPROCESSED.value
+        assert tuple(
+            asset.fingerprint.path for asset in persisted.source_assets
+        ) == original_paths
+        assert project.models["pair"].source_paths == original_paths
+        assert window._culling_session.current_id == "pair"
+        assert window._undo_command is None
+    finally:
+        window.close()
+        qapp.processEvents()
+
+
+def test_culling_mark_store_failure_keeps_model_session_and_files(
+    qapp,
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    project = _make_project(tmp_path)
+    window = _window(project)
+    original_paths = project.models["pair"].source_paths
+    try:
+        window.enter_culling()
+        current = window._culling_session.current_id
+        assert current == "pair"
+
+        def fail_save_marks(_marks) -> None:
+            raise OSError("mark database unavailable")
+
+        monkeypatch.setattr(
+            "src.xuanpian.ui.main_window.QMessageBox.warning",
+            lambda *_args: None,
+        )
+        monkeypatch.setattr(project.store, "save_marks", fail_save_marks)
+        window.request_culling_mark(current, PhotoMark.KEEP)
+
+        assert project.models["pair"].mark == PhotoMark.UNPROCESSED.value
+        assert window._culling_session.current_id == current
+        assert project.models["pair"].source_paths == original_paths
+        assert all(Path(path).is_file() for path in original_paths)
+        assert window._active_culling_move is None
+        assert window._undo_command is None
+    finally:
+        window.close()
+        qapp.processEvents()
+
+
+def test_real_product_flow_marks_undoes_finishes_and_reopens_without_moves(
     qapp,
     tmp_path: Path,
 ) -> None:
@@ -181,13 +281,13 @@ def test_real_product_flow_moves_pair_and_raw_undoes_finishes_and_reopens(
         _submit_current(qapp, window, PhotoMark.KEEP)
         kept = project.store.get_photo("pair")
         assert kept is not None
-        assert {Path(asset.fingerprint.path).parent.name for asset in kept.source_assets} == {
-            PhotoMark.KEEP.value
+        assert kept.mark == PhotoMark.KEEP.value
+        assert {Path(asset.fingerprint.path).parent for asset in kept.source_assets} == {
+            project.root
         }
         _assert_persisted_hashes(project, project.store)
 
         window.request_culling_undo()
-        _finish_move(qapp, window)
         undone = project.store.get_photo("pair")
         assert undone is not None
         assert undone.mark == PhotoMark.UNPROCESSED.value
@@ -209,7 +309,7 @@ def test_real_product_flow_moves_pair_and_raw_undoes_finishes_and_reopens(
         assert "舍弃 1" in workspace._summary_label.text()
         assert {
             path.name for path in project.root.iterdir() if path.is_dir()
-        } == {"保留", "待定", "舍弃"}
+        } == set()
         assert project.store.list_pending_photo_moves() == ()
         _assert_persisted_hashes(project, project.store)
     finally:
@@ -237,7 +337,7 @@ def test_real_product_flow_moves_pair_and_raw_undoes_finishes_and_reopens(
             qapp.processEvents()
 
 
-def test_target_collision_fails_closed_without_mutating_source_or_store(
+def test_existing_status_directory_does_not_change_non_destructive_marking(
     qapp,
     tmp_path: Path,
 ) -> None:
@@ -249,42 +349,26 @@ def test_target_collision_fails_closed_without_mutating_source_or_store(
     window = _window(project)
     try:
         window.enter_culling()
-        current_before = window._culling_session.current_id
-        workspace_current_before = window._culling_workspace.current_photo_id
         jpeg_source = project.root / "pair.jpg"
         raw_source = project.root / "pair.cr3"
         jpeg_source_hash = _sha256(jpeg_source)
         raw_source_hash = _sha256(raw_source)
         window.request_culling_mark("pair", PhotoMark.KEEP)
-        _wait(qapp, lambda: not window.culling_move_pending)
 
         assert window.culling_move_pending is False
         assert window._culling_workspace.move_pending is False
-        assert window._culling_session.current_id == current_before == "pair"
-        assert window._culling_workspace.current_photo_id == workspace_current_before
         assert project.store.list_pending_photo_moves() == ()
-        assert project.store.get_photo("pair") == project.records["pair"]
+        assert project.store.get_photo("pair").mark == PhotoMark.KEEP.value
+        assert project.models["pair"].source_paths == (
+            str(jpeg_source),
+            str(raw_source),
+        )
         assert _sha256(jpeg_source) == jpeg_source_hash
         assert _sha256(raw_source) == raw_source_hash
         assert _sha256(target) == foreign_hash
     finally:
         window.close()
         qapp.processEvents()
-
-
-class _SlowMoveService(PhotoMoveService):
-    def __init__(self) -> None:
-        super().__init__()
-        self.started = threading.Event()
-        self.release = threading.Event()
-        self.worker_thread_id: int | None = None
-
-    def execute(self, *args, **kwargs):
-        self.worker_thread_id = threading.get_ident()
-        self.started.set()
-        if not self.release.wait(3):
-            raise TimeoutError("test did not release slow move")
-        return super().execute(*args, **kwargs)
 
 
 class _ControlledAnalysisCoordinator:
@@ -331,34 +415,6 @@ class _ControlledAnalysisCoordinator:
                 JobState.SUCCEEDED,
             )
         )
-
-
-def test_pending_feedback_is_visible_next_event_turn_while_worker_is_slow(
-    qapp,
-    tmp_path: Path,
-) -> None:
-    project = _make_project(tmp_path)
-    service = _SlowMoveService()
-    window = _window(project, photo_move_service=service)
-    next_turn: list[bool] = []
-    try:
-        window.enter_culling()
-        QTimer.singleShot(
-            0,
-            lambda: next_turn.append(window._culling_workspace.move_pending),
-        )
-        window._culling_workspace._mark_buttons[0].click()
-        _wait(qapp, lambda: service.started.is_set() and bool(next_turn))
-
-        assert next_turn == [True]
-        assert window._culling_workspace.move_pending is True
-        assert service.worker_thread_id != threading.get_ident()
-    finally:
-        service.release.set()
-        if window._active_culling_move is not None:
-            _finish_move(qapp, window)
-        window.close()
-        qapp.processEvents()
 
 
 def test_browse_analyze_cull_back_preserves_similar_scope_sidebar_and_compare(

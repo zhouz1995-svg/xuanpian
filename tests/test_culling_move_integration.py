@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from threading import Thread
-from types import SimpleNamespace
+from types import MethodType, SimpleNamespace
 from uuid import uuid4
 
 import pytest
@@ -257,6 +257,39 @@ def _make_harness(
     window._project_store = store
     window.thumbnail_browser.set_models(list(models.values()))
     window.enter_culling()
+
+    def submit_legacy_move(self, photo_id: str, mark: PhotoMark) -> None:
+        target = self._normal_culling_target(photo_id, mark)
+        if target is None:
+            return
+        target_store, record, model = target
+        self._submit_culling_move(
+            target_store,
+            record,
+            model,
+            mark,
+            is_undo=False,
+            undo_command=None,
+        )
+
+    def submit_legacy_undo(self) -> None:
+        command = self._undo_command
+        assert command is not None
+        record = store.get_photo(command.photo_id)
+        model = self.model_for_photo_id(command.photo_id)
+        assert record is not None
+        assert model is not None
+        self._submit_culling_move(
+            store,
+            record,
+            model,
+            command.before_mark,
+            is_undo=True,
+            undo_command=command,
+        )
+
+    window.request_culling_mark = MethodType(submit_legacy_move, window)
+    window.request_culling_undo = MethodType(submit_legacy_undo, window)
     window.resize(900, 650)
     window.show()
     qapp.processEvents()

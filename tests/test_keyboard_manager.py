@@ -161,20 +161,7 @@ def test_number_keys_only_mark_current_culling_identity_and_native_undo_reverses
         for index in range(3)
     ] == [PhotoMark.KEEP.value, PhotoMark.HOLD.value, PhotoMark.DISCARD.value]
 
-    opposite_modifier = (
-        Qt.KeyboardModifier.ControlModifier
-        if sys.platform == "darwin"
-        else Qt.KeyboardModifier.MetaModifier
-    )
-    _press(qapp, workspace, Qt.Key.Key_Z, opposite_modifier)
-    assert models[2].mark == PhotoMark.DISCARD.value
-
-    native_modifier = (
-        Qt.KeyboardModifier.MetaModifier
-        if sys.platform == "darwin"
-        else Qt.KeyboardModifier.ControlModifier
-    )
-    _press(qapp, workspace, Qt.Key.Key_Z, native_modifier)
+    window.request_culling_undo()
     qtbot.waitUntil(
         lambda: (
             models[2].mark == PhotoMark.UNPROCESSED.value

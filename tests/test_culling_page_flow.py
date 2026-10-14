@@ -182,11 +182,10 @@ def test_enter_culling_uses_all_capture_order_and_default_filters(
     window.thumbnail_browser.set_models(models)
     window.thumbnail_browser._set_group("portrait")
     assert window.thumbnail_browser.current_photo_ids() == []
-    prompts: list[str] = []
     monkeypatch.setattr(
         "src.xuanpian.ui.main_window.QMessageBox.question",
-        lambda _parent, _title, message, *_args: (
-            prompts.append(message) or QMessageBox.StandardButton.Yes
+        lambda *_args: (_ for _ in ()).throw(
+            AssertionError("non-destructive culling must not prompt")
         ),
     )
 
@@ -197,17 +196,13 @@ def test_enter_culling_uses_all_capture_order_and_default_filters(
         assert window._culling_session.visible_ids() == ["p1", "p2", "p3"]
         assert window._culling_session.status_filter is StatusFilter.UNPROCESSED
         assert window._culling_session.analysis_filter is AnalysisFilter.ALL
-        assert store.saved_values == [True]
-        assert len(prompts) == 1
-        assert "原始文件" in prompts[0]
-        assert "JPEG" in prompts[0]
-        assert "RAW" in prompts[0]
+        assert store.saved_values == []
     finally:
         window.close()
         qapp.processEvents()
 
 
-def test_notice_decline_stays_in_browse_and_does_not_persist(
+def test_legacy_notice_setting_is_not_consulted_for_non_destructive_culling(
     qapp,
     monkeypatch,
 ) -> None:
@@ -216,13 +211,15 @@ def test_notice_decline_stays_in_browse_and_does_not_persist(
     window.thumbnail_browser.set_models([_model("p1")])
     monkeypatch.setattr(
         "src.xuanpian.ui.main_window.QMessageBox.question",
-        lambda *_args: QMessageBox.StandardButton.No,
+        lambda *_args: (_ for _ in ()).throw(
+            AssertionError("non-destructive culling must not prompt")
+        ),
     )
 
     try:
         window.enter_culling()
 
-        assert window._stack.currentWidget() is window.thumbnail_browser
+        assert window._stack.currentWidget() is window._culling_workspace
         assert store.confirmed is False
         assert store.saved_values == []
     finally:
@@ -230,23 +227,18 @@ def test_notice_decline_stays_in_browse_and_does_not_persist(
         qapp.processEvents()
 
 
-def test_notice_is_only_prompted_once_for_the_same_persisted_project(
+def test_reentering_culling_never_prompts_for_source_file_moves(
     qapp,
     monkeypatch,
 ) -> None:
     store = _NoticeStore()
     window = _window(store)
     window.thumbnail_browser.set_models([_model("p1")])
-    prompts = 0
-
-    def accept(*_args) -> QMessageBox.StandardButton:
-        nonlocal prompts
-        prompts += 1
-        return QMessageBox.StandardButton.Yes
-
     monkeypatch.setattr(
         "src.xuanpian.ui.main_window.QMessageBox.question",
-        accept,
+        lambda *_args: (_ for _ in ()).throw(
+            AssertionError("non-destructive culling must not prompt")
+        ),
     )
 
     try:
@@ -254,15 +246,14 @@ def test_notice_is_only_prompted_once_for_the_same_persisted_project(
         window.exit_culling()
         window.enter_culling()
 
-        assert prompts == 1
-        assert store.saved_values == [True]
+        assert store.saved_values == []
         assert window._stack.currentWidget() is window._culling_workspace
     finally:
         window.close()
         qapp.processEvents()
 
 
-def test_switching_projects_uses_each_projects_persisted_notice(
+def test_switching_projects_does_not_prompt_for_source_file_moves(
     qapp,
     monkeypatch,
 ) -> None:
@@ -270,29 +261,22 @@ def test_switching_projects_uses_each_projects_persisted_notice(
     second = _NoticeStore(confirmed=False)
     window = _window(first)
     window.thumbnail_browser.set_models([_model("p1")])
-    prompts = 0
-
-    def accept(*_args) -> QMessageBox.StandardButton:
-        nonlocal prompts
-        prompts += 1
-        return QMessageBox.StandardButton.Yes
-
     monkeypatch.setattr(
         "src.xuanpian.ui.main_window.QMessageBox.question",
-        accept,
+        lambda *_args: (_ for _ in ()).throw(
+            AssertionError("non-destructive culling must not prompt")
+        ),
     )
 
     try:
         window.enter_culling()
-        assert prompts == 0
         window.exit_culling()
 
         window._project_store = second
         window._refresh_culling_eligibility()
         window.enter_culling()
 
-        assert prompts == 1
-        assert second.saved_values == [True]
+        assert second.saved_values == []
     finally:
         window.close()
         qapp.processEvents()
