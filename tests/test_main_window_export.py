@@ -34,6 +34,17 @@ class _AcceptedMoveDialog:
     conflict_policy = ConflictPolicy.UNIQUE
 
 
+def accepted_dialog(
+    copy_mode: bool, conflict: ConflictPolicy
+) -> type[_AcceptedMoveDialog]:
+    class _AcceptedDialog(_AcceptedMoveDialog):
+        pass
+
+    _AcceptedDialog.copy_mode = copy_mode
+    _AcceptedDialog.conflict_policy = conflict
+    return _AcceptedDialog
+
+
 class _ProgressDialog:
     def __init__(self, *args: object) -> None:
         self.value = 0
@@ -70,6 +81,56 @@ class _FakeExportService:
         self.requests.append(request)
         self.observed_cancel = is_canceled()
         return self.report
+
+
+@pytest.fixture(autouse=True)
+def accept_destructive_export_confirmation(monkeypatch) -> None:
+    monkeypatch.setattr(
+        MainWindow,
+        "_confirm_destructive_export",
+        lambda *_args: True,
+        raising=False,
+    )
+
+
+@pytest.mark.parametrize(
+    ("copy_mode", "conflict"),
+    (
+        (False, ConflictPolicy.UNIQUE),
+        (True, ConflictPolicy.OVERWRITE),
+    ),
+)
+def test_destructive_export_confirmation_decline_stops_before_service(
+    qapp,
+    monkeypatch,
+    tmp_path: Path,
+    copy_mode: bool,
+    conflict: ConflictPolicy,
+) -> None:
+    service = _FakeExportService(
+        ExportReport(results=(), canceled=False)
+    )
+    window = MainWindow(export_service=service)
+    window._thumbnail_browser.set_models(
+        [ImageFileModel(str(tmp_path / "first.jpg"), photo_id="p1")]
+    )
+    monkeypatch.setattr(
+        main_window,
+        "ExportDialog",
+        accepted_dialog(copy_mode, conflict),
+    )
+    monkeypatch.setattr(
+        main_window.QFileDialog,
+        "getExistingDirectory",
+        lambda *_args: str(tmp_path / "out"),
+    )
+    monkeypatch.setattr(
+        window, "_confirm_destructive_export", lambda *_args: False
+    )
+
+    window._on_export()
+
+    assert service.requests == []
 
 
 def test_on_export_routes_request_through_service_and_consumes_report(

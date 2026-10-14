@@ -41,6 +41,7 @@ from src.xuanpian.domain.photo import PhotoAssetRecord, PhotoRecord
 from src.xuanpian.domain.photo_move import PhotoMoveTransaction
 from src.xuanpian.engine.exif_reader import read_exif
 from src.xuanpian.services.export_service import (
+    ConflictPolicy,
     ExportItem,
     ExportMode,
     ExportRequest,
@@ -1800,6 +1801,20 @@ class MainWindow(QMainWindow):
             return
 
         mode = ExportMode.COPY if dlg.copy_mode else ExportMode.MOVE
+        conflict = dlg.conflict_policy
+        destination = Path(dest)
+        if (
+            mode is ExportMode.MOVE
+            or conflict is ConflictPolicy.OVERWRITE
+        ) and not self._confirm_destructive_export(
+            mode,
+            conflict,
+            len(models),
+            destination,
+        ):
+            self._status_bar.showMessage("已取消导出")
+            return
+
         if not self._uses_direct_export_service:
             units = []
             for index, model in enumerate(models):
@@ -1814,11 +1829,11 @@ class MainWindow(QMainWindow):
                     items.append(ExportItem(source, target_name))
                 units.append(ExportUnit(model.photo_id, tuple(items)))
             request = ExportRequest(
-                destination=Path(dest),
+                destination=destination,
                 items=(),
                 units=tuple(units),
                 mode=mode,
-                conflict=dlg.conflict_policy,
+                conflict=conflict,
             )
             old_handle = self._export_handle
             self._active_job_ids["export"] = None
@@ -1826,7 +1841,7 @@ class MainWindow(QMainWindow):
             self._export_context = {
                 "mode": mode,
                 "photo_ids": tuple(model.photo_id for model in models),
-                "destination": Path(dest),
+                "destination": destination,
             }
             if old_handle is not None:
                 old_handle.cancel()
@@ -1852,12 +1867,44 @@ class MainWindow(QMainWindow):
 
         self._run_legacy_export(
             models,
-            Path(dest),
+            destination,
             prefix,
             start_num,
             mode,
-            dlg.conflict_policy,
+            conflict,
         )
+
+    def _confirm_destructive_export(
+        self,
+        mode: ExportMode,
+        conflict: ConflictPolicy,
+        count: int,
+        destination: Path,
+    ) -> bool:
+        operation = "移动" if mode is ExportMode.MOVE else "复制"
+        risks = []
+        if mode is ExportMode.MOVE:
+            risks.append("移动完成后，原位置中的文件将被移除。")
+        if conflict is ConflictPolicy.OVERWRITE:
+            risks.append("目标目录中的同名文件将被覆盖。")
+
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Icon.Warning)
+        box.setWindowTitle("确认导出操作")
+        box.setText(f"即将{operation} {count} 张照片")
+        box.setInformativeText(
+            f"目标目录：{destination}\n\n" + "\n".join(risks)
+        )
+        continue_button = box.addButton(
+            "继续", QMessageBox.ButtonRole.AcceptRole
+        )
+        cancel_button = box.addButton(
+            "取消", QMessageBox.ButtonRole.RejectRole
+        )
+        box.setDefaultButton(cancel_button)
+        box.setEscapeButton(cancel_button)
+        box.exec()
+        return box.clickedButton() is continue_button
 
     def _run_legacy_export(
         self,

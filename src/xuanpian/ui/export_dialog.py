@@ -31,6 +31,9 @@ class ExportDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("导出选项")
         self.setMinimumWidth(380)
+        self._group_counts = {
+            key: count for key, (_label, count) in groups.items()
+        }
 
         layout = QVBoxLayout(self)
         layout.setSpacing(12)
@@ -83,10 +86,20 @@ class ExportDialog(QDialog):
         rename_layout.addRow("起始序号:", spin_layout)
         layout.addLayout(rename_layout)
 
-        # Hint
-        hint = QLabel("重命名格式: {前缀}_{序号:03d}{原扩展名}")
-        hint.setStyleSheet("color: #7F8996; font-size: 11px;")
-        layout.addWidget(hint)
+        self._selection_summary = QLabel()
+        self._selection_summary.setStyleSheet("color: #525D6B;")
+        layout.addWidget(self._selection_summary)
+
+        self._filename_preview = QLabel()
+        self._filename_preview.setStyleSheet(
+            "color: #7F8996; font-size: 11px;"
+        )
+        layout.addWidget(self._filename_preview)
+
+        self._group_combo.currentIndexChanged.connect(self._refresh_preview)
+        self._prefix_edit.textChanged.connect(self._refresh_preview)
+        self._start_num.valueChanged.connect(self._refresh_preview)
+        self._refresh_preview()
 
         # Confirm / Cancel
         buttons = QDialogButtonBox()
@@ -105,6 +118,17 @@ class ExportDialog(QDialog):
         return self._group_combo.currentData()
 
     @property
+    def selected_count(self) -> int:
+        return self._group_counts.get(self.selected_group, 0)
+
+    @property
+    def filename_example(self) -> str:
+        prefix = self.prefix
+        if not prefix:
+            return "IMG_0001.jpg"
+        return f"{prefix}_{self.start_number:03d}.jpg"
+
+    @property
     def copy_mode(self) -> bool:
         return self._copy_radio.isChecked()
 
@@ -119,3 +143,16 @@ class ExportDialog(QDialog):
     @property
     def start_number(self) -> int:
         return self._start_num.value()
+
+    def _refresh_preview(self, _value: object = None) -> None:
+        self._selection_summary.setText(
+            f"将导出 {self.selected_count} 张照片"
+        )
+        if self.prefix:
+            self._filename_preview.setText(
+                f"文件名示例：{self.filename_example}"
+            )
+        else:
+            self._filename_preview.setText(
+                "保持原文件名，例如 IMG_0001.jpg"
+            )

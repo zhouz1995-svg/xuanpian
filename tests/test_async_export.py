@@ -3,6 +3,7 @@ from threading import Event
 from types import SimpleNamespace
 from uuid import uuid4
 
+import pytest
 from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import QDialog
 
@@ -70,6 +71,15 @@ class _BlockingExportService:
             for unit in request.units
         )
         return ExportReport(results, False, unit_results=unit_results)
+
+
+@pytest.fixture(autouse=True)
+def accept_destructive_export_confirmation(monkeypatch) -> None:
+    monkeypatch.setattr(
+        MainWindow,
+        "_confirm_destructive_export",
+        lambda *_args: True,
+    )
 
 
 def test_paired_export_runs_off_qt_thread_and_builds_one_unit(
@@ -170,7 +180,7 @@ def test_stale_export_finish_does_not_mark_model(qapp, tmp_path) -> None:
     assert model.mark == ""
 
 
-def test_new_import_resets_export_button_before_cancel(
+def test_new_import_keeps_export_disabled_during_reset(
     qapp, tmp_path
 ) -> None:
     enabled_when_canceled = []
@@ -192,8 +202,8 @@ def test_new_import_resets_export_button_before_cancel(
 
     window._start_import(str(tmp_path))
 
-    assert enabled_when_canceled == [True]
-    assert window._export_btn.isEnabled() is True
+    assert enabled_when_canceled == [False]
+    assert window._export_btn.isEnabled() is False
     assert window._export_context is None
     assert window._active_job_ids["export"] is None
 

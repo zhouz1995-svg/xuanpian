@@ -50,3 +50,16 @@ class TestExportDialog:
 
         assert dlg._accept_button.text() == "导出"
         assert dlg._cancel_button.text() == "取消"
+
+    def test_export_dialog_updates_count_and_filename_example(self, qapp):
+        dlg = ExportDialog(
+            {"all": ("全部", 8), "sharp": ("清晰", 3)}
+        )
+
+        dlg._group_combo.setCurrentIndex(1)
+        dlg._prefix_edit.setText("精选")
+        dlg._start_num.setValue(12)
+
+        assert dlg.selected_count == 3
+        assert dlg.filename_example == "精选_012.jpg"
+        assert "3 张" in dlg._selection_summary.text()
