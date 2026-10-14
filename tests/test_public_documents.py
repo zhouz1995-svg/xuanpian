@@ -33,6 +33,15 @@ def test_readme_documents_supported_target() -> None:
     assert "/Users/" not in text
 
 
+def test_readme_describes_non_destructive_marks_and_not_unimplemented_ratings() -> None:
+    text = (ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert "标记不会移动原始文件" in text
+    assert "快捷键选片、评分、标记" not in text
+    assert "Marks do not move original files" in text
+    assert "keyboard-driven culling, ratings" not in text
+
+
 def test_installation_is_arm64_dmg_drag_and_drop() -> None:
     text = (ROOT / "docs/installation.md").read_text(encoding="utf-8")
     assert "arm64" in text

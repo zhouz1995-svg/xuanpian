@@ -315,7 +315,9 @@ def test_unknown_start_outcome_retains_journal_and_refuses_close(qapp, tmp_path,
         _close(harness, qapp)
 
 
-def test_legacy_mouse_actions_cannot_publish_metadata_only_marks(qapp, tmp_path):
+def test_batch_mouse_actions_publish_metadata_only_marks_without_moves(
+    qapp, tmp_path
+):
     harness = _make_harness(qapp, tmp_path)
     window = harness.window
     before = harness.store.get_photo("photo-0")
@@ -326,16 +328,18 @@ def test_legacy_mouse_actions_cannot_publish_metadata_only_marks(qapp, tmp_path)
         assert harness.store.get_photo("photo-0") == before
         window.exit_culling()
         window.thumbnail_browser.select_photo_id("photo-0")
+        assert window._batch_mark_btn.isEnabled()
         for action in window._batch_mark_menu.actions():
             action.trigger()
-        assert harness.store.get_photo("photo-0") == before
-        window.enter_preview_photo("photo-0")
-        for button in window._preview_widget.findChildren(QPushButton):
-            if button.text() in {"入选", "淘汰", "保留", "待定", "舍弃"}:
-                button.click()
-        _process(qapp)
-        assert harness.store.get_photo("photo-0") == before
-        assert harness.models["photo-0"].mark == "未处理"
+        after = harness.store.get_photo("photo-0")
+        assert after is not None
+        assert after.mark == "舍弃"
+        assert after.source_assets == before.source_assets
+        assert harness.models["photo-0"].mark == "舍弃"
+        assert all(
+            Path(asset.fingerprint.path).is_file()
+            for asset in after.source_assets
+        )
         assert harness.store.list_pending_photo_moves() == ()
     finally:
         _close(harness, qapp)

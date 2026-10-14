@@ -290,6 +290,14 @@ def _make_harness(
 
     window.request_culling_mark = MethodType(submit_legacy_move, window)
     window.request_culling_undo = MethodType(submit_legacy_undo, window)
+    window._culling_workspace.mark_requested.disconnect()
+    window._culling_workspace.mark_requested.connect(
+        window.request_culling_mark
+    )
+    window._culling_workspace.undo_requested.disconnect()
+    window._culling_workspace.undo_requested.connect(
+        window.request_culling_undo
+    )
     window.resize(900, 650)
     window.show()
     qapp.processEvents()

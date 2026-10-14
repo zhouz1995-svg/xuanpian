@@ -27,7 +27,7 @@ shasum -a 256 XuanPian-0.1.0-arm64-local-ad-hoc.dmg
 
 安装过程不会运行管理员安装脚本。0.1.0 测试版使用本地临时签名，**尚未经过 Apple 公证**，因此 macOS 可能警告或阻止应用打开。请勿关闭 Gatekeeper 或其他系统级安全保护。如果不希望运行未经公证的测试软件，可以选择从源码运行，或等待后续公证版本。
 
-安装包声明的最低系统目标为 macOS 26.0，实际测试版本以 Release 说明为准。首次使用时建议先备份重要照片，并使用少量照片副本试运行。分析本身不会改写原图，但明确执行的移动或导出操作可能改变文件位置或创建输出文件。
+安装包声明的最低系统目标为 macOS 26.0，实际测试版本以 Release 说明为准。首次使用时建议先备份重要照片，并使用少量照片副本试运行。分析和保留/待定/舍弃标记不会改写或移动原图；只有明确选择“移动文件”导出时才会改变文件位置。移动文件或覆盖同名文件前，应用会显示二次确认。
 
 相关说明：[隐私与数据处理](../PRIVACY.md)、[分析限制](../README.md#分析范围与限制)、[从源码构建](building-macos.md)。
 
@@ -58,6 +58,6 @@ The result must exactly match the checksum shown on the release page and in the 
 
 There is no administrator installer script. The 0.1.0 beta is locally ad-hoc signed and is **not Apple-notarized**, so macOS may warn or prevent it from opening. Do not disable Gatekeeper or other system-wide security controls. If you are not comfortable running a non-notarized beta, build from source or wait for a future notarized release.
 
-The packaged binary declares macOS 26.0 as its minimum target; the release notes state the versions actually tested. Before importing irreplaceable work, keep a backup and try a small copied folder first. Analysis does not rewrite originals, but explicit move and export actions can change file locations or create output files.
+The packaged binary declares macOS 26.0 as its minimum target; the release notes state the versions actually tested. Before importing irreplaceable work, keep a backup and try a small copied folder first. Analysis and keep/maybe/discard marks do not rewrite or move originals. File locations change only through an explicit move export, and the app asks for confirmation before moving files or overwriting same-name files.
 
 See [privacy and data handling](../PRIVACY.md), [analysis limitations](../README.md#analysis-scope-and-limitations), and [building from source](building-macos.md).

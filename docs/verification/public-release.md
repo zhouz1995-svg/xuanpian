@@ -6,6 +6,13 @@ rights and distributable notices remain separate gates. See the
 [component inventory](../../THIRD_PARTY_NOTICES.md) and
 [macOS build procedure](../building-macos.md).
 
+The current source workflow treats keep/maybe/discard marks as project metadata:
+marking and undoing a mark must not move a source file. File movement is available
+only through an explicit move export. A release candidate must show the export
+count and filename example, and request a second confirmation for move or
+same-name overwrite operations. Five-star ratings and XMP write-back are not
+implemented in this release.
+
 ## Evidence ledger
 
 ### Notice-packaging follow-up — 2026-10-11
@@ -96,6 +103,7 @@ python3.11 -c 'import json, pathlib; print(json.loads(pathlib.Path("export-manif
 | DMG | Stage A local ad-hoc DMG: digest above; `hdiutil verify` valid. A read-only mounted copy passed static bundle inspection with zero violations. This is not drag-and-drop GUI acceptance. |
 | macOS support | Apple Silicon only. Declared binary floor: macOS 26.0; only a macOS 26.3.1(a) host has been exercised. This is not a clean-Mac or 26.0 test. |
 | AF behavior and private photos | Supported metadata is Nikon Z50 II JPEG `AFInfo2Version=0402`; other inputs conservatively fall back to image evidence. Earlier aggregate acceptance remains separate evidence, not a fresh sample run on this DMG. No private photos belong in Git. |
+| Culling and export safety | Re-verify on the final app build that single and batch marks persist without moving source files, undo changes only project metadata, export previews the selected count and filename, and move/overwrite exports show a Chinese second confirmation. |
 | Dependency and asset rights | **BLOCKED**: the exact EfficientDet-Lite0 float32 grant, native FFmpeg/HEIF/x265 and Qt closure, fonts/data, and compatible notices/source duties require review. BlazeFace and Pose Landmarker model provenance plus icon provenance are recorded separately; trademark similarity was not searched. |
 | Distributable notices | Known snapshot inclusion **verified** in the 2026-10-11 follow-up above. Full required notice/source/relinking coverage remains **BLOCKED** pending exact dependency and asset rights review. Earlier Stage A/B artifacts do not contain the new snapshot. |
 | Signature | Local ad-hoc signing only. No Developer ID signature or notarization. |
