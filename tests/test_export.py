@@ -44,3 +44,9 @@ class TestExportDialog:
         groups = {"all": ("全部", 10)}
         dlg = ExportDialog(groups)
         assert dlg.start_number == 1
+
+    def test_action_buttons_use_chinese_labels(self, qapp):
+        dlg = ExportDialog({"all": ("全部", 2)})
+
+        assert dlg._accept_button.text() == "导出"
+        assert dlg._cancel_button.text() == "取消"

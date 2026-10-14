@@ -23,6 +23,37 @@ def test_status_bar_defaults(qapp) -> None:
     qapp.processEvents()
 
 
+def test_empty_project_disables_export_and_offers_import(qapp) -> None:
+    window = MainWindow()
+    requested: list[bool] = []
+    window.thumbnail_browser.import_requested.disconnect(window._on_import)
+    window.thumbnail_browser.import_requested.connect(
+        lambda: requested.append(True)
+    )
+    window.show()
+    qapp.processEvents()
+
+    assert not window._export_btn.isEnabled()
+    assert window.thumbnail_browser._empty_import_btn.isVisible()
+    window.thumbnail_browser._empty_import_btn.click()
+    assert requested == [True]
+
+    window.thumbnail_browser.set_models(_models())
+    assert window._export_btn.isEnabled()
+    window.close()
+    qapp.processEvents()
+
+
+def test_thumbnail_slider_names_its_purpose(qapp) -> None:
+    window = MainWindow()
+
+    assert window._size_slider.accessibleName() == "缩略图大小"
+    assert "缩略图" in window._size_slider.toolTip()
+
+    window.close()
+    qapp.processEvents()
+
+
 def test_status_bar_counts_and_filter_label(qapp) -> None:
     window = MainWindow()
     models = _models()

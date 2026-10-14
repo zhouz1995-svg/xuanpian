@@ -322,6 +322,7 @@ class _ThumbnailListView(QListView):
 
 
 class ThumbnailBrowser(QWidget):
+    import_requested = pyqtSignal()
     selection_changed = pyqtSignal()
     thumbnail_size_changed = pyqtSignal(int)
     model_set_changed = pyqtSignal()
@@ -358,6 +359,14 @@ class ThumbnailBrowser(QWidget):
         self._empty_hint.setProperty("class", "emptyHint")
         self._empty_hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
         empty_layout.addWidget(self._empty_hint)
+        self._empty_import_btn = QPushButton("导入照片", self._empty_widget)
+        self._empty_import_btn.setAccessibleName("导入照片文件夹")
+        self._empty_import_btn.clicked.connect(self.import_requested)
+        empty_layout.addWidget(
+            self._empty_import_btn,
+            0,
+            Qt.AlignmentFlag.AlignCenter,
+        )
 
         self._loading_bar = QProgressBar(center)
         self._loading_bar.setRange(0, 0)

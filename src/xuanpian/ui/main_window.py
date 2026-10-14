@@ -393,6 +393,7 @@ class MainWindow(QMainWindow):
         )
         self._export_btn.setProperty("primaryAction", True)
         self._export_btn.clicked.connect(self._on_export)
+        self._export_btn.setEnabled(False)
         self._toolbar.addWidget(self._export_btn)
 
         self._toolbar.addSeparator()
@@ -405,6 +406,8 @@ class MainWindow(QMainWindow):
         self._size_slider.setRange(_THUMB_MIN, _THUMB_MAX)
         self._size_slider.setValue(_THUMB_DEFAULT)
         self._size_slider.setFixedWidth(90)
+        self._size_slider.setAccessibleName("缩略图大小")
+        self._size_slider.setToolTip("调整缩略图大小")
         self._size_slider.valueChanged.connect(self._on_thumbnail_size_changed)
         self._toolbar.addWidget(self._size_slider)
 
@@ -478,10 +481,14 @@ class MainWindow(QMainWindow):
     # ---- signals ----
 
     def _connect_signals(self) -> None:
+        self._thumbnail_browser.import_requested.connect(self._on_import)
         self._thumbnail_browser.selection_changed.connect(self._update_status_bar)
         self._thumbnail_browser.model_set_changed.connect(self._update_status_bar)
         self._thumbnail_browser.model_set_changed.connect(
             self._refresh_culling_eligibility
+        )
+        self._thumbnail_browser.model_set_changed.connect(
+            self._refresh_export_enabled_state
         )
         self._thumbnail_browser.analysis_status_changed.connect(
             self._refresh_culling_eligibility
@@ -490,6 +497,13 @@ class MainWindow(QMainWindow):
             self._update_batch_mark_state
         )
         self._thumbnail_browser.thumbnail_size_changed.connect(self._on_browser_zoom)
+
+    def _refresh_export_enabled_state(self) -> None:
+        self._export_btn.setEnabled(
+            bool(self._thumbnail_browser.all_models())
+            and self._active_job_ids["export"] is None
+            and self._active_culling_move is None
+        )
 
     def _update_batch_mark_state(self) -> None:
         enabled = bool(self._thumbnail_browser.selected_photo_ids()) and (
@@ -556,7 +570,6 @@ class MainWindow(QMainWindow):
         self._undo_command = None
         self._culling_workspace.set_undo_available(False)
         self._project_store = None
-        self._export_btn.setEnabled(True)
         self._cancel_and_wait_handles(
             (old_import, old_analysis, old_export, *old_io)
         )
@@ -566,7 +579,6 @@ class MainWindow(QMainWindow):
         self._thumbnail_browser.set_models([])
         self._thumbnail_browser.show_loading()
         self._analyze_btn.setEnabled(False)
-        self._export_btn.setEnabled(True)
         self._status_bar.showMessage("正在扫描照片…")
 
         if (
@@ -1829,7 +1841,7 @@ class MainWindow(QMainWindow):
                 self._active_job_ids["export"] = None
                 self._export_handle = None
                 self._export_context = None
-                self._export_btn.setEnabled(True)
+                self._refresh_export_enabled_state()
                 self._status_bar.showMessage(
                     f"无法启动导出：{type(error).__name__}: {error}"
                 )
@@ -1922,7 +1934,7 @@ class MainWindow(QMainWindow):
         self._active_job_ids["export"] = None
         self._export_handle = None
         self._export_context = None
-        self._export_btn.setEnabled(True)
+        self._refresh_export_enabled_state()
         if event.report is None or context is None:
             self._status_bar.showMessage(
                 f"导出失败：{event.error or '未知错误'}"

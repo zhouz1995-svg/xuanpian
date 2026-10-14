@@ -89,8 +89,12 @@ class ExportDialog(QDialog):
         layout.addWidget(hint)
 
         # Confirm / Cancel
-        buttons = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        buttons = QDialogButtonBox()
+        self._accept_button = buttons.addButton(
+            "导出", QDialogButtonBox.ButtonRole.AcceptRole
+        )
+        self._cancel_button = buttons.addButton(
+            "取消", QDialogButtonBox.ButtonRole.RejectRole
         )
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)

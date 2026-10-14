@@ -83,6 +83,27 @@ def _valid_acceptance_report() -> dict[str, object]:
     }
 
 
+def test_main_window_toggle_click_shows_only_compact_list(qapp) -> None:
+    window = MainWindow()
+    window.thumbnail_browser.set_models(_models()[:3])
+    window.resize(900, 650)
+    window.show()
+    qapp.processEvents()
+
+    QTest.mouseClick(
+        window._view_toggle._buttons["list"],
+        Qt.MouseButton.LeftButton,
+    )
+    qapp.processEvents()
+
+    browser = window.thumbnail_browser
+    assert window.view_mode() == "list"
+    assert browser._list_view.isVisible()
+    assert not browser._view.isVisible()
+    assert browser._list_view.sizeHintForRow(0) == 56
+    window.close()
+
+
 def test_offscreen_1000_ui_acceptance_reports_virtualized_stable_state(qapp) -> None:
     script = Path("scripts/acceptance_ui_1000.py")
     assert script.is_file()
