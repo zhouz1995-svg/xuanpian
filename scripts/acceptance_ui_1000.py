@@ -385,6 +385,7 @@ def run_acceptance(app: QApplication | None = None) -> dict[str, object]:
         keep_enabled = _click_mark_button(preview, "保留")
         keep_selected = preview._mark_buttons[PhotoMark.KEEP].isChecked()
         preview.navigate(1)
+        _wait_until(app, lambda: preview.loaded_photo_id == "photo-0505")
         hold_enabled = _click_mark_button(preview, "待定")
         hold_selected = preview._mark_buttons[PhotoMark.HOLD].isChecked()
         database_marks = [

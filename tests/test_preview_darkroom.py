@@ -1,13 +1,20 @@
 from PyQt6.QtCore import QEvent, QPointF, Qt
-from PyQt6.QtGui import QMouseEvent
+from PyQt6.QtGui import QImage, QMouseEvent
 from PyQt6.QtTest import QTest
 from PyQt6.QtWidgets import QPushButton, QWidget
 
 from src.xuanpian.domain.analysis import AnalysisStatus
 from src.xuanpian.domain.culling import PhotoMark
 from src.xuanpian.ui.image_model import ImageFileModel
+from src.xuanpian.ui.photo_list_model import PhotoListModel
 from src.xuanpian.ui.preview_widget import PreviewWidget
 from src.xuanpian.ui.thumbnail_browser import ThumbnailBrowser
+
+
+def _finish_preview_load(preview: PreviewWidget, photo_id: str) -> None:
+    image = QImage(16, 12, QImage.Format.Format_RGB32)
+    image.fill(Qt.GlobalColor.white)
+    preview._on_preview_decoded(photo_id, image)
 
 
 def test_preview_has_analysis_and_exif_tabs(qapp) -> None:
@@ -78,6 +85,7 @@ def test_preview_mark_passes_business_photo_id_to_main_window(
             calls.append((photo_id, mark))
 
     monkeypatch.setattr(preview, "_find_main_window", lambda: MainWindow())
+    _finish_preview_load(preview, "photo")
 
     preview._mark_current("入选")
 
@@ -105,6 +113,11 @@ def test_preview_mark_buttons_enable_and_show_persisted_selection(
     preview.load_photo("photo", lambda: ["photo"], {"photo": model}.get)
 
     assert all(
+        not button.isEnabled()
+        for button in preview._mark_buttons.values()
+    )
+    _finish_preview_load(preview, "photo")
+    assert all(
         button.isEnabled()
         for button in preview._mark_buttons.values()
     )
@@ -118,6 +131,17 @@ def test_preview_mark_buttons_enable_and_show_persisted_selection(
     assert preview._mark_buttons[PhotoMark.KEEP].isChecked() is True
     assert preview._mark_buttons[PhotoMark.HOLD].isChecked() is False
     assert preview._mark_buttons[PhotoMark.DISCARD].isChecked() is False
+    assert {
+        mark: button.accessibleName()
+        for mark, button in preview._mark_buttons.items()
+    } == {
+        PhotoMark.KEEP: "保留照片（快捷键 1）",
+        PhotoMark.HOLD: "待定照片（快捷键 2）",
+        PhotoMark.DISCARD: "舍弃照片（快捷键 3）",
+    }
+    assert "快捷键 1" in preview._mark_buttons[PhotoMark.KEEP].toolTip()
+    assert "快捷键 2" in preview._mark_buttons[PhotoMark.HOLD].toolTip()
+    assert "快捷键 3" in preview._mark_buttons[PhotoMark.DISCARD].toolTip()
 
 
 def test_preview_mark_button_restores_previous_selection_when_save_fails(
@@ -136,6 +160,7 @@ def test_preview_mark_button_restores_previous_selection_when_save_fails(
 
     monkeypatch.setattr(preview, "_find_main_window", lambda: MainWindow())
     preview.load_photo("photo", lambda: ["photo"], {"photo": model}.get)
+    _finish_preview_load(preview, "photo")
 
     QTest.mouseClick(
         preview._mark_buttons[PhotoMark.DISCARD],
@@ -146,6 +171,78 @@ def test_preview_mark_button_restores_previous_selection_when_save_fails(
     assert preview._mark_label.text() == "标记: 保留"
     assert preview._mark_buttons[PhotoMark.KEEP].isChecked() is True
     assert preview._mark_buttons[PhotoMark.DISCARD].isChecked() is False
+
+
+def test_preview_marking_is_blocked_until_current_photo_is_loaded(
+    qapp, monkeypatch
+) -> None:
+    preview = PreviewWidget()
+    model = ImageFileModel("/fake/photo.jpg", photo_id="photo")
+    calls: list[tuple[str, str]] = []
+
+    class MainWindow:
+        def mark_photo(self, photo_id: str, mark: str) -> bool:
+            calls.append((photo_id, mark))
+            return True
+
+    monkeypatch.setattr(preview, "_find_main_window", lambda: MainWindow())
+    preview.load_photo("photo", lambda: ["photo"], {"photo": model}.get)
+
+    preview._mark_current(PhotoMark.KEEP.value)
+    preview._on_preview_failed("photo", "decode failed")
+    preview._mark_current(PhotoMark.DISCARD.value)
+
+    assert calls == []
+    assert all(
+        not button.isEnabled()
+        for button in preview._mark_buttons.values()
+    )
+
+
+def test_preview_mark_does_not_apply_removed_photo_state_to_neighbor(
+    qapp, monkeypatch
+) -> None:
+    models = {
+        "first": ImageFileModel(
+            "/fake/first.jpg",
+            photo_id="first",
+            mark=PhotoMark.KEEP.value,
+        ),
+        "second": ImageFileModel(
+            "/fake/second.jpg",
+            photo_id="second",
+            mark=PhotoMark.KEEP.value,
+        ),
+    }
+    photo_list = PhotoListModel(models.get)
+    photo_list.set_photo_ids(["first", "second"])
+    preview = PreviewWidget()
+
+    class MainWindow:
+        def mark_photo(self, photo_id: str, mark: str) -> bool:
+            models[photo_id].mark = mark
+            photo_list.remove_photo_id(photo_id)
+            return True
+
+    monkeypatch.setattr(preview, "_find_main_window", lambda: MainWindow())
+    preview.load_photo(
+        "first",
+        photo_list.photo_ids,
+        models.get,
+        photo_list_model=photo_list,
+    )
+    _finish_preview_load(preview, "first")
+
+    preview._mark_current(PhotoMark.DISCARD.value)
+
+    assert preview.current_photo_id() == "second"
+    assert preview._mark_label.text() == "标记: 保留"
+    assert preview._mark_buttons[PhotoMark.KEEP].isChecked() is True
+    assert preview._mark_buttons[PhotoMark.DISCARD].isChecked() is False
+    assert all(
+        not button.isEnabled()
+        for button in preview._mark_buttons.values()
+    )
 
 
 def test_preview_identity_survives_external_current_list_reorder(
@@ -168,6 +265,7 @@ def test_preview_identity_survives_external_current_list_reorder(
 
     monkeypatch.setattr(preview, "_find_main_window", lambda: MainWindow())
     preview.load_photo("target", lambda: list(photo_ids), models.get)
+    _finish_preview_load(preview, "target")
 
     photo_ids[:] = ["last", "first", "target"]
     preview._mark_current("入选")
@@ -199,6 +297,7 @@ def test_preview_removed_photo_selects_neighbor_without_identity_drift(
 
     photo_ids.remove("target")
     preview._filmstrip_model.set_photo_ids(photo_ids)
+    _finish_preview_load(preview, "last")
     preview._mark_current("待定")
 
     assert preview.current_photo_id() == "last"

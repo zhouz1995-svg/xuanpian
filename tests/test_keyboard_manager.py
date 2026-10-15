@@ -129,8 +129,21 @@ def test_number_keys_mark_preview_and_culling_identity_and_native_undo_reverses(
     browser.select_photo_id("photo-0")
     window.enter_preview_photo("photo-3")
     preview = window._preview_widget
-
-    _press(qapp, preview, Qt.Key.Key_1)
+    qtbot.waitUntil(
+        lambda: preview.loaded_photo_id == "photo-3",
+        timeout=2000,
+    )
+    assert preview.preview_state == "loaded"
+    assert all(
+        button.isEnabled()
+        for button in preview._mark_buttons.values()
+    )
+    next(
+        shortcut
+        for shortcut in window.findChildren(QShortcut)
+        if shortcut.key().toString() == "1"
+    ).activated.emit()
+    qapp.processEvents()
     assert models[3].mark == PhotoMark.KEEP.value
     assert (
         window._project_store.get_photo("photo-3").mark

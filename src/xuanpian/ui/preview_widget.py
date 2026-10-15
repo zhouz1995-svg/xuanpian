@@ -690,16 +690,22 @@ class PreviewWidget(QWidget):
         buttons = QHBoxLayout()
         buttons.setSpacing(6)
         self._mark_buttons: dict[PhotoMark, QPushButton] = {}
-        for mark, style_key in (
-            (PhotoMark.KEEP, "keep"),
-            (PhotoMark.HOLD, "hold"),
-            (PhotoMark.DISCARD, "discard"),
+        for mark, style_key, shortcut in (
+            (PhotoMark.KEEP, "keep", "1"),
+            (PhotoMark.HOLD, "hold", "2"),
+            (PhotoMark.DISCARD, "discard", "3"),
         ):
             button = QPushButton(mark.value, mark_panel)
             button.setCheckable(True)
             button.setEnabled(False)
             button.setProperty("previewMark", style_key)
-            button.setToolTip("在项目中记录标记，不移动原文件")
+            button.setAccessibleName(
+                f"{mark.value}照片（快捷键 {shortcut}）"
+            )
+            button.setToolTip(
+                f"{mark.value} · 快捷键 {shortcut} · "
+                "仅记录项目标记，不移动原文件"
+            )
             button.clicked.connect(
                 lambda checked=False, value=mark.value: self._mark_current(
                     value
@@ -955,6 +961,7 @@ class PreviewWidget(QWidget):
         self._loaded_photo_id = None
         self._loaded_token = None
         self._set_preview_state("loading", model.photo_id, self._preview_token)
+        self._sync_mark_controls(model.mark, enabled=False)
         self._image_view.clear_image("正在加载…")
         self._tool_overlay.hide()
 
@@ -986,6 +993,7 @@ class PreviewWidget(QWidget):
         self._loaded_photo_id = photo_id
         self._loaded_token = token
         self._set_preview_state("loaded", photo_id, token)
+        self._sync_mark_controls(model.mark, enabled=True)
         self._tool_overlay.show()
         self._position_tool_overlay()
         self.preview_loaded.emit(photo_id, token)
@@ -1003,6 +1011,11 @@ class PreviewWidget(QWidget):
         self._loaded_photo_id = None
         self._loaded_token = None
         self._set_preview_state("error", photo_id, token)
+        model = self._model_provider(photo_id)
+        self._sync_mark_controls(
+            model.mark if model is not None else "",
+            enabled=False,
+        )
         self._tool_overlay.hide()
         self.preview_error.emit(photo_id, token, message)
 
@@ -1069,7 +1082,14 @@ class PreviewWidget(QWidget):
         self._portrait_value.setText(portrait)
         self._sync_mark_controls(
             model.mark,
-            enabled=self._current_photo_id == model.photo_id,
+            enabled=self._current_preview_is_loaded(model.photo_id),
+        )
+
+    def _current_preview_is_loaded(self, photo_id: str) -> bool:
+        return (
+            self._current_photo_id == photo_id
+            and self._loaded_photo_id == photo_id
+            and self._preview_state == "loaded"
         )
 
     def _sync_mark_controls(self, value: str, *, enabled: bool) -> None:
@@ -1308,7 +1328,10 @@ class PreviewWidget(QWidget):
             self._render_photo(photo_id)
             return
         if int(PhotoRoles.MARK) in changed:
-            self._sync_mark_controls(model.mark, enabled=True)
+            self._sync_mark_controls(
+                model.mark,
+                enabled=self._current_preview_is_loaded(photo_id),
+            )
         if int(PhotoRoles.ANALYSIS) in changed:
             self._show_analysis(model)
             self._show_exif(model)
@@ -1321,20 +1344,28 @@ class PreviewWidget(QWidget):
 
     def _mark_current(self, mark: str) -> None:
         photo_id = self.current_photo_id()
-        if photo_id is None:
+        if photo_id is None or not self._current_preview_is_loaded(photo_id):
             return
         model = self._model_provider(photo_id)
         if model is None:
             return
         main_window = self._find_main_window()
+        result: object = True
         if main_window is None:
             model.mark = mark
         else:
             result = main_window.mark_photo(photo_id, mark)
-            if result is False:
-                self._sync_mark_controls(model.mark, enabled=True)
-                return
-        self._sync_mark_controls(mark, enabled=True)
+        if self.current_photo_id() != photo_id:
+            return
+        current_model = self._model_provider(photo_id)
+        if current_model is None:
+            self._sync_mark_controls("", enabled=False)
+            return
+        value = current_model.mark if result is False else mark
+        self._sync_mark_controls(
+            value,
+            enabled=self._current_preview_is_loaded(photo_id),
+        )
 
     def _rotate(self, delta: int) -> None:
         photo_id = self.current_photo_id()
