@@ -138,12 +138,7 @@ def test_number_keys_mark_preview_and_culling_identity_and_native_undo_reverses(
         button.isEnabled()
         for button in preview._mark_buttons.values()
     )
-    next(
-        shortcut
-        for shortcut in window.findChildren(QShortcut)
-        if shortcut.key().toString() == "1"
-    ).activated.emit()
-    qapp.processEvents()
+    _press(qapp, preview, Qt.Key.Key_1)
     assert models[3].mark == PhotoMark.KEEP.value
     assert (
         window._project_store.get_photo("photo-3").mark
