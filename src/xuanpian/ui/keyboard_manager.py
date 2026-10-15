@@ -131,13 +131,21 @@ class KeyboardManager:
             self._mw.enter_preview_photo(photo_id)
 
     def _on_mark_1(self) -> None:
-        self._mark_culling(PhotoMark.KEEP)
+        self._mark_active_photo(PhotoMark.KEEP)
 
     def _on_mark_2(self) -> None:
-        self._mark_culling(PhotoMark.HOLD)
+        self._mark_active_photo(PhotoMark.HOLD)
 
     def _on_mark_3(self) -> None:
-        self._mark_culling(PhotoMark.DISCARD)
+        self._mark_active_photo(PhotoMark.DISCARD)
+
+    def _mark_active_photo(self, mark: PhotoMark) -> None:
+        if self._text_control_has_focus():
+            return
+        if self._in_preview():
+            self._mw._preview_widget._mark_current(mark.value)
+            return
+        self._mark_culling(mark)
 
     def _mark_culling(self, mark: PhotoMark) -> None:
         if (

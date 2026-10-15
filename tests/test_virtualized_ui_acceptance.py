@@ -53,15 +53,16 @@ def _valid_acceptance_report() -> dict[str, object]:
         "preview_open_photo_id": "photo-0502",
         "navigation_photo_ids": ["photo-0503", "photo-0502"],
         "filmstrip_selected_photo_id": "photo-0504",
-        "legacy_mark_attempt_photo_ids": ["photo-0504", "photo-0505"],
-        "legacy_mark_controls_disabled": True,
+        "preview_mark_photo_ids": ["photo-0504", "photo-0505"],
+        "preview_mark_controls_enabled": True,
+        "preview_mark_source_paths_unchanged": True,
         "deleted_photo_id": "photo-0504",
         "preview_after_delete_id": "photo-0505",
         "preview_rows_before_delete": PHOTO_COUNT,
         "preview_rows_after_delete": PHOTO_COUNT - 1,
         "preview_model_resets_during_navigation": 0,
         "database_deleted": True,
-        "database_marks": ["入选", ""],
+        "database_marks": ["保留", "待定"],
         "preview_image_nonempty": True,
         "preview_loaded_photo_id": "photo-0502",
         "preview_zoom_changed": True,
@@ -129,15 +130,16 @@ def test_offscreen_1000_ui_acceptance_reports_virtualized_stable_state(qapp) -> 
     assert report["preview_open_photo_id"] == "photo-0502"
     assert report["navigation_photo_ids"] == ["photo-0503", "photo-0502"]
     assert report["filmstrip_selected_photo_id"] == "photo-0504"
-    assert report["legacy_mark_attempt_photo_ids"] == ["photo-0504", "photo-0505"]
-    assert report["legacy_mark_controls_disabled"] is True
+    assert report["preview_mark_photo_ids"] == ["photo-0504", "photo-0505"]
+    assert report["preview_mark_controls_enabled"] is True
+    assert report["preview_mark_source_paths_unchanged"] is True
     assert report["deleted_photo_id"] == "photo-0504"
     assert report["preview_after_delete_id"] == "photo-0505"
     assert report["preview_rows_before_delete"] == PHOTO_COUNT
     assert report["preview_rows_after_delete"] == PHOTO_COUNT - 1
     assert report["preview_model_resets_during_navigation"] == 0
     assert report["database_deleted"] is True
-    assert report["database_marks"] == ["入选", ""]
+    assert report["database_marks"] == ["保留", "待定"]
     assert report["preview_image_nonempty"] is True
     assert report["preview_loaded_photo_id"] == "photo-0502"
     assert report["preview_zoom_changed"] is True
@@ -170,8 +172,14 @@ def test_offscreen_acceptance_main_exits_nonzero_for_invalid_report(
 @pytest.mark.parametrize(
     ("case", "mutate"),
     [
-        ("wrong attempted IDs", lambda report: report.__setitem__("legacy_mark_attempt_photo_ids", ["wrong"])),
-        ("missing attempted IDs", lambda report: report.pop("legacy_mark_attempt_photo_ids")),
+        ("wrong marked IDs", lambda report: report.__setitem__("preview_mark_photo_ids", ["wrong"])),
+        ("missing marked IDs", lambda report: report.pop("preview_mark_photo_ids")),
+        (
+            "source paths changed",
+            lambda report: report.__setitem__(
+                "preview_mark_source_paths_unchanged", False
+            ),
+        ),
         ("wrong deleted ID", lambda report: report.__setitem__("deleted_photo_id", "wrong")),
         ("missing deleted ID", lambda report: report.pop("deleted_photo_id")),
         ("missing timings", lambda report: report.pop("timings_ms")),

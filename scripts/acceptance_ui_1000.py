@@ -24,6 +24,7 @@ from PyQt6.QtWidgets import (
 )
 
 from src.xuanpian.domain.analysis import AnalysisStatus
+from src.xuanpian.domain.culling import PhotoMark
 from src.xuanpian.domain.photo import (
     AssetKind,
     FileFingerprint,
@@ -151,8 +152,9 @@ def _click_mark_button(preview, text: str) -> bool:
         for button in preview.findChildren(QPushButton)
         if button.text() == text
     )
+    enabled = button.isEnabled()
     QTest.mouseClick(button, Qt.MouseButton.LeftButton)
-    return not button.isEnabled()
+    return enabled
 
 
 def _confirm_active_delete() -> None:
@@ -192,15 +194,16 @@ def validate_report(report: Mapping[str, object]) -> list[str]:
         "preview_open_photo_id": "photo-0502",
         "navigation_photo_ids": ["photo-0503", "photo-0502"],
         "filmstrip_selected_photo_id": "photo-0504",
-        "legacy_mark_attempt_photo_ids": ["photo-0504", "photo-0505"],
-        "legacy_mark_controls_disabled": True,
+        "preview_mark_photo_ids": ["photo-0504", "photo-0505"],
+        "preview_mark_controls_enabled": True,
+        "preview_mark_source_paths_unchanged": True,
         "deleted_photo_id": "photo-0504",
         "preview_after_delete_id": "photo-0505",
         "preview_rows_before_delete": PHOTO_COUNT,
         "preview_rows_after_delete": PHOTO_COUNT - 1,
         "preview_model_resets_during_navigation": 0,
         "database_deleted": True,
-        "database_marks": ["入选", ""],
+        "database_marks": ["保留", "待定"],
         "preview_image_nonempty": True,
         "preview_loaded_photo_id": "photo-0502",
         "preview_zoom_changed": True,
@@ -375,16 +378,24 @@ def run_acceptance(app: QApplication | None = None) -> dict[str, object]:
         _click_index(app, preview._filmstrip, film_target)
         _wait_until(app, lambda: preview.loaded_photo_id == "photo-0504")
         filmstrip_selected_photo_id = preview.current_photo_id()
-        # Metadata-only preview marking is retired. Exercise its disabled
-        # controls and prove existing marks remain unchanged; supported file
-        # transactions and culling performance have their own acceptance.
-        keep_disabled = _click_mark_button(preview, "保留")
+        mark_source_paths_before = {
+            photo_id: models[int(photo_id.rsplit("-", 1)[1])].path
+            for photo_id in ("photo-0504", "photo-0505")
+        }
+        keep_enabled = _click_mark_button(preview, "保留")
+        keep_selected = preview._mark_buttons[PhotoMark.KEEP].isChecked()
         preview.navigate(1)
-        hold_disabled = _click_mark_button(preview, "待定")
+        hold_enabled = _click_mark_button(preview, "待定")
+        hold_selected = preview._mark_buttons[PhotoMark.HOLD].isChecked()
         database_marks = [
             store.get_photo(photo_id).mark
             for photo_id in ("photo-0504", "photo-0505")
         ]
+        preview_mark_source_paths_unchanged = all(
+            models[int(photo_id.rsplit("-", 1)[1])].path == path
+            and Path(path).is_file()
+            for photo_id, path in mark_source_paths_before.items()
+        )
         preview._show_photo_id("photo-0504")
 
         QTimer.singleShot(0, _confirm_active_delete)
@@ -416,8 +427,16 @@ def run_acceptance(app: QApplication | None = None) -> dict[str, object]:
         "preview_open_photo_id": preview_open_photo_id,
         "navigation_photo_ids": [after_next, after_previous],
         "filmstrip_selected_photo_id": filmstrip_selected_photo_id,
-        "legacy_mark_attempt_photo_ids": ["photo-0504", "photo-0505"],
-        "legacy_mark_controls_disabled": keep_disabled and hold_disabled,
+        "preview_mark_photo_ids": ["photo-0504", "photo-0505"],
+        "preview_mark_controls_enabled": (
+            keep_enabled
+            and keep_selected
+            and hold_enabled
+            and hold_selected
+        ),
+        "preview_mark_source_paths_unchanged": (
+            preview_mark_source_paths_unchanged
+        ),
         "deleted_photo_id": "photo-0504",
         "preview_after_delete_id": preview_after_delete_id,
         "preview_rows_before_delete": preview_rows_before_delete,

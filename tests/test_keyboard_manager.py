@@ -119,7 +119,7 @@ def test_production_keyboard_has_one_unambiguous_shortcut_per_key_and_routes_nav
     assert not any("ambiguous" in message.lower() for message in messages)
 
 
-def test_number_keys_only_mark_current_culling_identity_and_native_undo_reverses(
+def test_number_keys_mark_preview_and_culling_identity_and_native_undo_reverses(
     qapp,
     qtbot,
     tmp_path,
@@ -127,11 +127,16 @@ def test_number_keys_only_mark_current_culling_identity_and_native_undo_reverses
     window, models = _window(qapp, tmp_path)
     browser = window.thumbnail_browser
     browser.select_photo_id("photo-0")
-    window.enter_preview_photo("photo-2")
+    window.enter_preview_photo("photo-3")
     preview = window._preview_widget
 
     _press(qapp, preview, Qt.Key.Key_1)
-    assert models[2].mark == ""
+    assert models[3].mark == PhotoMark.KEEP.value
+    assert (
+        window._project_store.get_photo("photo-3").mark
+        == PhotoMark.KEEP.value
+    )
+    assert (tmp_path / "photo-3.jpg").is_file()
     _press(qapp, preview, Qt.Key.Key_Escape)
     _press(qapp, browser._view, Qt.Key.Key_2)
     assert models[0].mark == ""

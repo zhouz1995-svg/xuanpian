@@ -4,6 +4,7 @@ from PyQt6.QtTest import QTest
 from PyQt6.QtWidgets import QPushButton, QWidget
 
 from src.xuanpian.domain.analysis import AnalysisStatus
+from src.xuanpian.domain.culling import PhotoMark
 from src.xuanpian.ui.image_model import ImageFileModel
 from src.xuanpian.ui.preview_widget import PreviewWidget
 from src.xuanpian.ui.thumbnail_browser import ThumbnailBrowser
@@ -81,6 +82,70 @@ def test_preview_mark_passes_business_photo_id_to_main_window(
     preview._mark_current("入选")
 
     assert calls == [("photo", "入选")]
+
+
+def test_preview_mark_buttons_enable_and_show_persisted_selection(
+    qapp, monkeypatch
+) -> None:
+    preview = PreviewWidget()
+    assert all(
+        not button.isEnabled()
+        for button in preview._mark_buttons.values()
+    )
+    model = ImageFileModel("/fake/photo.jpg", photo_id="photo")
+    calls: list[tuple[str, str]] = []
+
+    class MainWindow:
+        def mark_photo(self, photo_id: str, mark: str) -> bool:
+            calls.append((photo_id, mark))
+            model.mark = mark
+            return True
+
+    monkeypatch.setattr(preview, "_find_main_window", lambda: MainWindow())
+    preview.load_photo("photo", lambda: ["photo"], {"photo": model}.get)
+
+    assert all(
+        button.isEnabled()
+        for button in preview._mark_buttons.values()
+    )
+    QTest.mouseClick(
+        preview._mark_buttons[PhotoMark.KEEP],
+        Qt.MouseButton.LeftButton,
+    )
+
+    assert calls == [("photo", PhotoMark.KEEP.value)]
+    assert preview._mark_label.text() == "标记: 保留"
+    assert preview._mark_buttons[PhotoMark.KEEP].isChecked() is True
+    assert preview._mark_buttons[PhotoMark.HOLD].isChecked() is False
+    assert preview._mark_buttons[PhotoMark.DISCARD].isChecked() is False
+
+
+def test_preview_mark_button_restores_previous_selection_when_save_fails(
+    qapp, monkeypatch
+) -> None:
+    preview = PreviewWidget()
+    model = ImageFileModel(
+        "/fake/photo.jpg",
+        photo_id="photo",
+        mark=PhotoMark.KEEP.value,
+    )
+
+    class MainWindow:
+        def mark_photo(self, _photo_id: str, _mark: str) -> bool:
+            return False
+
+    monkeypatch.setattr(preview, "_find_main_window", lambda: MainWindow())
+    preview.load_photo("photo", lambda: ["photo"], {"photo": model}.get)
+
+    QTest.mouseClick(
+        preview._mark_buttons[PhotoMark.DISCARD],
+        Qt.MouseButton.LeftButton,
+    )
+
+    assert model.mark == PhotoMark.KEEP.value
+    assert preview._mark_label.text() == "标记: 保留"
+    assert preview._mark_buttons[PhotoMark.KEEP].isChecked() is True
+    assert preview._mark_buttons[PhotoMark.DISCARD].isChecked() is False
 
 
 def test_preview_identity_survives_external_current_list_reorder(

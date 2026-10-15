@@ -371,6 +371,24 @@ QDialog {
     padding: 4px 8px;
 }
 
+#previewMarkPanel QPushButton[previewMark="keep"]:checked {
+    background-color: #17382C;
+    border-color: #43A878;
+    color: #8FE0B8;
+}
+
+#previewMarkPanel QPushButton[previewMark="hold"]:checked {
+    background-color: #3A3018;
+    border-color: #CDA44A;
+    color: #F0D58A;
+}
+
+#previewMarkPanel QPushButton[previewMark="discard"]:checked {
+    background-color: #3B2024;
+    border-color: #C35D68;
+    color: #F1A0A8;
+}
+
 /* Similar-photo compare strip and toggle button */
 #compareStrip {
     background-color: #13161A;

@@ -689,11 +689,24 @@ class PreviewWidget(QWidget):
         mark_layout.addWidget(self._mark_label)
         buttons = QHBoxLayout()
         buttons.setSpacing(6)
-        for label in ("保留", "待定", "舍弃"):
-            button = QPushButton(label, mark_panel)
+        self._mark_buttons: dict[PhotoMark, QPushButton] = {}
+        for mark, style_key in (
+            (PhotoMark.KEEP, "keep"),
+            (PhotoMark.HOLD, "hold"),
+            (PhotoMark.DISCARD, "discard"),
+        ):
+            button = QPushButton(mark.value, mark_panel)
+            button.setCheckable(True)
             button.setEnabled(False)
-            button.setToolTip("请在筛选工作台标记并安全移动文件")
+            button.setProperty("previewMark", style_key)
+            button.setToolTip("在项目中记录标记，不移动原文件")
+            button.clicked.connect(
+                lambda checked=False, value=mark.value: self._mark_current(
+                    value
+                )
+            )
             buttons.addWidget(button, 1)
+            self._mark_buttons[mark] = button
         mark_layout.addLayout(buttons)
         panel.add_content(mark_panel)
         self._sync_info_header()
@@ -1054,8 +1067,24 @@ class PreviewWidget(QWidget):
                 "检测到人像" if model.face_count > 0 else "未检测到人像"
             )
         self._portrait_value.setText(portrait)
-        normalized = normalize_legacy_mark(model.mark)
-        self._mark_label.setText(f"标记: {normalized.value if normalized else '历史不可用'}")
+        self._sync_mark_controls(
+            model.mark,
+            enabled=self._current_photo_id == model.photo_id,
+        )
+
+    def _sync_mark_controls(self, value: str, *, enabled: bool) -> None:
+        normalized = normalize_legacy_mark(value)
+        label = normalized.value if normalized else "历史不可用"
+        self._mark_label.setText(f"标记: {label}")
+        selected = (
+            normalized
+            if normalized
+            in (PhotoMark.KEEP, PhotoMark.HOLD, PhotoMark.DISCARD)
+            else None
+        )
+        for mark, button in self._mark_buttons.items():
+            button.setEnabled(enabled)
+            button.setChecked(mark is selected)
 
     def _show_exif(self, model: ImageFileModel) -> None:
         self._exif_status.setText(
@@ -1143,6 +1172,7 @@ class PreviewWidget(QWidget):
             self.invalidate_preview_requests()
             self._image_view.clear_image()
             self._tool_overlay.hide()
+            self._sync_mark_controls("", enabled=False)
             main_window = self._find_main_window()
             if main_window is not None:
                 main_window.exit_preview()
@@ -1278,8 +1308,7 @@ class PreviewWidget(QWidget):
             self._render_photo(photo_id)
             return
         if int(PhotoRoles.MARK) in changed:
-            normalized = normalize_legacy_mark(model.mark)
-            self._mark_label.setText(f"标记: {normalized.value if normalized else '历史不可用'}")
+            self._sync_mark_controls(model.mark, enabled=True)
         if int(PhotoRoles.ANALYSIS) in changed:
             self._show_analysis(model)
             self._show_exif(model)
@@ -1294,18 +1323,18 @@ class PreviewWidget(QWidget):
         photo_id = self.current_photo_id()
         if photo_id is None:
             return
+        model = self._model_provider(photo_id)
+        if model is None:
+            return
         main_window = self._find_main_window()
         if main_window is None:
-            model = self._model_provider(photo_id)
-            if model is None:
-                return
             model.mark = mark
         else:
             result = main_window.mark_photo(photo_id, mark)
             if result is False:
+                self._sync_mark_controls(model.mark, enabled=True)
                 return
-        normalized = normalize_legacy_mark(mark)
-        self._mark_label.setText(f"标记: {normalized.value if normalized else '历史不可用'}")
+        self._sync_mark_controls(mark, enabled=True)
 
     def _rotate(self, delta: int) -> None:
         photo_id = self.current_photo_id()
