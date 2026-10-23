@@ -8,7 +8,7 @@ from importlib.resources import files
 from pathlib import Path
 
 
-MODEL_KEYS = frozenset({"face_detector", "pose_landmarker", "object_detector"})
+MODEL_KEYS = frozenset({"face_detector", "object_detector"})
 
 
 class ModelAssetError(RuntimeError):

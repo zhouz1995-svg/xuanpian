@@ -8,8 +8,8 @@ Output:
     dist/选片APP.app
 
 Runtime assets are declared explicitly so the packaged app is self-contained:
-styles.qss, the offline MediaPipe models (with their manifest), and the app
-icon PNG.  mediapipe Tasks and rawpy are binary/namespace-heavy dependencies
+styles.qss, the offline ONNX models (with their manifest), and the app
+icon PNG. ONNX Runtime and rawpy are binary-heavy dependencies
 and are collected explicitly as hidden imports.
 """
 
@@ -40,20 +40,20 @@ datas += [(os.path.join(ROOT, name), "legal/" + str(Path(name).parent))
           for name in notice_payload(Path(ROOT))]
 
 hiddenimports = (
-    list(collect_submodules("mediapipe"))
+    list(collect_submodules("onnxruntime"))
     + ["rawpy"]
 )
-mediapipe_binaries = collect_dynamic_libs("mediapipe")
+onnx_binaries = collect_dynamic_libs("onnxruntime", search_patterns=["*.dylib", "*.dll", "*.so"])
 
 a = Analysis(
     [os.path.join(ROOT, "src", "main.py")],
     pathex=[ROOT],
-    binaries=mediapipe_binaries,
+    binaries=onnx_binaries,
     datas=datas,
     hiddenimports=hiddenimports,
     hookspath=[],
     runtime_hooks=[],
-    excludes=[],
+    excludes=["cv2", "mediapipe"],
     noarchive=False,
 )
 

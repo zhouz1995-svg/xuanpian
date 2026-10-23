@@ -39,17 +39,17 @@ def _legacy_payload(version: str) -> dict[str, object]:
     }
 
 
-def test_v7_round_trip_omits_framing_and_persists_portrait_assessed() -> None:
+def test_v8_round_trip_omits_framing_and_persists_portrait_assessed() -> None:
     result = TechnicalAnalysisResult.review_only()
     payload = result.to_dict()
 
-    assert payload["algorithm_version"] == "technical-v7"
+    assert payload["algorithm_version"] == "technical-v8"
     assert payload["portrait_assessed"] is False
     assert "framing" not in payload
     assert TechnicalAnalysisResult.from_dict(payload) == result
 
 
-def test_v7_result_rejects_legacy_framing_key() -> None:
+def test_v8_result_rejects_legacy_framing_key() -> None:
     payload = TechnicalAnalysisResult.review_only().to_dict()
     payload["framing"] = {"conclusion": "不判断"}
 
@@ -57,7 +57,7 @@ def test_v7_result_rejects_legacy_framing_key() -> None:
         TechnicalAnalysisResult.from_dict(payload)
 
 
-@pytest.mark.parametrize("version", ["technical-v5", "technical-v6"])
+@pytest.mark.parametrize("version", ["technical-v5", "technical-v6", "technical-v7"])
 def test_prior_current_format_results_remain_readable_but_are_historical(
     version: str,
 ) -> None:

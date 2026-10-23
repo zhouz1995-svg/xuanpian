@@ -4,14 +4,13 @@ from __future__ import annotations
 
 from collections.abc import Set
 from dataclasses import dataclass
-from math import isfinite
 from typing import Any
 
-from src.xuanpian.domain.technical_analysis import Keypoint, Rect, SubjectCandidate
+from src.xuanpian.domain.technical_analysis import Rect, SubjectCandidate
 from src.xuanpian.engine.analysis_context import AnalysisContext
 
 
-SUBJECT_SOURCES = frozenset({"face", "pose", "object"})
+SUBJECT_SOURCES = frozenset({"face", "object"})
 _DUPLICATE_SUBJECT_IOU = 0.65
 
 
@@ -51,11 +50,12 @@ class SubjectLocator:
         face_count = 0
         for source, method_name in (
             ("face", "detect_faces"),
-            ("pose", "detect_poses"),
             ("object", "detect_objects"),
         ):
             try:
-                candidates = tuple(getattr(self._backend, method_name)(context.locate_bgr))
+                candidates = tuple(
+                    getattr(self._backend, method_name)(context.locate_bgr)
+                )
             except Exception as exc:
                 diagnostics.append(f"{source}: {exc}")
                 failed_sources.add(source)
@@ -84,12 +84,10 @@ class SubjectLocator:
         for candidate in candidates:
             if isinstance(candidate, SubjectCandidate):
                 normalized.append(candidate)
-            elif source == "pose":
-                pose = SubjectLocator._pose_candidate(candidate)
-                if pose is not None:
-                    normalized.append(pose)
             else:
-                detected = SubjectLocator._detection_candidate(candidate, source, image_shape)
+                detected = SubjectLocator._detection_candidate(
+                    candidate, source, image_shape
+                )
                 if detected is not None:
                     normalized.append(detected)
         return tuple(normalized)
@@ -116,41 +114,24 @@ class SubjectLocator:
         confidence = float(getattr(categories[0], "score", 0.0)) if categories else 0.0
         if not 0.0 <= confidence <= 1.0:
             return None
-        kind = "face" if source == "face" else str(
-            getattr(categories[0], "category_name", "object") if categories else "object"
+        kind = (
+            "face"
+            if source == "face"
+            else str(
+                getattr(categories[0], "category_name", "object")
+                if categories
+                else "object"
+            )
         )
         return SubjectCandidate(kind, bounds, confidence, bounds.width * bounds.height)
 
     @staticmethod
-    def _pose_candidate(landmarks: Any) -> SubjectCandidate | None:
-        points: list[Keypoint] = []
-        for landmark in landmarks:
-            try:
-                confidence = float(
-                    getattr(landmark, "visibility", getattr(landmark, "presence", 1.0))
-                )
-                x = float(landmark.x)
-                y = float(landmark.y)
-            except (AttributeError, TypeError, ValueError):
-                continue
-            if not all(isfinite(value) for value in (x, y, confidence)):
-                continue
-            if not 0.0 <= confidence <= 1.0:
-                continue
-            points.append(Keypoint(min(1.0, max(0.0, x)), min(1.0, max(0.0, y)), confidence))
-        if len(points) < 4:
-            return None
-        min_x, max_x = min(point.x for point in points), max(point.x for point in points)
-        min_y, max_y = min(point.y for point in points), max(point.y for point in points)
-        if min_x == max_x or min_y == max_y:
-            return None
-        confidence = sum(point.confidence for point in points) / len(points)
-        bounds = Rect(min_x, min_y, max_x - min_x, max_y - min_y)
-        return SubjectCandidate("person", bounds, confidence, bounds.width * bounds.height, tuple(points))
-
-    @staticmethod
     def _rank(candidate: SubjectCandidate) -> float:
-        face_bonus = 0.3 if candidate.kind == "face" else 0.0
+        face_bonus = (
+            (0.7 if candidate.confidence >= 0.65 else 0.3)
+            if candidate.kind == "face"
+            else 0.0
+        )
         return candidate.confidence * 0.7 + candidate.salience * 0.3 + face_bonus
 
     def _primary_index(self, subjects: tuple[SubjectCandidate, ...]) -> int | None:
@@ -158,6 +139,13 @@ class SubjectLocator:
             return None
         competitors: list[SubjectCandidate] = []
         for subject in subjects:
+            if subject.kind == "person" and any(
+                face.kind == "face"
+                and face.confidence >= 0.65
+                and self.face_in_person(face.bounds, subject.bounds)
+                for face in subjects
+            ):
+                continue
             if any(
                 subject.kind == competitor.kind
                 and self._intersection_over_union(subject.bounds, competitor.bounds)
@@ -174,15 +162,22 @@ class SubjectLocator:
         return 0
 
     @staticmethod
+    def face_in_person(face: Rect, person: Rect) -> bool:
+        intersection = max(
+            0.0,
+            min(face.x + face.width, person.x + person.width) - max(face.x, person.x),
+        ) * max(
+            0.0,
+            min(face.y + face.height, person.y + person.height) - max(face.y, person.y),
+        )
+        return intersection >= 0.8 * face.width * face.height
+
+    @staticmethod
     def _intersection_over_union(first: Rect, second: Rect) -> float:
         left = max(first.x, second.x)
         top = max(first.y, second.y)
         right = min(first.x + first.width, second.x + second.width)
         bottom = min(first.y + first.height, second.y + second.height)
         intersection = max(0.0, right - left) * max(0.0, bottom - top)
-        union = (
-            first.width * first.height
-            + second.width * second.height
-            - intersection
-        )
+        union = first.width * first.height + second.width * second.height - intersection
         return intersection / union if union > 0.0 else 0.0

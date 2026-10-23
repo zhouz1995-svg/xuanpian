@@ -1,13 +1,16 @@
 {
   "schema_version": 1,
   "release_status": "blocked",
-  "scope": "Known notice snapshot, not redistribution clearance or a complete native closure. Wheel notices cover build/test inputs as well as runtime candidates.",
+  "scope": "Historical wheel texts plus current ONNX/model source notices; current pins do not imply the historical native observations are shipped. New bundle audit pending.",
   "files": {
     "LICENSE": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
-    "THIRD_PARTY_NOTICES.md": "ad03ff933786737256cc535a6e03b76bb6261cc55460667d86a2169200033397",
-    "packaging/third-party-components.json": "46841cd1f1247cd22db81150a05654570fa1690cf675b30873c62edf5520ee77",
+    "THIRD_PARTY_NOTICES.md": "101913a28c8a4d439b147c284a0fb3332fccae934459766ac2046b1cb5c45b57",
     "packaging/licenses/PyQt6_sip-BSD-2-Clause.txt": "3e6f5b427c36f94ecf86bc01698af7030a1ed6eb3748110d5dbb8d142d804611",
     "packaging/licenses/Qt-LGPL-3.0.txt": "6c671e2912ec69c0832f32066c0313cee5fdc3bbcbce237822e89f3da58edd4e",
+    "packaging/licenses/models/YOLOX-Apache-2.0.txt": "577c03d505ec80f667ebf96ebd0cc4f6825c817ca1088ee348c48aaabd51bd92",
+    "packaging/licenses/models/YuNet-MIT.txt": "c83b8120c50ccbd4c4f96edf53141bdd566ebb8f8e9227e415326aa1b1aba958",
+    "packaging/licenses/onnxruntime/LICENSE.txt": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c",
+    "packaging/licenses/onnxruntime/ThirdPartyNotices.txt": "cf7342f7ba482ef715ae58f5f497a8d3564fa255164175aea324cd293c5701a0",
     "packaging/licenses/runtime/CPython-3.11.15-LICENSE.txt": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
     "packaging/licenses/runtime/ExifTool-13.59-README.txt": "e13005e5431c89910feba2309710d844f1bf4fd97df1236284e6475161bc14da",
     "packaging/licenses/runtime/Perl-5.44.0-Artistic.txt": "dd90d4f42e4dcadf5a7c09eea0189d93c7b37ae560c91f0f6d5233ed3b9292a2",
@@ -88,7 +91,8 @@
     "packaging/licenses/wheels/ed9bf58c6d74d3fad9d92d1d67d9bff8141d8ab60de784516b0711364fd43357.txt": "ed9bf58c6d74d3fad9d92d1d67d9bff8141d8ab60de784516b0711364fd43357",
     "packaging/licenses/wheels/eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449.txt": "eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449",
     "packaging/licenses/wheels/f1218143d766da3fea66f13396b7f15df46a83303f29bf96ba6e98eb4d42f408.txt": "7eec27ee66da53ba5912cb00b3521ac4428834bb37d0691080bf5d543b0cbb31",
-    "packaging/licenses/wheels/fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec.txt": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec"
+    "packaging/licenses/wheels/fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec.txt": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec",
+    "packaging/third-party-components.json": "6902df18fe8baad8d0ce675638eb1ab2e632e3855a42750d035a7a56a69e1735"
   },
   "wheel_origins": [
     {
@@ -885,6 +889,28 @@
     {
       "path": "packaging/licenses/runtime/ExifTool-13.59-README.txt",
       "source": "Verified Stage A runtime licenses/exiftool/README; source pinned by packaging/runtime-sources.json"
+    }
+  ],
+  "upstream_origins": [
+    {
+      "path": "packaging/licenses/models/YuNet-MIT.txt",
+      "url": "https://raw.githubusercontent.com/opencv/opencv_zoo/48b10fa505aeb51fbd127fc60a5c660040e823b7/models/face_detection_yunet/LICENSE",
+      "sha256": "c83b8120c50ccbd4c4f96edf53141bdd566ebb8f8e9227e415326aa1b1aba958"
+    },
+    {
+      "path": "packaging/licenses/models/YOLOX-Apache-2.0.txt",
+      "url": "https://raw.githubusercontent.com/Megvii-BaseDetection/YOLOX/0.1.1rc0/LICENSE",
+      "sha256": "577c03d505ec80f667ebf96ebd0cc4f6825c817ca1088ee348c48aaabd51bd92"
+    },
+    {
+      "path": "packaging/licenses/onnxruntime/LICENSE.txt",
+      "url": "https://raw.githubusercontent.com/microsoft/onnxruntime/v1.19.2/LICENSE",
+      "sha256": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c"
+    },
+    {
+      "path": "packaging/licenses/onnxruntime/ThirdPartyNotices.txt",
+      "url": "https://raw.githubusercontent.com/microsoft/onnxruntime/v1.19.2/ThirdPartyNotices.txt",
+      "sha256": "cf7342f7ba482ef715ae58f5f497a8d3564fa255164175aea324cd293c5701a0"
     }
   ]
 }

@@ -104,7 +104,7 @@ def test_current_technical_analysis_validates_terminal_contract(
     )
     assert store.get_current_technical_analysis("one") is None
 
-    payload = {"algorithm_version": "technical-v7"}
+    payload = {"algorithm_version": "technical-v8"}
     store.save_analysis("one", "technical", AnalysisStatus.SUCCEEDED, payload, None)
     assert store.get_current_technical_analysis("one").result == payload
 

@@ -37,9 +37,8 @@ def test_missing_model_is_rejected(tmp_path) -> None:
 @pytest.mark.parametrize(
     ("name", "filename"),
     [
-        ("face_detector", "face_detector.tflite"),
-        ("pose_landmarker", "pose_landmarker.task"),
-        ("object_detector", "object_detector.tflite"),
+        ("face_detector", "yunet.onnx"),
+        ("object_detector", "yolox_nano.onnx"),
     ],
 )
 def test_shared_subject_models_remain_verified(name: str, filename: str) -> None:

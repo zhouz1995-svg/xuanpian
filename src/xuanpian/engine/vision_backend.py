@@ -1,125 +1,69 @@
-"""MediaPipe Tasks adapter for offline subject detection models."""
+"""Lazy, offline CPU inference using the two packaged ONNX models."""
 
 from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
+from threading import RLock
 from typing import Any
 
-import cv2
 import numpy as np
 
 from src.xuanpian.engine.model_assets import verified_model_path
+from src.xuanpian.engine.onnx_detection import (
+    prepare_yolox,
+    decode_yolox,
+    prepare_yunet,
+    decode_yunet,
+)
 
 
 class VisionCapabilityError(RuntimeError):
-    """Raised when the local MediaPipe Tasks capability cannot be started."""
+    """The packaged subject detector could not be loaded or executed."""
 
 
-class MediaPipeSubjectBackend:
-    """Lazy MediaPipe Tasks adapter with all model paths resolved offline."""
-
+class OnnxSubjectBackend:
     def __init__(
-        self,
-        *,
-        mp_module: Any | None = None,
-        model_resolver: Callable[[str], Path] = verified_model_path,
+        self, *, model_resolver: Callable[[str], Path] = verified_model_path
     ) -> None:
-        self._mp = mp_module
         self._model_resolver = model_resolver
-        self._face_detector: Any | None = None
-        self._pose_landmarker: Any | None = None
-        self._object_detector: Any | None = None
+        self._sessions: dict[str, Any] = {}
+        self._lock = RLock()
 
-    def detect_faces(self, bgr: np.ndarray) -> tuple[Any, ...]:
-        """Run the packaged face detector and return raw Tasks detections."""
-        if self._face_detector is None:
-            self._face_detector = self._create_face_detector()
+    def _session(self, name: str) -> Any:
+        with self._lock:
+            if name not in self._sessions:
+                import onnxruntime as ort
 
-        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-        image = self._media_pipe().Image(
-            image_format=self._media_pipe().ImageFormat.SRGB,
-            data=rgb,
-        )
-        result = self._face_detector.detect(image)
-        return tuple(result.detections or ())
+                options = ort.SessionOptions()
+                options.intra_op_num_threads = 2
+                options.inter_op_num_threads = 1
+                self._sessions[name] = ort.InferenceSession(
+                    str(self._model_resolver(name)),
+                    sess_options=options,
+                    providers=["CPUExecutionProvider"],
+                )
+            return self._sessions[name]
 
-    def detect_poses(self, bgr: np.ndarray) -> tuple[Any, ...]:
-        """Run the packaged pose landmarker and return landmark groups."""
-        if self._pose_landmarker is None:
-            self._pose_landmarker = self._create_pose_landmarker()
-        result = self._pose_landmarker.detect(self._image_from_bgr(bgr))
-        return tuple(result.pose_landmarks or ())
-
-    def detect_objects(self, bgr: np.ndarray) -> tuple[Any, ...]:
-        """Run the packaged object detector and return raw Tasks detections."""
-        if self._object_detector is None:
-            self._object_detector = self._create_object_detector()
-        result = self._object_detector.detect(self._image_from_bgr(bgr))
-        return tuple(result.detections or ())
-
-    def _create_face_detector(self) -> Any:
-        mp = self._media_pipe()
+    def detect_faces(self, bgr: np.ndarray) -> tuple:
         try:
-            options = mp.tasks.vision.FaceDetectorOptions(
-                base_options=mp.tasks.BaseOptions(
-                    model_asset_path=str(self._model_resolver("face_detector")),
-                    delegate=mp.tasks.BaseOptions.Delegate.CPU,
-                ),
-                min_detection_confidence=0.5,
-            )
-            return mp.tasks.vision.FaceDetector.create_from_options(options)
-        except Exception as exc:
-            raise VisionCapabilityError(f"MediaPipe Tasks 人脸模型加载失败: {exc}") from exc
+            session = self._session("face_detector")
+            tensor, scale = prepare_yunet(bgr)
+            outputs = session.run(None, {session.get_inputs()[0].name: tensor})
+            named = dict(zip((item.name for item in session.get_outputs()), outputs))
+            return decode_yunet(named, bgr.shape[:2], scale)
+        except Exception as error:
+            raise VisionCapabilityError(f"ONNX 人脸检测失败: {error}") from error
 
-    def _create_pose_landmarker(self) -> Any:
-        mp = self._media_pipe()
+    def detect_objects(self, bgr: np.ndarray) -> tuple:
         try:
-            options = mp.tasks.vision.PoseLandmarkerOptions(
-                base_options=self._base_options("pose_landmarker")
-            )
-            return mp.tasks.vision.PoseLandmarker.create_from_options(options)
-        except Exception as exc:
-            raise VisionCapabilityError(f"MediaPipe Tasks 姿态模型加载失败: {exc}") from exc
-
-    def _create_object_detector(self) -> Any:
-        mp = self._media_pipe()
-        try:
-            options = mp.tasks.vision.ObjectDetectorOptions(
-                base_options=self._base_options("object_detector"),
-                score_threshold=0.5,
-            )
-            return mp.tasks.vision.ObjectDetector.create_from_options(options)
-        except Exception as exc:
-            raise VisionCapabilityError(f"MediaPipe Tasks 物体模型加载失败: {exc}") from exc
-
-    def _base_options(self, name: str) -> Any:
-        mp = self._media_pipe()
-        return mp.tasks.BaseOptions(
-            model_asset_path=str(self._model_resolver(name)),
-            delegate=mp.tasks.BaseOptions.Delegate.CPU,
-        )
-
-    def _image_from_bgr(self, bgr: np.ndarray) -> Any:
-        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-        mp = self._media_pipe()
-        return mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
-
-    def _media_pipe(self) -> Any:
-        if self._mp is not None:
-            return self._mp
-        try:
-            import mediapipe as mp
-        except ImportError as exc:
-            raise VisionCapabilityError("mediapipe 未安装，无法执行主体检测") from exc
-        self._mp = mp
-        return mp
+            session = self._session("object_detector")
+            tensor, scale = prepare_yolox(bgr)
+            outputs = session.run(None, {session.get_inputs()[0].name: tensor})
+            return decode_yolox(outputs[0], bgr.shape[:2], scale)
+        except Exception as error:
+            raise VisionCapabilityError(f"ONNX 物体检测失败: {error}") from error
 
     def close(self) -> None:
-        """Release loaded task instances when their implementation supports it."""
-        for task in (self._face_detector, self._pose_landmarker, self._object_detector):
-            if task is not None and hasattr(task, "close"):
-                task.close()
-        self._face_detector = None
-        self._pose_landmarker = None
-        self._object_detector = None
+        with self._lock:
+            self._sessions.clear()

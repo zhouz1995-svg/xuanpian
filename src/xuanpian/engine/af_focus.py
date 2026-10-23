@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import cv2
 import numpy as np
+from src.xuanpian.engine import image_ops
 
 from src.xuanpian.domain.technical_analysis import (
     FocusConclusion,
@@ -126,13 +126,12 @@ def _geometry_evidence(region: Rect, context: Rect) -> tuple[tuple[str, float], 
 
 
 def _mean_square(values: np.ndarray) -> float:
-    return float(cv2.norm(values, cv2.NORM_L2SQR) / values.size)
+    return image_ops.mean_square(values)
 
 
 def _texture(gray: np.ndarray, region: _PixelRect) -> float:
     roi = gray[region.y0 : region.y1, region.x0 : region.x1]
-    _mean, deviation = cv2.meanStdDev(roi)
-    return float(deviation[0, 0])
+    return float(np.std(roi))
 
 
 def _derivative_metrics(
@@ -140,17 +139,17 @@ def _derivative_metrics(
     regions: tuple[_PixelRect, _PixelRect],
 ) -> tuple[tuple[float, float], tuple[float, float]]:
     """Return (Laplacian variance, Tenengrad) without retaining float frames."""
-    laplacian = cv2.Laplacian(gray, cv2.CV_16S, ksize=1)
+    laplacian = image_ops.laplacian(gray)
     laplacian_metrics: list[float] = []
     for region in regions:
         roi = laplacian[region.y0 : region.y1, region.x0 : region.x1]
-        mean = float(cv2.mean(roi)[0])
+        mean = float(np.mean(roi))
         laplacian_metrics.append(max(0.0, _mean_square(roi) - mean * mean))
     del laplacian
 
     tenengrad = [0.0, 0.0]
     for dx, dy in ((1, 0), (0, 1)):
-        derivative = cv2.Sobel(gray, cv2.CV_16S, dx, dy, ksize=3)
+        derivative = image_ops.sobel(gray, dx, dy)
         for index, region in enumerate(regions):
             roi = derivative[region.y0 : region.y1, region.x0 : region.x1]
             tenengrad[index] += _mean_square(roi)

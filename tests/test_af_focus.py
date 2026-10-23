@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import cv2
+from PIL import Image, ImageFilter
 import numpy as np
 
 from src.xuanpian.domain.technical_analysis import (
@@ -66,7 +66,7 @@ def test_blurred_af_region_with_sharp_surroundings_requests_review() -> None:
 
 def test_textured_gaussian_blurred_af_with_sharp_surroundings_requests_review() -> None:
     gray = _checker(240, 240, cell=8)
-    blurred_af = cv2.GaussianBlur(_checker(60, 60, cell=8), (0, 0), 3.0)
+    blurred_af = np.array(Image.fromarray(_checker(60, 60, cell=8)).filter(ImageFilter.GaussianBlur(3.0)))
     gray[90:150, 90:150] = blurred_af
 
     result = analyze_af_focus(gray, AFHint(_CENTER_AF, "available"), None)

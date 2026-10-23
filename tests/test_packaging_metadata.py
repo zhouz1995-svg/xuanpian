@@ -50,14 +50,14 @@ def test_spec_collects_runtime_assets() -> None:
     assert '"src/xuanpian/resources/models"' in text
 
 
-def test_spec_collects_mediapipe_and_rawpy() -> None:
+def test_spec_collects_onnxruntime_and_rawpy() -> None:
     text = SPEC.read_text(encoding="utf-8")
-    assert "collect_submodules(\"mediapipe\")" in text
+    assert "collect_submodules(\"onnxruntime\")" in text
     assert '"rawpy"' in text
 
 
 @pytest.mark.skipif(sys.platform != "darwin", reason="macOS bundle-native dylib contract")
-def test_spec_passes_mediapipe_runtime_library_to_analysis(
+def test_spec_passes_onnxruntime_runtime_library_to_analysis(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     class AnalysisProbe:
@@ -84,8 +84,8 @@ def test_spec_passes_mediapipe_runtime_library_to_analysis(
     )
 
     assert any(
-        Path(source).name == "libmediapipe.dylib"
-        and destination == "mediapipe/tasks/c"
+        Path(source).name == "onnxruntime_pybind11_state.so"
+        and destination == "onnxruntime/capi"
         for source, destination in namespace["a"].binaries
     )
 
@@ -142,14 +142,12 @@ def test_model_manifest_contains_only_shared_subject_models() -> None:
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     assert set(manifest["models"]) == {
         "face_detector",
-        "pose_landmarker",
         "object_detector",
     }
     filenames = {entry["filename"] for entry in manifest["models"].values()}
     assert filenames == {
-        "face_detector.tflite",
-        "pose_landmarker.task",
-        "object_detector.tflite",
+        "yunet.onnx",
+        "yolox_nano.onnx",
     }
     assert not (MANIFEST.parent / "face_landmarker.task").exists()
 
@@ -698,9 +696,8 @@ def test_clean_wheel_excludes_removed_analysis_payload_and_contains_only_shared_
         if member.startswith("src/xuanpian/resources/models/")
     } == {
         "src/xuanpian/resources/models/manifest.json",
-        "src/xuanpian/resources/models/face_detector.tflite",
-        "src/xuanpian/resources/models/pose_landmarker.task",
-        "src/xuanpian/resources/models/object_detector.tflite",
+        "src/xuanpian/resources/models/yunet.onnx",
+        "src/xuanpian/resources/models/yolox_nano.onnx",
     }
 
 

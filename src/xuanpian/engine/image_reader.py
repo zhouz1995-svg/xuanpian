@@ -10,9 +10,9 @@ import logging
 from io import BytesIO
 from pathlib import Path
 
-import cv2
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
+from src.xuanpian.engine.image_ops import bgr_to_gray
 
 logger = logging.getLogger(__name__)
 
@@ -37,10 +37,7 @@ def read_image_gray(path: str) -> np.ndarray:
     if _is_raw(path):
         return _read_raw_gray(path)
 
-    img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-    if img is None:
-        raise ValueError(f"Failed to read image: {path}")
-    return img
+    return bgr_to_gray(read_image_color(path))
 
 
 def read_image_color(path: str) -> np.ndarray:
@@ -48,10 +45,18 @@ def read_image_color(path: str) -> np.ndarray:
     if _is_raw(path):
         return _read_raw_bgr(path)
 
-    img = cv2.imread(path, cv2.IMREAD_COLOR)
-    if img is None:
-        raise ValueError(f"Failed to read image: {path}")
-    return img
+    try:
+        if Path(path).suffix.lower() in {'.heic', '.heif', '.avif'}:
+            try:
+                from pillow_heif import register_heif_opener
+                register_heif_opener()
+            except ImportError:
+                pass
+        with Image.open(path) as image:
+            rgb = np.array(ImageOps.exif_transpose(image).convert('RGB'))
+        return np.ascontiguousarray(rgb[:, :, ::-1])
+    except (OSError, ValueError) as error:
+        raise ValueError(f"Failed to read image: {path}") from error
 
 
 def _try_extract_thumb(path: str) -> np.ndarray | None:
@@ -79,13 +84,13 @@ def _read_raw_gray(path: str) -> np.ndarray:
         with rawpy.imread(path) as raw:
             rgb = raw.postprocess(half_size=True, use_camera_wb=True,
                                   no_auto_bright=True)
-        return cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
+        return bgr_to_gray(rgb[:, :, ::-1])
     except Exception:
         logger.debug("RAW decode failed for %s, trying embedded preview", path)
 
     thumb = _try_extract_thumb(path)
     if thumb is not None:
-        return cv2.cvtColor(thumb, cv2.COLOR_RGB2GRAY)
+        return bgr_to_gray(thumb[:, :, ::-1])
 
     raise ValueError(f"Failed to read RAW file (no embedded preview): {path}")
 
@@ -97,12 +102,12 @@ def _read_raw_bgr(path: str) -> np.ndarray:
         with rawpy.imread(path) as raw:
             rgb = raw.postprocess(half_size=True, use_camera_wb=True,
                                   no_auto_bright=True)
-        return cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+        return np.ascontiguousarray(rgb[:, :, ::-1])
     except Exception:
         logger.debug("RAW decode failed for %s, trying embedded preview", path)
 
     thumb = _try_extract_thumb(path)
     if thumb is not None:
-        return cv2.cvtColor(thumb, cv2.COLOR_RGB2BGR)
+        return np.ascontiguousarray(thumb[:, :, ::-1])
 
     raise ValueError(f"Failed to read RAW file (no embedded preview): {path}")

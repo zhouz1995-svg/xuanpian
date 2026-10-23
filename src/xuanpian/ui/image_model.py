@@ -52,7 +52,7 @@ class ImageFileModel:
     technical_status: AnalysisStatus = AnalysisStatus.PENDING
     analysis_failures: dict[str, AnalysisFailure] = field(default_factory=dict)
 
-    # Versioned technical analysis conclusions (technical-v7).
+    # Versioned technical analysis conclusions (technical-v8).
     focus_conclusion: str = ""
     exposure_conclusion: str = ""
     face_count: int = 0

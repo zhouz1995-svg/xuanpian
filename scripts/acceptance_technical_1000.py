@@ -10,13 +10,9 @@ analysis pipeline against a deterministic synthetic folder, then reports:
 - ``portrait_assessment`` (assessed / unassessed / assessed coverage)
 - ``source_mutations`` (changed or added source files, gate: == 0)
 
-MediaPipe Tasks cannot initialize in a headless CI shell (the Drishti/Metal
-accelerator aborts before Python can raise), so the script probes the real
-backend in a subprocess. When it is unavailable the analysis runs through the
-product's designed conservative fallback — subject capability unavailable,
-focus/exposure still evaluated — with a thread-based coordinator and records
-``subject_backend: "fallback"``. Run with ``--force-mediapipe`` on a desktop
-session to exercise the real models with the default process pool.
+The offline ONNX CPU backend runs in headless environments. The script probes
+it in a subprocess and records a conservative fallback if capability loading
+fails. Pass --force-onnx to require real model execution.
 """
 
 from __future__ import annotations
@@ -66,7 +62,7 @@ FALLBACK_ANALYSIS_DELAY_SECONDS = 0.03
 
 
 class UnavailableSubjectBackend:
-    """Deterministic stand-in for a machine without MediaPipe capability.
+    """Deterministic stand-in for a machine without ONNX capability.
 
     Mirrors the real backend interface but always reports the capability as
     unavailable, exercising the product's conservative subject fallback.
@@ -86,11 +82,11 @@ class UnavailableSubjectBackend:
 
 
 class _PacedTechnicalAnalyzer:
-    """Adds a nominal per-image delay to emulate real MediaPipe pacing.
+    """Adds a nominal per-image delay to emulate real ONNX pacing.
 
     The synthetic images decode in a fraction of a millisecond, so without a
     pacing delay all 1,000 results would land in one event-loop drain. Real
-    MediaPipe runs take tens of milliseconds per photo; the nominal delay makes
+    ONNX runs take tens of milliseconds per photo; the nominal delay makes
     the acceptance exercise realistic background scheduling and heartbeat
     behavior while keeping the wall-clock gate well inside 15 minutes.
     """
@@ -120,12 +116,12 @@ def _fallback_technical_factory() -> TechnicalAnalyzer:
     )
 
 
-def _probe_mediapipe() -> bool:
-    """Return True only when the real MediaPipe backend can run a detection."""
+def _probe_onnx() -> bool:
+    """Return True only when the real ONNX backend can run a detection."""
     probe = (
         "import numpy as np;"
-        "from src.xuanpian.engine.vision_backend import MediaPipeSubjectBackend;"
-        "b = MediaPipeSubjectBackend();"
+        "from src.xuanpian.engine.vision_backend import OnnxSubjectBackend;"
+        "b = OnnxSubjectBackend();"
         "r = b.detect_faces(np.full((96, 64, 3), 128, dtype=np.uint8));"
         "b.close();"
         "print('OK', len(r))"
@@ -230,15 +226,15 @@ def _wait_until(
 def run_acceptance(
     *,
     photo_count: int = PHOTO_COUNT,
-    force_mediapipe: bool = False,
+    force_onnx: bool = False,
 ) -> dict[str, object]:
-    mediapipe_ok = _probe_mediapipe() if not force_mediapipe else True
-    if not mediapipe_ok and force_mediapipe:
+    onnx_ok = _probe_onnx() if not force_onnx else True
+    if not onnx_ok and force_onnx:
         raise RuntimeError(
-            "--force-mediapipe requested but the MediaPipe backend cannot run "
+            "--force-onnx requested but the ONNX backend cannot run "
             "in this environment"
         )
-    subject_backend = "mediapipe" if mediapipe_ok else "fallback"
+    subject_backend = "onnx" if onnx_ok else "fallback"
 
     with tempfile.TemporaryDirectory(prefix="xuanpian-technical-") as tmp:
         root = Path(tmp) / "photos"
@@ -441,9 +437,9 @@ def validate_report(report: Mapping[str, object]) -> list[str]:
 
 
 def main() -> int:
-    force_mediapipe = "--force-mediapipe" in sys.argv[1:]
+    force_onnx = "--force-onnx" in sys.argv[1:]
     try:
-        report = run_acceptance(force_mediapipe=force_mediapipe)
+        report = run_acceptance(force_onnx=force_onnx)
         errors = validate_report(report)
     except Exception as error:
         print(

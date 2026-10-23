@@ -102,6 +102,25 @@ def test_face_is_primary_and_counted() -> None:
     assert result.primary.kind == "face"
 
 
+def test_face_inside_person_does_not_compete_with_its_own_body() -> None:
+    face = _bounded_candidate('face', .7, Rect(.3, .15, .2, .2))
+    person = _bounded_candidate('person', .95, Rect(.15, .1, .65, .85))
+    backend = SimpleNamespace(detect_faces=lambda image: (face,), detect_objects=lambda image: (person,))
+    result = SubjectLocator(backend).locate(_context())
+    assert result.primary == face
+    assert result.failed_sources == frozenset()
+
+
+def test_separate_faces_with_similar_confidence_require_review() -> None:
+    faces = (_bounded_candidate('face', .91, Rect(.1, .1, .2, .2)),
+             _bounded_candidate('face', .9, Rect(.65, .1, .2, .2)))
+    backend = SimpleNamespace(detect_faces=lambda image: faces, detect_objects=lambda image: ())
+    result = SubjectLocator(backend).locate(_context())
+    assert result.primary is None
+    assert result.face_count == 2
+    assert result.failed_sources == frozenset()
+
+
 def test_conflicting_candidates_have_no_primary() -> None:
     backend = SimpleNamespace(
         detect_faces=lambda image: (),
@@ -349,26 +368,3 @@ def test_tasks_face_detection_is_normalized_to_a_subject_candidate() -> None:
     assert candidate.bounds.height == pytest.approx(0.4)
     assert candidate.confidence == 0.91
     assert candidate.salience == pytest.approx(0.12)
-
-
-def test_pose_landmarks_outside_frame_are_clamped_and_invalid_points_ignored() -> None:
-    landmarks = (
-        SimpleNamespace(x=-.02, y=.2, visibility=.9),
-        SimpleNamespace(x=.8, y=1.02, visibility=.9),
-        SimpleNamespace(x=.2, y=.4, visibility=.9),
-        SimpleNamespace(x=.6, y=.7, visibility=.9),
-        SimpleNamespace(x=float("nan"), y=.5, visibility=.9),
-    )
-    backend = SimpleNamespace(
-        detect_faces=lambda image: (),
-        detect_poses=lambda image: (landmarks,),
-        detect_objects=lambda image: (),
-    )
-
-    result = SubjectLocator(backend).locate(_context())
-
-    assert result.primary is not None
-    assert result.primary.kind == "person"
-    assert len(result.primary.keypoints) == 4
-    assert all(0.0 <= point.x <= 1.0 for point in result.primary.keypoints)
-    assert all(0.0 <= point.y <= 1.0 for point in result.primary.keypoints)

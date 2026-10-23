@@ -9,7 +9,7 @@ from src.xuanpian.engine.analysis_context import AnalysisContext
 from src.xuanpian.engine.focus_analyzer import FocusAnalyzer
 from src.xuanpian.engine.subject_locator import SubjectLocator
 from src.xuanpian.engine.technical_analyzer import TechnicalAnalyzer
-from src.xuanpian.engine.vision_backend import MediaPipeSubjectBackend
+from src.xuanpian.engine.vision_backend import OnnxSubjectBackend
 
 
 class Analyzer(Protocol):
@@ -40,7 +40,7 @@ class PhotoAnalysisResponse:
 _ANALYZER_FACTORIES: dict[str, Callable[[], object]] = {
     "technical": lambda: TechnicalAnalyzer(
         AnalysisContext.from_path,
-        SubjectLocator(MediaPipeSubjectBackend()),
+        SubjectLocator(OnnxSubjectBackend()),
         FocusAnalyzer(),
         ExposureAnalyzer(),
     ),

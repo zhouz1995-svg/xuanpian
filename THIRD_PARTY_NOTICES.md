@@ -4,6 +4,23 @@ This is an evidence inventory, **not** a statement that the application or DMG m
 
 ## Evidence already located
 
+### ONNX migration (2026-10-23)
+
+The current source engine replaces MediaPipe and OpenCV with ONNX Runtime CPU,
+YuNet and YOLOX-Nano. The three former MediaPipe model blobs are removed from
+the current tree; Git history retains them. Current model identity and upstream
+license evidence are recorded in [model-provenance.md](docs/model-provenance.md).
+YuNet's model directory explicitly licenses all files under MIT. The official
+YOLOX-Nano release asset is paired with the project's Apache-2.0 license; no
+separate asset-specific model card was found, so that distinction remains
+explicit in the inventory. ONNX Runtime v1.19.2 MIT and third-party notice texts
+are preserved under `packaging/licenses/onnxruntime/`.
+
+The r5 native observations and wheel notices below are historical evidence.
+They do not describe the current 28-pin ONNX build environment or clear a future
+installer. The existing HEIF/Qt/source obligations and metadata-runtime platform
+floor still require a new bundle audit.
+
 ### Packaged notice snapshot (2026-10-11)
 
 `packaging/notice-manifest.json` records checksums for the project license, this

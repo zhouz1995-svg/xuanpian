@@ -9,8 +9,7 @@ Usage:
     python scripts/calibrate_technical_samples.py /path/to/photos [--report out.json]
 
 The subject backend defaults to the conservative fallback so the run works in
-headless environments. Pass ``--mediapipe`` on a desktop session to exercise
-the real MediaPipe subject models.
+headless environments. Pass ``--onnx`` to exercise the real offline CPU models.
 """
 
 from __future__ import annotations
@@ -31,7 +30,7 @@ from src.xuanpian.engine.focus_analyzer import FocusAnalyzer
 from src.xuanpian.engine.subject_locator import SubjectLocator
 from src.xuanpian.engine.technical_analyzer import TechnicalAnalyzer
 from src.xuanpian.engine.vision_backend import (
-    MediaPipeSubjectBackend,
+    OnnxSubjectBackend,
     VisionCapabilityError,
 )
 from src.xuanpian.calibration_review import (
@@ -71,10 +70,10 @@ def _subject_review_limit(value: str) -> int:
     return limit
 
 
-def _analyzer(use_mediapipe: bool) -> TechnicalAnalyzer:
+def _analyzer(use_onnx: bool) -> TechnicalAnalyzer:
     backend = (
-        MediaPipeSubjectBackend()
-        if use_mediapipe
+        OnnxSubjectBackend()
+        if use_onnx
         else _UnavailableSubjectBackend()
     )
     return TechnicalAnalyzer(
@@ -114,7 +113,7 @@ def _mutations(before: dict[str, object], after: dict[str, object]) -> list[str]
 def run_calibration(
     folder: Path,
     *,
-    use_mediapipe: bool = False,
+    use_onnx: bool = False,
     max_workers: int = 4,
 ) -> dict[str, object]:
     if not folder.is_dir():
@@ -129,7 +128,7 @@ def run_calibration(
                 latest.pop(photo_id, None)
             latest[candidate.photo_id] = candidate
     candidates = list(latest.values())
-    analyzer = _analyzer(use_mediapipe)
+    analyzer = _analyzer(use_onnx)
 
     rows: list[dict[str, object]] = []
     started = time.perf_counter()
@@ -193,7 +192,7 @@ def run_calibration(
         "photos": len(candidates),
         "analyzed": len(rows),
         "elapsed_seconds": elapsed_seconds,
-        "subject_backend": "mediapipe" if use_mediapipe else "fallback",
+        "subject_backend": "onnx" if use_onnx else "fallback",
         "conclusion_counts": {
             "focus": focus_counts,
             "exposure": exposure_counts,
@@ -218,7 +217,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("folder", type=Path, nargs="?")
     parser.add_argument("--report", type=Path, default=Path("/tmp/technical-calibration.json"))
-    parser.add_argument("--mediapipe", action="store_true")
+    parser.add_argument("--onnx", action="store_true")
     parser.add_argument(
         "--review-template",
         type=Path,
@@ -257,7 +256,7 @@ def main() -> int:
     if args.folder is None:
         parser.error("folder is required")
     try:
-        report = run_calibration(args.folder, use_mediapipe=args.mediapipe)
+        report = run_calibration(args.folder, use_onnx=args.onnx)
     except Exception as error:
         print(f"Calibration failed: {type(error).__name__}: {error}", file=sys.stderr)
         return 1

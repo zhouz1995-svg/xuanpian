@@ -5,13 +5,14 @@ from enum import Enum
 from math import isfinite
 
 
-TECHNICAL_ALGORITHM_VERSION = "technical-v7"
+TECHNICAL_ALGORITHM_VERSION = "technical-v8"
 _READABLE_TECHNICAL_ALGORITHM_VERSIONS = frozenset(
     {
         "technical-v3",
         "technical-v4",
         "technical-v5",
         "technical-v6",
+        "technical-v7",
         TECHNICAL_ALGORITHM_VERSION,
     }
 )

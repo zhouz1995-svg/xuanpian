@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import cv2
 import numpy as np
+from src.xuanpian.engine.image_ops import bgr_to_gray, resize_bgr
 
 from src.xuanpian.domain.technical_analysis import Rect
 from src.xuanpian.engine.af_metadata import AFHint, read_af_hint
@@ -32,13 +32,13 @@ class AnalysisContext:
         longest = max(width, height)
         scale = min(1.0, locate_long_edge / longest)
         locate_size = (max(1, round(width * scale)), max(1, round(height * scale)))
-        locate_bgr = bgr if scale == 1.0 else cv2.resize(bgr, locate_size, interpolation=cv2.INTER_AREA)
+        locate_bgr = bgr if scale == 1.0 else resize_bgr(bgr, locate_size)
         return cls(
             path=path,
             bgr=bgr,
-            gray=cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY),
+            gray=bgr_to_gray(bgr),
             locate_bgr=locate_bgr,
-            locate_gray=cv2.cvtColor(locate_bgr, cv2.COLOR_BGR2GRAY),
+            locate_gray=bgr_to_gray(locate_bgr),
             scale_x=locate_bgr.shape[1] / width,
             scale_y=locate_bgr.shape[0] / height,
             af_hint=read_af_hint(path, (width, height)),

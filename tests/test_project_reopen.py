@@ -682,7 +682,7 @@ def test_reopen_ignores_v5_and_v6_conclusions_preserves_marks_and_queues_stale_c
         "face_count": 0,
         "portrait_assessed": False,
     }
-    current_payload = {**v6_payload, "algorithm_version": "technical-v7"}
+    current_payload = {**v6_payload, "algorithm_version": "technical-v8"}
 
     with ProjectStore.open(database, root_path=root) as store:
         store.upsert_photos(

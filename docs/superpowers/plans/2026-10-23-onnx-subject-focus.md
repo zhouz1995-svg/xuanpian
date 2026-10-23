@@ -24,7 +24,7 @@
 
 **Interfaces:** `prepare_yolox(bgr, size=416) -> (tensor, scale)`; `decode_yolox(outputs, shape, scale) -> tuple[SubjectCandidate, ...]`; corresponding YuNet helpers; `OnnxSubjectBackend.detect_faces/detect_objects(bgr)` and `close()`.
 
-- [ ] Add failing tests for letterbox channel order, normalized boxes/landmarks, NMS, malformed output and offline lazy session creation. Hand-check a person row `(cx=208, cy=104, w=104, h=104)` on a 416x208 image maps to `Rect(.375,.25,.25,.5)`.
+- [x] Add failing tests for letterbox channel order, normalized boxes/landmarks, NMS, malformed output and offline lazy session creation. Hand-check a person row `(cx=208, cy=104, w=104, h=104)` on a 416x208 image maps to `Rect(.375,.25,.25,.5)`.
 - [ ] Run `.venv/bin/python -m pytest -q tests/test_onnx_detection.py tests/test_vision_backend.py` and observe missing implementation failures.
 - [ ] Implement fixed preprocessing and output decoding with finite checks, clipped rectangles and class-aware NMS. Verify actual upstream model tensor signatures before implementing decoding.
 - [ ] Vendor official release models, record source URL/version/digest/license and run real CPU inference on a generated image without network.

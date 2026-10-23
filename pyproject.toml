@@ -10,18 +10,18 @@ license = "GPL-3.0-only"
 license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md", "packaging/licenses/**/*.txt", "packaging/licenses/*.txt", "packaging/notice-manifest.json", "packaging/third-party-components.json"]
 requires-python = ">=3.11"
 dependencies = [
-    "opencv-contrib-python",
-    "numpy",
-    "mediapipe",
-    "rawpy",
-    "Pillow",
-    "PyQt6",
-    "scikit-image",
+    "numpy==2.2.6",
+    "onnxruntime==1.19.2",
+    "rawpy==0.24.0",
+    "Pillow==11.3.0",
+    "PyQt6==6.7.1",
+    "PyQt6-Qt6==6.7.3",
 ]
 
 [project.optional-dependencies]
 formats = ["pillow-heif"]
 test = ["pytest", "pytest-qt"]
+build = ["pip", "wheel", "setuptools>=77", "pyinstaller==6.21.0"]
 
 [project.scripts]
 xuanpian = "src.main:main"

@@ -73,7 +73,7 @@ def test_manifest_covers_every_lock_pin_and_model() -> None:
     lock = (ROOT / "packaging/requirements-macos-arm64.lock").read_text(encoding="utf-8")
     pins = set(re.findall(r"^([A-Za-z0-9_.-]+)==", lock, re.MULTILINE))
     assert {pin.lower().replace("_", "-") for pin in pins} <= names
-    assert {"face-detector", "pose-landmarker", "object-detector"} <= names
+    assert {"face-detector", "object-detector", "onnxruntime"} <= names
     for component in components:
         assert {
             "name", "version", "source_url", "license_expression",
@@ -107,18 +107,16 @@ def test_bundled_models_only_clear_when_exact_official_evidence_is_recorded() ->
         if item["distribution_scope"] == "bundled_model"
     }
 
-    assert set(models) == {"face-detector", "pose-landmarker", "object-detector"}
-    assert {models[name]["status"] for name in ("face-detector", "pose-landmarker")} == {"reviewed"}
-    assert {models[name]["license_expression"] for name in ("face-detector", "pose-landmarker")} == {
-        "Apache-2.0"
-    }
-    assert {models[name]["license_file"] for name in ("face-detector", "pose-landmarker")} == {
-        "packaging/licenses/wheels/8707eef0533987efc5b155d64761eeb6e20793f50b9bd1a68dad1cf4719d0ed8.txt"
-    }
-    assert "1682480001338381" in models["face-detector"]["verification_source"]
-    assert "1682624736756847" in models["pose-landmarker"]["verification_source"]
-    assert models["object-detector"]["status"] == "unresolved"
-    assert models["object-detector"]["license_expression"] is None
+    assert set(models) == {"face-detector", "object-detector"}
+    assets = json.loads((ROOT / "src/xuanpian/resources/models/manifest.json").read_text())["models"]
+    for name, asset in assets.items():
+        component = models[name.replace("_", "-")]
+        assert component["source_url"] == asset["url"]
+        assert component["sha256"] == asset["sha256"]
+        assert component["license_expression"] == asset["license"]
+        assert (ROOT / component["license_file"]).is_file()
+    assert models["face-detector"]["status"] == "reviewed"
+    assert models["object-detector"]["status"] == "partial"
 
 
 def test_spdx_metadata_requires_a_compatible_builder() -> None:

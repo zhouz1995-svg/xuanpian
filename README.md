@@ -10,6 +10,8 @@ XuanPian（选片）是一款注重隐私的桌面照片筛选助手。它可以
 
 0.1.0 是面向 Apple 芯片 Mac 的测试版本。分析结果仅用于辅助人工复查，不会自动判定一张照片是否可用。
 
+开发分支的 `technical-v8` 已采用 ONNX Runtime CPU、YuNet 和 YOLOX-Nano，模型随源码内置，完全离线运行。跨平台目标为 macOS 12+（Intel / Apple Silicon）及 Windows 10 22H2 / Windows 11 x64；这些系统的安装包尚待单独构建和验证，当前 Release 的支持范围仍以下方安装说明为准。迁移说明见 [ONNX 分析记录](docs/onnx-analysis.md)。
+
 ### 主要功能
 
 - 在本地导入和预览 JPEG 及受支持的 RAW 格式。
@@ -65,6 +67,8 @@ XuanPian 0.1.0 是早期公开测试版，仅供 Apple 芯片 Mac 评估使用�
 XuanPian is a privacy-friendly desktop photo-review assistant. It helps photographers import a folder, compare likely bursts, review focus and exposure cues, mark keepers, and export a selection without uploading photos to a cloud service.
 
 Version 0.1.0 is a beta for Apple Silicon Macs. Analysis results are review aids, not an automatic decision about whether a photo is usable.
+
+The development branch uses ONNX Runtime CPU with bundled YuNet and YOLOX-Nano models (`technical-v8`). The target platforms are macOS 12+ (Intel / Apple Silicon) and Windows 10 22H2 / Windows 11 x64. Native installers for these targets still require separate builds and validation; the existing Release keeps its documented support limits. See [the migration notes](docs/onnx-analysis.md).
 
 ### Highlights
 
