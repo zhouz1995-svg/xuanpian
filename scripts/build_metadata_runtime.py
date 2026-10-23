@@ -148,7 +148,8 @@ def _clean_build_environment(sdkroot: str, deployment_target: str) -> dict[str, 
     environment.pop("DYLD_FALLBACK_LIBRARY_PATH", None)
     environment.pop("LIBRARY_PATH", None)
     environment.pop("CPATH", None)
-    for key in ("CFLAGS", "CPPFLAGS", "CXXFLAGS", "LDFLAGS", "CC", "CXX", "LD"):
+    for key in ("CFLAGS", "CPPFLAGS", "CXXFLAGS", "LDFLAGS", "CC", "CXX", "LD",
+                "MAKEFLAGS", "MFLAGS"):
         environment.pop(key, None)
     environment["SDKROOT"] = sdkroot
     # Perl's Darwin hints propagate this into compile and link flags, including
