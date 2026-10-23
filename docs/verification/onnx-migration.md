@@ -66,6 +66,32 @@ actionable findings.
 
 ## Remaining release work
 
+### Packaged Apple Silicon candidate
+
+A local ad-hoc-signed candidate was built from source commit `3f7c9e7`.
+The app passed native dependency/resource/signature inspection, offscreen
+startup, and actual technical-v8 analysis in a spawned process whose imports
+were restricted to the bundled payload. Two real photos returned successful
+analysis and assessed portrait capability, including one detected face.
+
+The generated DMG passed `hdiutil verify`; a fresh copy from its read-only
+mounted volume passed the same bundle inspection. Its SHA-256 is
+`74e044066d2f38299e736c8206d1d81280eee59304afc161f4f7e5cb7f98f807`.
+The local filename is `选片APP-0.1.0-onnx-arm64-local-ad-hoc.dmg`.
+This candidate retains the macOS 26 floor imposed by its current Perl runtime.
+It has not been notarized or uploaded as a new public Release.
+
+App disk usage decreased from approximately 463 MiB to 236 MiB compared with
+the previous preview-marking candidate. Model and native-video dependency
+removal account for much of the reduction.
+
+### Cross-platform engine checks
+
+The workflow retains the complete macOS arm64 suite and adds actual offline
+model/image/focus/serialization tests on Windows Server 2022 x64 and macOS 15
+Intel runners. These exercise the shared engine; they do not substitute for
+Windows 10/11 installer or macOS 12 clean-machine acceptance.
+
 This verifies the source migration on the current Apple Silicon host. It does
 not certify macOS 12 Intel/arm64 or Windows 10/11 installers. The existing
 metadata-runtime Perl binary still requires macOS 26 and needs replacement for
