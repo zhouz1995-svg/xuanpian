@@ -6,9 +6,9 @@ import numpy as np
 
 from src.xuanpian.domain.technical_analysis import (
     FocusConclusion,
+    Keypoint,
     Rect,
     SubjectCandidate,
-    Keypoint,
 )
 from src.xuanpian.engine.af_metadata import AFHint
 from src.xuanpian.engine.analysis_context import AnalysisContext
@@ -265,7 +265,9 @@ def test_tiny_distant_people_do_not_prevent_scene_analysis():
 
 def test_landmarks_outside_face_fall_back_to_central_face_region():
     gray = np.full((200, 200), 128, np.uint8)
-    points = tuple(Keypoint(x, y, 0.95) for x, y in ((0.8,0.8),(0.9,0.85),(0.85,0.9)))
+    points = tuple(
+        Keypoint(x, y, 0.95) for x, y in ((0.8, 0.8), (0.9, 0.85), (0.85, 0.9))
+    )
     face = SubjectCandidate("face", Rect(0.25, 0.25, 0.2, 0.2), 0.95, 0.04, points)
     result = FocusAnalyzer().analyze(
         _context(gray), SubjectLocationResult((face,), 0, 1)

@@ -1,6 +1,7 @@
 """Small deterministic image operations without a native video dependency."""
 
 from __future__ import annotations
+
 import numpy as np
 from PIL import Image
 

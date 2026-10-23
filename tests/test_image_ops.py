@@ -1,5 +1,7 @@
 import numpy as np
+import pytest
 from PIL import Image
+
 from src.xuanpian.engine.image_ops import bgr_to_gray, laplacian, sobel
 from src.xuanpian.engine.image_reader import read_image_color
 
@@ -33,3 +35,13 @@ def test_reader_orients_and_preserves_bgr_on_unicode_path(tmp_path):
     result = read_image_color(str(path))
     assert result.shape == (4, 2, 3)
     assert result[0, 0].tolist() == [10, 30, 250]
+
+
+@pytest.mark.parametrize("suffix", [".tiff", ".png"])
+def test_16bit_grayscale_preserves_full_range_for_analysis(tmp_path, suffix):
+    path = tmp_path / ("levels" + suffix)
+    values = np.array([[0, 16384, 32768, 49152, 65535]], np.uint16)
+    Image.fromarray(values).save(path)
+    result = read_image_color(str(path))
+    assert result[0, :, 0].tolist() == [0, 64, 128, 192, 255]
+    assert result[0, :, 1].tolist() == [0, 64, 128, 192, 255]

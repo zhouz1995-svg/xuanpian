@@ -165,6 +165,12 @@ def decode_yolox(
     if output.shape != (1, 3549, 85):
         raise ValueError("Invalid YOLOX output shape")
     rows = output[0]
+    if (
+        not np.isfinite(rows).all()
+        or np.any(rows[:, 4:] < -1e-6)
+        or np.any(rows[:, 4:] > 1 + 1e-6)
+    ):
+        raise ValueError("Invalid YOLOX numeric output")
     grids, strides = [], []
     for stride in (8, 16, 32):
         y, x = np.mgrid[: 416 // stride, : 416 // stride]
@@ -172,11 +178,14 @@ def decode_yolox(
         strides.extend([stride] * x.size)
     grid = np.concatenate(grids)
     stride_array = np.asarray(strides)[:, None]
-    scores = rows[:, 4:5] * rows[:, 5:]
+    probabilities = np.clip(rows[:, 4:], 0, 1)
+    scores = probabilities[:, :1] * probabilities[:, 1:]
     classes = scores.argmax(axis=1)
     confidence = scores[np.arange(len(rows)), classes]
     valid = np.isfinite(rows).all(axis=1) & (confidence >= 0.5) & (confidence <= 1)
-    valid &= (rows[:, 4:] >= 0).all(axis=1) & (rows[:, 4:] <= 1).all(axis=1)
+    # ORT CPU sigmoid fusion may produce -2**-24 for a value near zero.
+    # Accept roundoff, while rejecting genuinely malformed probabilities.
+    valid &= (rows[:, 4:] >= -1e-6).all(axis=1) & (rows[:, 4:] <= 1 + 1e-6).all(axis=1)
     candidates = []
     for index in np.flatnonzero(valid):
         row = rows[index]
@@ -207,6 +216,12 @@ def decode_yunet(
             if array is None or array.shape != (1, side * side, dims):
                 raise ValueError("Invalid YuNet output shape")
             arrays[name] = array[0]
+            if not np.isfinite(array).all():
+                raise ValueError("Invalid YuNet numeric output")
+            if name in {"cls", "obj"} and (
+                np.any(array < -1e-6) or np.any(array > 1 + 1e-6)
+            ):
+                raise ValueError("Invalid YuNet probability output")
         confidence = np.sqrt(
             np.clip(arrays["cls"][:, 0], 0, 1) * np.clip(arrays["obj"][:, 0], 0, 1)
         )

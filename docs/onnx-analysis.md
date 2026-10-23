@@ -33,6 +33,8 @@ QT_QPA_PLATFORM=offscreen .venv/bin/python -m pytest -q
 
 清晰度阈值没有以“减少复查数量”为理由整体放宽。没有人工真值标签的样本对比只说明行为发生了变化，不能证明准确率提高。
 
+本轮验证、真实照片对比和未完成的安装包工作记录在 [迁移验证记录](verification/onnx-migration.md)。
+
 ## English
 
 The development engine uses CPU-only ONNX Runtime with two bundled, hash-verified models. YuNet supplies face boxes and five landmarks; YOLOX-Nano supplies COCO object boxes. Reliable autofocus metadata retains priority. Otherwise, focus is measured inside the selected subject; ambiguous scenes and capability failures request review.

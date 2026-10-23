@@ -2,10 +2,10 @@ import numpy as np
 import pytest
 
 from src.xuanpian.engine.onnx_detection import (
-    prepare_yolox,
     decode_yolox,
-    prepare_yunet,
     decode_yunet,
+    prepare_yolox,
+    prepare_yunet,
 )
 
 
@@ -80,13 +80,24 @@ def test_yunet_malformed_output_is_a_capability_error():
 def test_nonfinite_yolox_rows_cannot_become_subjects():
     rows = np.zeros((1, 3549, 85), np.float32)
     rows[0, 0] = np.nan
-    assert decode_yolox(rows, (208, 416), 1) == ()
+    with pytest.raises(ValueError, match="YOLOX"):
+        decode_yolox(rows, (208, 416), 1)
 
 
 def test_negative_model_scores_cannot_multiply_into_a_valid_detection():
     rows = np.zeros((1, 3549, 85), np.float32)
     rows[0, 0, :6] = [10, 10, 2, 2, -1, -1]
-    assert decode_yolox(rows, (208, 416), 1) == ()
+    with pytest.raises(ValueError, match="YOLOX"):
+        decode_yolox(rows, (208, 416), 1)
+
+
+def test_float_sigmoid_roundoff_in_unused_class_does_not_drop_real_person():
+    rows = np.zeros((1, 3549, 85), np.float32)
+    rows[0, 0, :6] = [26, 13, np.log(13), np.log(13), 0.9, 0.9]
+    rows[0, 0, 6] = -5.960464477539063e-8
+    subjects = decode_yolox(rows, (208, 416), 1)
+    assert len(subjects) == 1
+    assert subjects[0].kind == "person"
 
 
 def test_yunet_nonfinite_class_score_is_not_clipped_into_a_face():
@@ -98,4 +109,5 @@ def test_yunet_nonfinite_class_score_is_not_clipped_into_a_face():
     outputs["cls_8"][0, 0, 0] = np.inf
     outputs["obj_8"][0, 0, 0] = 1
     outputs["bbox_8"][0, 0] = [20, 20, 2, 2]
-    assert decode_yunet(outputs, (320, 320), 2) == ()
+    with pytest.raises(ValueError, match="YuNet"):
+        decode_yunet(outputs, (320, 320), 2)

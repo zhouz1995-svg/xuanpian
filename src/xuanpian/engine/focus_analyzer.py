@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import numpy as np
-from src.xuanpian.engine import image_ops
 
 from src.xuanpian.domain.technical_analysis import (
     FocusConclusion,
@@ -11,8 +10,9 @@ from src.xuanpian.domain.technical_analysis import (
     Rect,
     SubjectCandidate,
 )
-from src.xuanpian.engine.analysis_context import AnalysisContext
+from src.xuanpian.engine import image_ops
 from src.xuanpian.engine.af_focus import analyze_af_focus
+from src.xuanpian.engine.analysis_context import AnalysisContext
 from src.xuanpian.engine.subject_locator import SubjectLocationResult, SubjectLocator
 
 

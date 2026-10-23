@@ -33,6 +33,7 @@
     "docs/installation.md",
     "docs/model-provenance.md",
     "docs/onnx-analysis.md",
+    "docs/verification/onnx-migration.md",
     "docs/verification/public-release.md",
     "packaging/licenses/PyQt6_sip-BSD-2-Clause.txt",
     "packaging/licenses/Qt-LGPL-3.0.txt",

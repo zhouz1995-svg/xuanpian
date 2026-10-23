@@ -21,8 +21,18 @@ try:
     import rawpy  # noqa: F401
 
     RAW_EXTENSIONS = {
-        ".cr2", ".cr3", ".nef", ".nrw", ".arw", ".dng",
-        ".raf", ".orf", ".rw2", ".pef", ".srw", ".crw",
+        ".cr2",
+        ".cr3",
+        ".nef",
+        ".nrw",
+        ".arw",
+        ".dng",
+        ".raf",
+        ".orf",
+        ".rw2",
+        ".pef",
+        ".srw",
+        ".crw",
     }
 except ImportError:
     logger.info("rawpy not available — RAW format support disabled")
@@ -46,14 +56,23 @@ def read_image_color(path: str) -> np.ndarray:
         return _read_raw_bgr(path)
 
     try:
-        if Path(path).suffix.lower() in {'.heic', '.heif', '.avif'}:
+        if Path(path).suffix.lower() in {".heic", ".heif", ".avif"}:
             try:
                 from pillow_heif import register_heif_opener
+
                 register_heif_opener()
             except ImportError:
                 pass
         with Image.open(path) as image:
-            rgb = np.array(ImageOps.exif_transpose(image).convert('RGB'))
+            oriented = ImageOps.exif_transpose(image)
+            if oriented.mode.startswith("I;16"):
+                # Pillow's direct RGB conversion clips uint16 values at 255.
+                # Match the former 16->8-bit decode over the complete range.
+                pixels = np.asarray(oriented)
+                oriented = Image.fromarray(
+                    (pixels.astype(np.uint32) >> 8).astype(np.uint8)
+                )
+            rgb = np.array(oriented.convert("RGB"))
         return np.ascontiguousarray(rgb[:, :, ::-1])
     except (OSError, ValueError) as error:
         raise ValueError(f"Failed to read image: {path}") from error
@@ -63,6 +82,7 @@ def _try_extract_thumb(path: str) -> np.ndarray | None:
     """Extract embedded JPEG preview from a RAW file and return as RGB numpy array."""
     try:
         import rawpy
+
         with rawpy.imread(path) as raw:
             thumb = raw.extract_thumb()
             if thumb is not None and thumb.format is not None:
@@ -82,8 +102,9 @@ def _read_raw_gray(path: str) -> np.ndarray:
 
     try:
         with rawpy.imread(path) as raw:
-            rgb = raw.postprocess(half_size=True, use_camera_wb=True,
-                                  no_auto_bright=True)
+            rgb = raw.postprocess(
+                half_size=True, use_camera_wb=True, no_auto_bright=True
+            )
         return bgr_to_gray(rgb[:, :, ::-1])
     except Exception:
         logger.debug("RAW decode failed for %s, trying embedded preview", path)
@@ -100,8 +121,9 @@ def _read_raw_bgr(path: str) -> np.ndarray:
 
     try:
         with rawpy.imread(path) as raw:
-            rgb = raw.postprocess(half_size=True, use_camera_wb=True,
-                                  no_auto_bright=True)
+            rgb = raw.postprocess(
+                half_size=True, use_camera_wb=True, no_auto_bright=True
+            )
         return np.ascontiguousarray(rgb[:, :, ::-1])
     except Exception:
         logger.debug("RAW decode failed for %s, trying embedded preview", path)

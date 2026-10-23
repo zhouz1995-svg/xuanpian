@@ -2,6 +2,7 @@
 """Restore the exact two pinned ONNX assets; never rewrite their digests."""
 
 from __future__ import annotations
+
 import hashlib
 import json
 import os

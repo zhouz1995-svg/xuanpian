@@ -9,7 +9,6 @@ from typing import Any
 from src.xuanpian.domain.technical_analysis import Rect, SubjectCandidate
 from src.xuanpian.engine.analysis_context import AnalysisContext
 
-
 SUBJECT_SOURCES = frozenset({"face", "object"})
 _DUPLICATE_SUBJECT_IOU = 0.65
 
