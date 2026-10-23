@@ -11,7 +11,7 @@
 - 推理和图像运算使用 Python、ONNX Runtime、NumPy、Pillow、rawpy，不使用 Apple Vision 或 OpenCV。
 - ONNX Runtime 1.19.2 提供 macOS 11+ universal2 轮子；1.20.1 和 1.23.2 的官方轮子要求 macOS 13，因此兼容基线固定为 1.19.2。
 - Qt 6.7.3、PyQt 6.7.1、NumPy 2.2.6、Pillow 11.3.0 和 rawpy 0.24.0 固定为这一轮测试的依赖。
-- 完整应用仍需在 macOS 12 Intel/arm64 和 Windows 10/11 x64 上验证。现有打包脚本中的 Perl 元数据运行环境要求 macOS 26，不能仅通过修改 Info.plist 就声称兼容旧系统。
+- 完整应用仍需在 macOS 12 Intel/arm64 和 Windows 10/11 x64 上验证。新的 arm64 打包目标为 macOS 12，并要求重新构建 Perl、选择兼容的 NumPy 轮子及检查全部原生组件；旧的 macOS 26 安装包不因此获得兼容性。构建目标不等于旧系统实机验收。
 - HEIC/AVIF 保留现有可选 pillow-heif 插件；只解码发行组件另行处理。
 
 ## 开发验证

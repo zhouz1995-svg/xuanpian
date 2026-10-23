@@ -23,6 +23,13 @@ floor still require a new bundle audit.
 
 ### Packaged notice snapshot (2026-10-11)
 
+The macOS-12-targeted arm64 candidate uses the NumPy 2.2.6
+`macosx_11_0_arm64` wheel rather than the host-selected macOS-14 wheel.
+Its exact 94,029-byte `LICENSE.txt`, including bundled-library notices,
+is preserved at `packaging/licenses/numpy/2.2.6-macos11-arm64-LICENSE.txt`;
+the notice manifest records the wheel and member hashes. This additional
+notice evidence is not clearance of the final native distribution.
+
 `packaging/notice-manifest.json` records checksums for the project license, this
 notice, the component inventory, and preserved upstream texts. Its wheel-origin
 records identify the exact lock-matched wheel SHA-256 and archive member, including
