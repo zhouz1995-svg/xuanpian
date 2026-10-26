@@ -39,6 +39,7 @@ def boot(executable: Path):
 
 
 def frozen_analysis(app: Path, photo: Path):
+    print(f"Frozen analysis: {app}", flush=True)
     internal = app / "_internal"
     original = mp.spawn.get_preparation_data
     original_executable = mp.spawn.get_executable()
@@ -55,6 +56,7 @@ def frozen_analysis(app: Path, photo: Path):
     try:
         with ProcessPoolExecutor(max_workers=1, mp_context=mp.get_context("spawn")) as pool:
             version = pool.submit(eval, "__import__('PIL').__version__").result(timeout=60)
+            print(f"Frozen Pillow loaded: {version}", flush=True)
             assert version == "13.0.0", version
             result = pool.submit(analyze_photo, PhotoAnalysisRequest("synthetic", str(photo), ("technical",))).result(timeout=60)
             outcome = result.outcomes[0]
@@ -97,21 +99,27 @@ def check(candidate: Path):
             photo = folder / "合成照片.jpg"
             Image.new("RGB", (640, 480), (70, 100, 160)).save(photo)
             before = hashlib.sha256(photo.read_bytes()).hexdigest()
+            print("Stage: boot onedir", flush=True)
             boot(app / "XuanPian.exe")
             result = frozen_analysis(app, photo)
+            print("Stage: bundled ExifTool", flush=True)
             runtime = resolve_metadata_runtime(bundle_root=app / "_internal", development_executable=None)
             metadata = subprocess.run([*runtime.command_prefix, "-j", "-n", "-ImageWidth", "-ImageHeight", str(photo)],
                 capture_output=True, text=True, encoding="utf-8", env=dict(runtime.environment), check=True, timeout=15)
             record = json.loads(metadata.stdout)[0]
             assert (record["ImageWidth"], record["ImageHeight"]) == (640, 480)
             installed = folder / "安装位置"
+            print("Stage: silent install", flush=True)
             subprocess.run([str(installer), "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/SP-",
                             f"/DIR={installed}", "/LANG=chinesesimp"], check=True, timeout=180)
+            print("Stage: inspect installed files", flush=True)
             if errors := inspect_bundle(installed):
                 raise RuntimeError(errors)
+            print("Stage: boot installed app", flush=True)
             boot(installed / "XuanPian.exe")
             frozen_analysis(installed, photo)
             uninstall = installed / "unins000.exe"
+            print("Stage: uninstall and preservation checks", flush=True)
             subprocess.run([str(uninstall), "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART"], check=True, timeout=120)
             assert not (installed / "XuanPian.exe").exists()
             assert sentinel.read_text(encoding="utf-8") == "preserve project data"
@@ -126,6 +134,9 @@ def check(candidate: Path):
 
 
 if __name__ == "__main__":
+    import faulthandler
+    faulthandler.enable()
+    faulthandler.dump_traceback_later(90, repeat=True)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("candidate", type=Path)
     check(parser.parse_args().candidate.resolve())

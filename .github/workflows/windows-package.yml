@@ -42,6 +42,7 @@ jobs:
           $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6/ISCC.exe'
           & .venv/Scripts/python.exe scripts/build_windows.py --runtime "$env:RUNNER_TEMP/metadata-runtime" --output "$env:RUNNER_TEMP/windows-candidate" --iscc $iscc
       - name: Verify frozen engine, installed app and data-safe uninstall
+        timeout-minutes: 5
         shell: pwsh
         run: .venv/Scripts/python.exe scripts/check_windows_candidate.py "$env:RUNNER_TEMP/windows-candidate"
       - name: Upload unsigned verification candidate (not a Release)
