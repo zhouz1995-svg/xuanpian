@@ -280,6 +280,25 @@ def read_af_hint(path: str, decoded_size: tuple[int, int]) -> AFHint:
     )
 
 
+def run_metadata_command(
+    command_prefix: tuple[str, ...], options: list[str], source: str,
+    environment: tuple[tuple[str, str], ...], *, timeout: int = 5,
+) -> subprocess.CompletedProcess:
+    """Read one file; bypass Windows ANSI argv conversion using UTF-8 stdin."""
+    command = [*command_prefix, *options]
+    windows_options = {}
+    if sys.platform == "win32":
+        if any(character in source for character in "\r\n\0") or not Path(source).is_absolute():
+            raise ValueError("invalid metadata argument-stream filename")
+        command.extend(["-@", "-"])
+        windows_options = {"encoding": "utf-8", "creationflags": 0x08000000,
+                           "input": source + "\n"}
+    else:
+        command.append(source)
+    return subprocess.run(command, capture_output=True, text=True, timeout=timeout,
+                          check=False, env=dict(environment), **windows_options)
+
+
 @lru_cache(maxsize=256)
 def _read_af_hint_cached(
     source: str,
@@ -290,29 +309,18 @@ def _read_af_hint_cached(
     command_prefix: tuple[str, ...],
     environment: tuple[tuple[str, str], ...],
 ) -> AFHint:
-    command = [
-        *command_prefix,
+    options = [
         "-j",
         "-n",
         *(f"-{tag}" for tag in _EXIFTOOL_TAGS),
-        source,
     ]
     try:
-        windows_options = {"encoding": "utf-8", "creationflags": 0x08000000} if sys.platform == "win32" else {}
-        completed = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            timeout=5,
-            check=False,
-            env=dict(environment),
-            **windows_options,
-        )
+        completed = run_metadata_command(command_prefix, options, source, environment)
     except UnicodeError:
         return AFHint(reason="metadata_invalid_json")
     except subprocess.TimeoutExpired:
         return AFHint(reason="metadata_timeout")
-    except (OSError, subprocess.SubprocessError):
+    except (OSError, ValueError, subprocess.SubprocessError):
         return AFHint(reason="metadata_read_error")
     if completed.returncode != 0:
         return AFHint(reason="metadata_read_error")

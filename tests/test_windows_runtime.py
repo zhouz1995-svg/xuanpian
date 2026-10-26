@@ -108,10 +108,27 @@ def test_windows_af_reader_uses_utf8_and_hides_console(tmp_path, monkeypatch):
     def run(command, **kwargs):
         assert kwargs["encoding"] == "utf-8"
         assert kwargs["creationflags"] == 0x08000000
-        assert command[-1] == str(photo.resolve())
+        assert command[-2:] == ["-@", "-"]
+        assert str(photo.resolve()) not in command
+        assert kwargs["input"] == str(photo.resolve()) + "\n"
         return subprocess.CompletedProcess(command, 0, '[{"FileType":"JPEG"}]', "")
     monkeypatch.setattr(af_metadata.subprocess, "run", run)
     assert af_metadata.read_af_hint(str(photo), (400, 200)).reason != "metadata_read_error"
+
+
+@pytest.mark.parametrize("name", ["photo\n-config", "photo\r-other", "photo\0.jpg"])
+def test_windows_argument_stream_rejects_argument_injection(name, tmp_path, monkeypatch):
+    source = str(tmp_path / name)
+    monkeypatch.setattr(af_metadata, "sys", SimpleNamespace(platform="win32"))
+    monkeypatch.setattr(af_metadata.subprocess, "run", lambda *a, **kw: pytest.fail("unsafe argument executed"))
+    with pytest.raises(ValueError):
+        af_metadata.run_metadata_command(("exiftool.exe", "-config", ""), ["-j"], source, ())
+
+
+def test_windows_argument_stream_requires_absolute_filename(monkeypatch):
+    monkeypatch.setattr(af_metadata, "sys", SimpleNamespace(platform="win32"))
+    with pytest.raises(ValueError):
+        af_metadata.run_metadata_command(("exiftool.exe", "-config", ""), ["-j"], "-execute", ())
 
 
 def test_reparse_attribute_is_a_link_even_when_is_symlink_is_false():

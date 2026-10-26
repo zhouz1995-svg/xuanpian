@@ -30,6 +30,12 @@ $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6/ISCC.exe'
 保留上游 exiftool_files 全部模块、DLL、README 和 Strawberry Perl 许可证 ZIP；
 不使用宿主 Perl，不从 PATH 寻找替代工具。
 
+中文照片路径通过 UTF-8 标准输入参数流（`-charset filename=UTF8 -@ -`）交给
+ExifTool，避免 Windows ANSI 命令行转换；保留禁用外部配置的 `-config ""`。
+参数流仅接受绝对文件名，并拒绝换行、回车和 NUL，防止额外参数注入。
+此路径与官方 ExifTool 的 [Windows Unicode 文件名说明](https://github.com/exiftool/exiftool/blob/13.59/exiftool)
+所推荐的 UTF-8 参数文件方式一致；不宣称所有特殊 Unicode 文件名均已验证。
+
 ## 验证与交付边界
 
 `verify_windows_bundle.py` 校验全文件清单、PE x64、所需 DLL、离线模型、notice、

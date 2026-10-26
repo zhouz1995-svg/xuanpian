@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 from scripts.verify_windows_bundle import inspect_bundle
 from src.xuanpian.engine.metadata_runtime import resolve_metadata_runtime
+from src.xuanpian.engine.af_metadata import run_metadata_command
 from src.xuanpian.services.analysis_service import PhotoAnalysisRequest, analyze_photo
 
 
@@ -165,8 +166,8 @@ def check(candidate: Path):
             result = frozen_analysis(app, photo)
             print("Stage: bundled ExifTool", flush=True)
             runtime = resolve_metadata_runtime(bundle_root=app / "_internal", development_executable=None)
-            metadata = subprocess.run([*runtime.command_prefix, "-j", "-n", "-ImageWidth", "-ImageHeight", str(photo)],
-                capture_output=True, text=True, encoding="utf-8", env=dict(runtime.environment), check=False, timeout=15)
+            metadata = run_metadata_command(runtime.command_prefix,
+                ["-j", "-n", "-ImageWidth", "-ImageHeight"], str(photo), runtime.environment, timeout=15)
             if metadata.returncode:
                 raise RuntimeError(f"bundled ExifTool exit {metadata.returncode}: "
                                    f"stdout={metadata.stdout!r}; stderr={metadata.stderr!r}")
@@ -182,6 +183,13 @@ def check(candidate: Path):
             print("Stage: boot installed app", flush=True)
             boot(installed / "XuanPian.exe")
             frozen_analysis(installed, photo)
+            installed_runtime = resolve_metadata_runtime(bundle_root=installed / "_internal", development_executable=None)
+            installed_metadata = run_metadata_command(installed_runtime.command_prefix,
+                ["-j", "-n", "-ImageWidth", "-ImageHeight"], str(photo), installed_runtime.environment, timeout=15)
+            if installed_metadata.returncode:
+                raise RuntimeError(f"installed ExifTool failed: {installed_metadata.stderr!r}")
+            installed_record = json.loads(installed_metadata.stdout)[0]
+            assert (installed_record["ImageWidth"], installed_record["ImageHeight"]) == (640, 480)
             uninstall = installed / "unins000.exe"
             print("Stage: uninstall and preservation checks", flush=True)
             subprocess.run([str(uninstall), "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART"], check=True, timeout=120)

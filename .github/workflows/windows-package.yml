@@ -48,6 +48,7 @@ jobs:
           from pathlib import Path
           from PIL import Image
           from src.xuanpian.engine.metadata_runtime import resolve_metadata_runtime
+          from src.xuanpian.engine.af_metadata import run_metadata_command
           runtime = resolve_metadata_runtime(bundle_root=Path(os.environ['RUNNER_TEMP']), development_executable=None)
           failed = False
           with tempfile.TemporaryDirectory() as folder:
@@ -55,8 +56,8 @@ jobs:
                   photo = Path(folder) / name
                   photo.parent.mkdir(exist_ok=True)
                   Image.new('RGB', (640, 480)).save(photo)
-                  result = subprocess.run([*runtime.command_prefix, '-j', '-ImageWidth', str(photo)],
-                      capture_output=True, env=dict(runtime.environment), timeout=15)
+                  result = run_metadata_command(runtime.command_prefix, ['-j', '-ImageWidth'],
+                      str(photo), runtime.environment, timeout=15)
                   print(name, result.returncode, repr(result.stdout), repr(result.stderr), flush=True)
                   failed = failed or bool(result.returncode)
           if failed:
