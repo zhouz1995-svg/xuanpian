@@ -6,8 +6,10 @@ Mac 上的源码测试不等于生成或验收 Windows 安装器。候选包未 
 
 ## 构建
 
-需要干净的 Git 提交、uv、Python 3.11.15，以及含简体中文语言文件的 Inno
-Setup 6.3+。CI 使用 Windows Server 2022 的 Inno Setup 6，实际编译器摘要和
+需要干净的 Git 提交、uv、Python 3.11.15，以及 Inno Setup 6.5+。
+简体中文语言文件从 Inno Setup 6.7.1 官方源码固定提交下载并校验 SHA-256，
+不依赖编译器预装非内置语言；下载地址与摘要记录在构建溯源中。
+CI 使用 Windows Server 2022 的 Inno Setup 6，实际编译器摘要和
 版本 banner 记录在包内 build-provenance.json；编译器不随程序安装。
 
 在 PowerShell 中执行，输出目录必须全新：
@@ -54,7 +56,9 @@ Windows 原生组件完整发布审计仍是正式发行门禁。
 ## English
 
 Build natively on Windows x64 with Python 3.11.15, the hash-locked dependency
-closure and Inno Setup 6.3+. The onedir app bundles models and the approved
+closure and Inno Setup 6.5+. The Simplified Chinese installer translation is
+downloaded from a fixed upstream source revision and hash-verified, not assumed
+to be installed with the compiler. The onedir app bundles models and the approved
 ExifTool distribution, with no host runtime fallback. CI verifies Chinese paths,
 frozen analysis, installation and data-preserving uninstall using synthetic
 images only. Unsigned, short-lived CI artifacts are not a signed Release or

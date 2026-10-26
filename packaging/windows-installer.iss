@@ -24,7 +24,7 @@ CloseApplications=no
 SetupLogging=yes
 
 [Languages]
-Name: "chinesesimp"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
+Name: "chinesesimp"; MessagesFile: "{#ChineseMessagesFile}"
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]

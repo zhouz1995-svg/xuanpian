@@ -140,3 +140,11 @@ def test_msvc_runtime_is_collected_from_approved_qt_wheel_not_system(tmp_path):
     stage_msvc_runtime(internal, qt)
     assert (internal / "msvcp140_1.dll").read_bytes() == b"msvcp140_1.dll"
     assert (internal / "vcruntime140.dll").read_bytes() == b"already collected"
+
+
+def test_installer_language_rejects_unapproved_download_without_writing(tmp_path):
+    from scripts.build_windows import stage_installer_language
+    target = tmp_path / "ChineseSimplified.isl"
+    with pytest.raises(ValueError, match="language digest"):
+        stage_installer_language(target, b"unapproved translation")
+    assert not target.exists()
