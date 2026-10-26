@@ -166,7 +166,10 @@ def check(candidate: Path):
             print("Stage: bundled ExifTool", flush=True)
             runtime = resolve_metadata_runtime(bundle_root=app / "_internal", development_executable=None)
             metadata = subprocess.run([*runtime.command_prefix, "-j", "-n", "-ImageWidth", "-ImageHeight", str(photo)],
-                capture_output=True, text=True, encoding="utf-8", env=dict(runtime.environment), check=True, timeout=15)
+                capture_output=True, text=True, encoding="utf-8", env=dict(runtime.environment), check=False, timeout=15)
+            if metadata.returncode:
+                raise RuntimeError(f"bundled ExifTool exit {metadata.returncode}: "
+                                   f"stdout={metadata.stdout!r}; stderr={metadata.stderr!r}")
             record = json.loads(metadata.stdout)[0]
             assert (record["ImageWidth"], record["ImageHeight"]) == (640, 480)
             installed = folder / "安装位置"

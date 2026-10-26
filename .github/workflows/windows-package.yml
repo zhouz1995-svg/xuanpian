@@ -36,10 +36,35 @@ jobs:
           tests/test_onnx_detection.py tests/test_onnx_backend.py tests/test_image_ops.py
           tests/test_focus_analyzer.py tests/test_af_focus.py tests/test_subject_locator.py
           tests/test_technical_analysis_contracts.py
-      - name: Prepare approved runtime and build native installer
+      - name: Prepare approved runtime
         shell: pwsh
         run: |
           & .venv/Scripts/python.exe scripts/prepare_windows_runtime.py --output "$env:RUNNER_TEMP/metadata-runtime"
+      - name: Diagnose native metadata runtime before packaging
+        shell: pwsh
+        run: |
+          @'
+          import os, subprocess, tempfile
+          from pathlib import Path
+          from PIL import Image
+          from src.xuanpian.engine.metadata_runtime import resolve_metadata_runtime
+          runtime = resolve_metadata_runtime(bundle_root=Path(os.environ['RUNNER_TEMP']), development_executable=None)
+          failed = False
+          with tempfile.TemporaryDirectory() as folder:
+              for name in ('synthetic.jpg', '中文 路径/合成照片.jpg'):
+                  photo = Path(folder) / name
+                  photo.parent.mkdir(exist_ok=True)
+                  Image.new('RGB', (640, 480)).save(photo)
+                  result = subprocess.run([*runtime.command_prefix, '-j', '-ImageWidth', str(photo)],
+                      capture_output=True, env=dict(runtime.environment), timeout=15)
+                  print(name, result.returncode, repr(result.stdout), repr(result.stderr), flush=True)
+                  failed = failed or bool(result.returncode)
+          if failed:
+              raise RuntimeError('Approved metadata runtime probe failed; see stdout/stderr above')
+          '@ | .venv/Scripts/python.exe -
+      - name: Build native installer
+        shell: pwsh
+        run: |
           $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6/ISCC.exe'
           & .venv/Scripts/python.exe scripts/build_windows.py --runtime "$env:RUNNER_TEMP/metadata-runtime" --output "$env:RUNNER_TEMP/windows-candidate" --iscc $iscc
       - name: Verify frozen engine, installed app and data-safe uninstall
