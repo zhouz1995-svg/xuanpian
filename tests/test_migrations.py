@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 
 import pytest
@@ -23,8 +24,24 @@ from src.xuanpian.store.schema import create_schema, validate_schema
 _SQLITE_SIDECAR_SUFFIXES = ("-wal", "-shm", "-journal")
 
 
+def _release_wal_writer_after_backup_on_windows(
+    monkeypatch: pytest.MonkeyPatch, writer: sqlite3.Connection,
+) -> None:
+    if os.name != "nt":
+        return
+    original = migrations_module._atomic_database_backup
+
+    def backup_then_release(source: Path, destination: Path) -> None:
+        original(source, destination)
+        # Exercise the real backup while WAL is live, then release the test's
+        # external writer: Windows forbids replacing its open database file.
+        writer.close()
+
+    monkeypatch.setattr(migrations_module, "_atomic_database_backup", backup_then_release)
+
+
 def _create_version_one_database(path: Path) -> None:
-    with sqlite3.connect(path) as connection:
+    with closing(sqlite3.connect(path)) as connection, connection:
         connection.executescript(
             """
             PRAGMA foreign_keys = ON;
@@ -88,7 +105,7 @@ def _create_version_one_database(path: Path) -> None:
 def _create_version_two_database(path: Path) -> None:
     _create_version_one_database(path)
     migrate_database(path, target_version=2)
-    with sqlite3.connect(path) as connection:
+    with closing(sqlite3.connect(path)) as connection, connection:
         connection.execute(
             """
             INSERT INTO photos (id, project_id, filename, mark)
@@ -122,7 +139,7 @@ def _create_version_two_database(path: Path) -> None:
 
 
 def _schema_version(path: Path) -> int:
-    with sqlite3.connect(path) as connection:
+    with closing(sqlite3.connect(path)) as connection, connection:
         row = connection.execute(
             "SELECT value FROM metadata WHERE key = ?",
             ("schema_version",),
@@ -165,7 +182,7 @@ def test_migration_creates_pre_upgrade_backup_and_preserves_data(
     backup = Path(f"{database}.backup-v1")
     assert backup.is_file()
     assert _schema_version(backup) == 1
-    with sqlite3.connect(backup) as connection:
+    with closing(sqlite3.connect(backup)) as connection, connection:
         assert connection.execute(
             "SELECT root_path FROM projects WHERE id = ?",
             ("project",),
@@ -175,7 +192,7 @@ def test_migration_creates_pre_upgrade_backup_and_preserves_data(
         }
 
     assert _schema_version(database) == 2
-    with sqlite3.connect(database) as connection:
+    with closing(sqlite3.connect(database)) as connection, connection:
         assert connection.execute(
             "SELECT root_path, name FROM projects WHERE id = ?",
             ("project",),
@@ -190,7 +207,7 @@ def test_application_v1_to_current_migration_preserves_identity_mark_and_asset(
     source.write_bytes(b"jpeg")
     _create_version_one_database(database)
     stat = source.stat()
-    with sqlite3.connect(database) as connection:
+    with closing(sqlite3.connect(database)) as connection, connection:
         connection.execute(
             """
             INSERT INTO photos (id, project_id, filename, mark)
@@ -222,7 +239,7 @@ def test_application_v1_to_current_migration_preserves_identity_mark_and_asset(
 
     assert _schema_version(database) == 4
     assert _schema_version(Path(f"{database}.backup-v1")) == 1
-    with sqlite3.connect(database) as connection:
+    with closing(sqlite3.connect(database)) as connection, connection:
         assert connection.execute(
             "SELECT present FROM photo_assets WHERE photo_id = ?",
             ("stable",),
@@ -241,7 +258,7 @@ def test_application_v2_to_v3_migration_copies_paths_to_origins_and_matches_fres
 
     migrate_database(database)
 
-    with sqlite3.connect(database) as connection:
+    with closing(sqlite3.connect(database)) as connection, connection:
         assert connection.execute(
             "SELECT path, origin_path FROM photo_assets"
         ).fetchall() == [
@@ -284,7 +301,7 @@ def test_v2_to_v3_validation_failure_keeps_original_and_backup_unchanged(
 ) -> None:
     database = tmp_path / "project.sqlite3"
     _create_version_two_database(database)
-    with sqlite3.connect(database) as connection:
+    with closing(sqlite3.connect(database)) as connection, connection:
         connection.execute(
             "CREATE INDEX unexpected_photo_mark ON photos(mark)"
         )
@@ -297,7 +314,7 @@ def test_v2_to_v3_validation_failure_keeps_original_and_backup_unchanged(
     assert database.read_bytes() == original_bytes
     for candidate in (database, backup):
         assert _schema_version(candidate) == 2
-        with sqlite3.connect(candidate) as connection:
+        with closing(sqlite3.connect(candidate)) as connection, connection:
             assert connection.execute(
                 "SELECT name FROM sqlite_master WHERE type = 'index' "
                 "AND name = 'unexpected_photo_mark'"
@@ -325,7 +342,7 @@ def test_v2_to_v3_rejects_unknown_asset_schema_before_rebuild(
     database = tmp_path / "project.sqlite3"
     _create_version_two_database(database)
     object_name = f"external_{table}_{damage.replace('-', '_')}"
-    with sqlite3.connect(database) as connection:
+    with closing(sqlite3.connect(database)) as connection, connection:
         before_user_version = int(
             connection.execute("PRAGMA user_version").fetchone()[0]
         )
@@ -360,7 +377,7 @@ def test_v2_to_v3_rejects_unknown_asset_schema_before_rebuild(
     assert database.read_bytes() == original_bytes
     for candidate in (database, backup):
         assert _schema_version(candidate) == 2
-        with sqlite3.connect(candidate) as connection:
+        with closing(sqlite3.connect(candidate)) as connection, connection:
             assert connection.execute("PRAGMA user_version").fetchone() == (
                 before_user_version,
             )
@@ -382,7 +399,7 @@ def test_application_migration_rejects_extra_schema_object_before_publish(
 ) -> None:
     database = tmp_path / "project.sqlite3"
     _create_version_one_database(database)
-    with sqlite3.connect(database) as connection:
+    with closing(sqlite3.connect(database)) as connection, connection:
         connection.execute(
             """
             CREATE TRIGGER erase_after_mark
@@ -403,7 +420,7 @@ def test_application_migration_rejects_extra_schema_object_before_publish(
     assert database.read_bytes() == original_bytes
     for candidate in (database, backup):
         assert _schema_version(candidate) == 1
-        with sqlite3.connect(candidate) as connection:
+        with closing(sqlite3.connect(candidate)) as connection, connection:
             assert connection.execute(
                 "SELECT name FROM sqlite_master "
                 "WHERE type = 'trigger' AND name = 'erase_after_mark'"
@@ -455,7 +472,7 @@ def test_application_migration_rejects_sqlite_prefixed_disguised_objects(
 ) -> None:
     database = tmp_path / "project.sqlite3"
     _create_version_one_database(database)
-    with sqlite3.connect(database) as connection:
+    with closing(sqlite3.connect(database)) as connection, connection:
         connection.execute(create_sql)
         connection.execute("PRAGMA writable_schema = ON")
         connection.execute(
@@ -486,7 +503,7 @@ def test_application_migration_rejects_sqlite_prefixed_disguised_objects(
     assert database.read_bytes() == original_bytes
     for candidate in (database, backup):
         assert _schema_version(candidate) == 1
-        with sqlite3.connect(candidate) as connection:
+        with closing(sqlite3.connect(candidate)) as connection, connection:
             assert connection.execute(
                 "SELECT name FROM sqlite_master "
                 "WHERE type = ? AND name = ?",
@@ -515,7 +532,7 @@ def test_failed_migration_leaves_original_and_backup_openable_and_unchanged(
     backup = Path(f"{database}.backup-v1")
     for candidate in (database, backup):
         assert _schema_version(candidate) == 1
-        with sqlite3.connect(candidate) as connection:
+        with closing(sqlite3.connect(candidate)) as connection, connection:
             assert connection.execute(
                 "SELECT root_path FROM projects WHERE id = ?",
                 ("project",),
@@ -537,14 +554,14 @@ def test_database_without_metadata_is_rejected_without_backup(
     tmp_path: Path,
 ) -> None:
     database = tmp_path / "project.sqlite3"
-    with sqlite3.connect(database) as connection:
+    with closing(sqlite3.connect(database)) as connection, connection:
         connection.execute("CREATE TABLE unrelated (value TEXT)")
 
     with pytest.raises(RuntimeError, match="metadata"):
         migrate_database(database)
 
     assert not Path(f"{database}.backup-v1").exists()
-    with sqlite3.connect(database) as connection:
+    with closing(sqlite3.connect(database)) as connection, connection:
         assert connection.execute(
             "SELECT name FROM sqlite_master WHERE name = 'unrelated'"
         ).fetchone() == ("unrelated",)
@@ -556,7 +573,7 @@ def test_invalid_schema_version_is_rejected_clearly(
     stored_version: str,
 ) -> None:
     database = tmp_path / "project.sqlite3"
-    with sqlite3.connect(database) as connection:
+    with closing(sqlite3.connect(database)) as connection, connection:
         connection.execute(
             "CREATE TABLE metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL)"
         )
@@ -626,7 +643,7 @@ def test_migration_that_ends_transaction_is_rejected_without_replacing_original(
 
     for candidate in (database, Path(f"{database}.backup-v1")):
         assert _schema_version(candidate) == 1
-        with sqlite3.connect(candidate) as connection:
+        with closing(sqlite3.connect(candidate)) as connection, connection:
             assert connection.execute(
                 "SELECT root_path FROM projects WHERE id = ?",
                 ("project",),
@@ -661,7 +678,7 @@ def test_rollback_then_dml_cannot_replace_the_migration_transaction(
 
     for candidate in (database, Path(f"{database}.backup-v1")):
         assert _schema_version(candidate) == 1
-        with sqlite3.connect(candidate) as connection:
+        with closing(sqlite3.connect(candidate)) as connection, connection:
             assert connection.execute(
                 "SELECT root_path FROM projects WHERE id = ?",
                 ("project",),
@@ -692,7 +709,7 @@ def test_callback_cannot_recreate_framework_savepoint_after_rollback(
 
     for candidate in (database, Path(f"{database}.backup-v1")):
         assert _schema_version(candidate) == 1
-        with sqlite3.connect(candidate) as connection:
+        with closing(sqlite3.connect(candidate)) as connection, connection:
             assert connection.execute(
                 "SELECT root_path FROM projects WHERE id = ?",
                 ("project",),
@@ -706,6 +723,7 @@ def test_failed_post_replace_verification_restores_original(
     database = tmp_path / "project.sqlite3"
     _create_version_one_database(database)
     writer = sqlite3.connect(database)
+    _release_wal_writer_after_backup_on_windows(monkeypatch, writer)
     assert writer.execute("PRAGMA journal_mode = WAL").fetchone() == ("wal",)
     writer.execute(
         "UPDATE projects SET root_path = ? WHERE id = ?",
@@ -747,7 +765,7 @@ def test_failed_post_replace_verification_restores_original(
         assert _migration_artifacts(database) == []
         for candidate in (database, Path(f"{database}.backup-v1")):
             assert _schema_version(candidate) == 1
-            with sqlite3.connect(candidate) as connection:
+            with closing(sqlite3.connect(candidate)) as connection, connection:
                 assert connection.execute("PRAGMA journal_mode").fetchone() == (
                     "delete",
                 )
@@ -760,10 +778,46 @@ def test_failed_post_replace_verification_restores_original(
     assert _sidecars(database) == []
 
 
-def test_backup_includes_committed_wal_data(tmp_path: Path) -> None:
+@pytest.mark.skipif(os.name != "nt", reason="Windows denies replacing open SQLite files")
+def test_windows_external_sqlite_writer_blocks_publish_without_losing_data(
+    tmp_path: Path,
+) -> None:
+    database = tmp_path / "project.sqlite3"
+    _create_version_one_database(database)
+    migration = Migration(
+        version=2, apply=lambda connection: connection.execute(
+            "ALTER TABLE projects ADD COLUMN name TEXT"
+        ),
+    )
+    writer = sqlite3.connect(database)
+    try:
+        writer.execute("UPDATE projects SET root_path = '/external-committed'")
+        writer.commit()
+        before = database.read_bytes()
+        with pytest.raises(PermissionError):
+            migrate_database(database, target_version=2, migrations=[migration])
+        assert _schema_version(database) == 1
+        assert database.read_bytes() == before
+        assert _migration_artifacts(database) == []
+        for candidate in (database, Path(f"{database}.backup-v1")):
+            assert _schema_version(candidate) == 1
+            with closing(sqlite3.connect(candidate)) as reader:
+                assert reader.execute("SELECT root_path FROM projects").fetchone() == (
+                    "/external-committed",
+                )
+    finally:
+        writer.close()
+    migrate_database(database, target_version=2, migrations=[migration])
+    assert _schema_version(database) == 2
+
+
+def test_backup_includes_committed_wal_data(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
     database = tmp_path / "project.sqlite3"
     _create_version_one_database(database)
     writer = sqlite3.connect(database)
+    _release_wal_writer_after_backup_on_windows(monkeypatch, writer)
     try:
         assert writer.execute("PRAGMA journal_mode = WAL").fetchone() == ("wal",)
         writer.execute(
@@ -794,7 +848,7 @@ def test_backup_includes_committed_wal_data(tmp_path: Path) -> None:
     assert _sidecars(database) == []
 
     for candidate in (database, Path(f"{database}.backup-v1")):
-        with sqlite3.connect(candidate) as connection:
+        with closing(sqlite3.connect(candidate)) as connection, connection:
             assert connection.execute("PRAGMA journal_mode").fetchone() == (
                 "delete",
             )
@@ -826,6 +880,11 @@ def test_failed_wal_migration_removes_hidden_working_sidecars(
             reader = sqlite3.connect(working_path)
             reader.execute("SELECT value FROM metadata").fetchone()
             held_working_connections.append(reader)
+            if os.name == "nt":
+                # Unlike POSIX, Windows cannot unlink an open SQLite file.
+                # Keep the failure/cleanup checks, but release this deliberately
+                # leaked fixture handle before unwinding the migration.
+                reader.close()
             connection.execute("UPDATE projects SET root_path = '/partial'")
             raise RuntimeError("injected WAL migration failure")
 
@@ -841,7 +900,7 @@ def test_failed_wal_migration_removes_hidden_working_sidecars(
         assert _migration_artifacts(database) == []
         for candidate in (database, Path(f"{database}.backup-v1")):
             assert _schema_version(candidate) == 1
-            with sqlite3.connect(candidate) as connection:
+            with closing(sqlite3.connect(candidate)) as connection, connection:
                 assert connection.execute(
                     "SELECT root_path FROM projects WHERE id = ?",
                     ("project",),
@@ -946,7 +1005,7 @@ def test_foreign_key_violation_prevents_migrated_database_publication(
 ) -> None:
     database = tmp_path / "project.sqlite3"
     _create_version_one_database(database)
-    with sqlite3.connect(database) as connection:
+    with closing(sqlite3.connect(database)) as connection, connection:
         connection.execute(
             """
             INSERT INTO photos (id, project_id, filename, mark)
