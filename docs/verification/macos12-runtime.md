@@ -51,6 +51,14 @@ Frameworks、base_library.zip 和 lib-dynload，不从源码树补齐依赖。
 
 ## 尚未完成
 
+本次推送时 GitHub Dependabot 报告，当前 Pillow 11.3.0 位于多个严重
+安全公告的受影响版本范围内，包括 `GHSA-5x8w-8jj5-q52h`、
+`GHSA-v9pv-5gc8-w2m6`、`GHSA-332p-7hrc-92wf`、
+`GHSA-w889-685w-c8fh` 和 `GHSA-8g5g-8vmr-9782`。
+这些告警的利用条件尚未逐项复现；不能把功能测试通过理解为安全检查通过。
+依赖升级及兼容性回归是独立的优先后续工作，本候选不用于公开发行或处理
+不可信来源的图片。
+
 需要 macOS 12 arm64 实机的安装、GUI 和完整离线流程验收；仅检查 Mach-O
 最低版本无法证明所有系统 API 在旧系统上都可用。Intel Mac 和 Windows
 10 22H2/11 x64 的完整安装包仍是后续工作。第三方原生组件、HEIF、Qt 和
