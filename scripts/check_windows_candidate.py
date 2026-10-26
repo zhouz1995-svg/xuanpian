@@ -53,6 +53,8 @@ def abort_frozen_workers(pool: ProcessPoolExecutor) -> None:
             callback_type = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
             user32.GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
             user32.GetWindowTextW.argtypes = [wintypes.HWND, wintypes.LPWSTR, ctypes.c_int]
+            user32.SendMessageTimeoutW.argtypes = [wintypes.HWND, wintypes.UINT, wintypes.WPARAM,
+                wintypes.LPARAM, wintypes.UINT, wintypes.UINT, ctypes.POINTER(ctypes.c_size_t)]
             user32.EnumWindows.argtypes = [callback_type, wintypes.LPARAM]
             user32.EnumChildWindows.argtypes = [wintypes.HWND, callback_type, wintypes.LPARAM]
             pids = {worker.pid for worker in workers}
@@ -63,6 +65,12 @@ def abort_frozen_workers(pool: ProcessPoolExecutor) -> None:
                 if pid.value in pids:
                     buffer = ctypes.create_unicode_buffer(16000)
                     user32.GetWindowTextW(hwnd, buffer, len(buffer))
+                    if not buffer.value:
+                        result = ctypes.c_size_t()
+                        # WM_GETTEXT is marshalled across processes; GetWindowText
+                        # alone cannot retrieve another process's static controls.
+                        user32.SendMessageTimeoutW(hwnd, 0xD, len(buffer),
+                            ctypes.cast(buffer, ctypes.c_void_p).value, 2, 200, ctypes.byref(result))
                     if buffer.value:
                         print(f"Frozen worker {pid.value} window: {buffer.value}", flush=True)
                 return True
