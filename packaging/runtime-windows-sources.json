@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "target": {"platform": "windows", "architecture": "x86_64"},
+  "launcher_transform": {
+    "recipe": "active-code-page-utf8-v1",
+    "upstream_sha256": "68c079c32fdae0d6c7130e9a5fb73f8ac9dabdf9ab8da312da4f6c549d6d3385"
+  },
+  "exiftool": {
+    "version": "13.59",
+    "url": "https://sourceforge.net/projects/exiftool/files/exiftool-13.59_64.zip/download",
+    "sha256": "44b512b25af500724ba579d0a53c8fc5851628b692dd5e5d94ae4a15c2cba9ec",
+    "checksum_evidence": "https://www.exiftool.org/checksums.txt",
+    "installation_evidence": "https://exiftool.org/install.html#Windows",
+    "notice_files": ["README.txt", "exiftool_files/readme_windows.txt", "exiftool_files/LICENSE", "exiftool_files/Licenses_Strawberry_Perl.zip"]
+  }
+}

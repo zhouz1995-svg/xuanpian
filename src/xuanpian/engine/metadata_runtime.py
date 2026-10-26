@@ -5,8 +5,9 @@ import json
 import os
 import re
 import shutil
+import sys
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Any
 
 
@@ -29,6 +30,14 @@ _VERIFIED_FILES: dict[str, tuple[tuple[int, ...], str]] = {}
 
 
 def _environment() -> tuple[tuple[str, str], ...]:
+    if sys.platform == "win32":
+        root = os.environ.get("SystemRoot", os.environ.get("WINDIR", ""))
+        if not root or not PureWindowsPath(root).is_absolute():
+            raise RuntimeUnavailable("metadata_runtime_invalid")
+        values = {"SystemRoot": root, "WINDIR": root,
+                  "PATH": str(PureWindowsPath(root) / "System32")}
+        values.update((key, os.environ[key]) for key in ("TEMP", "TMP") if key in os.environ)
+        return tuple(sorted(values.items()))
     values = {"PATH": _SYSTEM_PATH}
     values.update(
         (name, os.environ[name])
@@ -42,7 +51,12 @@ def _relative_path(value: Any) -> Path:
     if not isinstance(value, str) or not value or "\\" in value:
         raise RuntimeUnavailable("metadata_runtime_invalid")
     path = Path(value)
-    if path.is_absolute() or any(part in ("", ".", "..") for part in value.split("/")):
+    windows = PureWindowsPath(value)
+    if path.is_absolute() or windows.drive or windows.root or any(
+        part in ("", ".", "..") or part.endswith((".", " "))
+        or PureWindowsPath(part).is_reserved() or any(c in '<>:"|?*' or ord(c) < 32 for c in part)
+        for part in value.split("/")
+    ):
         raise RuntimeUnavailable("metadata_runtime_invalid")
     return path
 
@@ -73,7 +87,14 @@ def _is_digest(value: Any) -> bool:
     )
 
 
+def _is_link(path: Path) -> bool:
+    """Reject NTFS junctions/reparse entries as well as POSIX symlinks."""
+    return path.is_symlink() or bool(getattr(path.lstat(), "st_file_attributes", 0) & 0x400)
+
+
 def _validate_manifest(data: Any) -> tuple[dict[str, Any], dict[str, str]]:
+    if isinstance(data, dict) and type(data.get("schema_version")) is int and data["schema_version"] == 2:
+        return _validate_windows_manifest(data)
     if not isinstance(data, dict) or set(data) != {
         "schema_version", "versions", "command_prefix", "files", "source_manifest_sha256",
     } or type(data["schema_version"]) is not int or data["schema_version"] != 1:
@@ -118,6 +139,33 @@ def _validate_manifest(data: Any) -> tuple[dict[str, Any], dict[str, str]]:
     return command, files
 
 
+def _validate_windows_manifest(data: dict[str, Any]) -> tuple[dict[str, Any], dict[str, str]]:
+    if set(data) != {"schema_version", "target", "versions", "command_prefix", "files",
+                     "source_manifest_sha256"} or data["target"] != {
+                         "platform": "windows", "architecture": "x86_64"}:
+        raise RuntimeUnavailable("metadata_runtime_invalid")
+    versions = data["versions"]
+    if not isinstance(versions, dict) or set(versions) != {"exiftool"} or not isinstance(
+        versions["exiftool"], str
+    ) or not re.fullmatch(r"[0-9]+\.[0-9]+", versions["exiftool"]):
+        raise RuntimeUnavailable("metadata_runtime_invalid")
+    command = data["command_prefix"]
+    if command != {"executable": "exiftool/exiftool.exe",
+                   "fixed_args": ["-config", "", "-charset", "filename=UTF8"]}:
+        raise RuntimeUnavailable("metadata_runtime_invalid")
+    files = data["files"]
+    required = {"exiftool/exiftool.exe", "exiftool/exiftool_files/perl.exe",
+                "exiftool/exiftool_files/perl532.dll", "exiftool/exiftool_files/exiftool.pl"}
+    if (not _is_digest(data["source_manifest_sha256"]) or not isinstance(files, dict)
+            or not required <= files.keys() or not all(_is_digest(v) for v in files.values())):
+        raise RuntimeUnavailable("metadata_runtime_invalid")
+    for name in files:
+        _relative_path(name)
+    if len({name.casefold() for name in files}) != len(files):
+        raise RuntimeUnavailable("metadata_runtime_invalid")
+    return command, files
+
+
 def _file_state(path: Path) -> tuple[int, ...]:
     try:
         stat = path.stat()
@@ -133,11 +181,14 @@ def _file_state(path: Path) -> tuple[int, ...]:
 
 def _bundle_runtime(bundle_root: Path, environment: tuple[tuple[str, str], ...]) -> MetadataRuntime:
     try:
+        linked_root = _is_link(bundle_root) or _is_link(bundle_root / "metadata-runtime")
         approved_root = bundle_root.resolve(strict=True)
         root = (bundle_root / "metadata-runtime").resolve(strict=True)
         root.relative_to(approved_root)
     except (OSError, RuntimeError, ValueError):
         raise RuntimeUnavailable("metadata_runtime_missing") from None
+    if linked_root:
+        raise RuntimeUnavailable("metadata_runtime_invalid")
     if not root.is_dir():
         raise RuntimeUnavailable("metadata_runtime_missing")
     manifest_path = root / "manifest.json"
@@ -153,7 +204,7 @@ def _bundle_runtime(bundle_root: Path, environment: tuple[tuple[str, str], ...])
     allowed_files = set(files) | {"manifest.json"}
 
     for entry in root.rglob("*"):
-        if entry.is_symlink() or (
+        if _is_link(entry) or (
             entry.is_file()
             and entry.relative_to(root).as_posix() not in allowed_files
         ) or not (entry.is_file() or entry.is_dir()):
@@ -174,15 +225,21 @@ def _bundle_runtime(bundle_root: Path, environment: tuple[tuple[str, str], ...])
         if actual != expected:
             raise RuntimeUnavailable("metadata_runtime_corrupt")
 
-    perl = _contained(root, root / command["perl"])
-    if not os.access(perl, os.X_OK):
-        raise RuntimeUnavailable("metadata_runtime_invalid")
-    modules = [_contained(root, root / name) for name in command["module_dirs"]]
-    if not all(path.is_dir() for path in modules):
-        raise RuntimeUnavailable("metadata_runtime_invalid")
-    script = _contained(root, root / command["script"])
-    prefix = (str(perl), *(argument for path in modules for argument in ("-I", str(path))),
-              str(script), "-config", "")
+    if "executable" in command:
+        executable = _contained(root, root / command["executable"])
+        if not os.access(executable, os.X_OK):
+            raise RuntimeUnavailable("metadata_runtime_invalid")
+        prefix = (str(executable), *command["fixed_args"])
+    else:
+        perl = _contained(root, root / command["perl"])
+        if not os.access(perl, os.X_OK):
+            raise RuntimeUnavailable("metadata_runtime_invalid")
+        modules = [_contained(root, root / name) for name in command["module_dirs"]]
+        if not all(path.is_dir() for path in modules):
+            raise RuntimeUnavailable("metadata_runtime_invalid")
+        script = _contained(root, root / command["script"])
+        prefix = (str(perl), *(argument for path in modules for argument in ("-I", str(path))),
+                  str(script), "-config", "")
     identity = "bundle:" + hashlib.sha256(manifest_bytes).hexdigest()
     return MetadataRuntime(prefix, environment, identity)
 
@@ -197,4 +254,5 @@ def resolve_metadata_runtime(
     if executable is None:
         raise RuntimeUnavailable("exiftool_unavailable")
     resolved = str(Path(executable).resolve(strict=False))
-    return MetadataRuntime((resolved, "-config", ""), environment, "development:" + resolved)
+    args = ("-config", "", "-charset", "filename=UTF8") if sys.platform == "win32" else ("-config", "")
+    return MetadataRuntime((resolved, *args), environment, "development:" + resolved)

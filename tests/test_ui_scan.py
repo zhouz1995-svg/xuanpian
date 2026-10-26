@@ -6,6 +6,7 @@ import sys
 from types import SimpleNamespace
 
 import numpy as np
+import pytest
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QImage, QPixmap
 from PyQt6.QtWidgets import QApplication
@@ -107,7 +108,10 @@ class TestThumbnailLoader:
         loader.stop()
         assert loader._stopped is True
 
-    def test_loader_generates_thumbnails(self, qapp: QApplication, qtbot) -> None:
+    @pytest.mark.parametrize("complete_before_start_returns", [False, True])
+    def test_loader_generates_thumbnails(
+        self, qapp: QApplication, qtbot, monkeypatch, complete_before_start_returns,
+    ) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             from PIL import Image
 
@@ -122,10 +126,14 @@ class TestThumbnailLoader:
                 received.append((index, qimage))
 
             loader.thumbnail_ready.connect(on_ready)
-            loader.start()
-
-            with qtbot.waitSignal(loader.finished_loading, timeout=5000):
-                pass
+            if complete_before_start_returns:
+                # Exercise the real work with deterministic immediate completion.
+                monkeypatch.setattr(loader, "start", loader.run)
+            try:
+                with qtbot.waitSignal(loader.finished_loading, timeout=5000):
+                    loader.start()
+            finally:
+                assert loader.wait(5000), "thumbnail worker did not finish"
 
             assert len(received) == 1
             assert received[0][0] == 0

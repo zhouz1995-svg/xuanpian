@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from src.xuanpian.domain.technical_analysis import Rect
-from src.xuanpian.engine.metadata_runtime import RuntimeUnavailable, resolve_metadata_runtime
+from src.xuanpian.engine.metadata_runtime import RuntimeUnavailable, resolve_metadata_runtime, _is_link
 
 
 @dataclass(frozen=True, slots=True)
@@ -206,7 +206,18 @@ def parse_af_metadata(
 
 
 def _frozen_runtime_root(meipass: Path) -> Path:
-    """Select the exact resource directory belonging to this macOS bundle."""
+    """Select only resources belonging to the running frozen application."""
+    if sys.platform == "win32":
+        internal = Path(meipass)
+        try:
+            app = Path(sys.executable).resolve(strict=True).parent
+            real_internal = internal.resolve(strict=True)
+        except (OSError, RuntimeError):
+            raise RuntimeUnavailable("metadata_runtime_missing") from None
+        if (internal.name != "_internal" or _is_link(internal)
+                or not internal.is_dir() or real_internal != app / "_internal"):
+            raise RuntimeUnavailable("metadata_runtime_invalid")
+        return internal
     frameworks = Path(meipass)
     contents = frameworks.parent
     app = contents.parent
@@ -269,6 +280,25 @@ def read_af_hint(path: str, decoded_size: tuple[int, int]) -> AFHint:
     )
 
 
+def run_metadata_command(
+    command_prefix: tuple[str, ...], options: list[str], source: str,
+    environment: tuple[tuple[str, str], ...], *, timeout: int = 5,
+) -> subprocess.CompletedProcess:
+    """Read one file; bypass Windows ANSI argv conversion using UTF-8 stdin."""
+    command = [*command_prefix, *options]
+    windows_options = {}
+    if sys.platform == "win32":
+        if any(character in source for character in "\r\n\0") or not Path(source).is_absolute():
+            raise ValueError("invalid metadata argument-stream filename")
+        command.extend(["-@", "-"])
+        windows_options = {"encoding": "utf-8", "creationflags": 0x08000000,
+                           "input": source + "\n"}
+    else:
+        command.append(source)
+    return subprocess.run(command, capture_output=True, text=True, timeout=timeout,
+                          check=False, env=dict(environment), **windows_options)
+
+
 @lru_cache(maxsize=256)
 def _read_af_hint_cached(
     source: str,
@@ -279,25 +309,18 @@ def _read_af_hint_cached(
     command_prefix: tuple[str, ...],
     environment: tuple[tuple[str, str], ...],
 ) -> AFHint:
-    command = [
-        *command_prefix,
+    options = [
         "-j",
         "-n",
         *(f"-{tag}" for tag in _EXIFTOOL_TAGS),
-        source,
     ]
     try:
-        completed = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            timeout=5,
-            check=False,
-            env=dict(environment),
-        )
+        completed = run_metadata_command(command_prefix, options, source, environment)
+    except UnicodeError:
+        return AFHint(reason="metadata_invalid_json")
     except subprocess.TimeoutExpired:
         return AFHint(reason="metadata_timeout")
-    except (OSError, subprocess.SubprocessError):
+    except (OSError, ValueError, subprocess.SubprocessError):
         return AFHint(reason="metadata_read_error")
     if completed.returncode != 0:
         return AFHint(reason="metadata_read_error")

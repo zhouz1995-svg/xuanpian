@@ -1,0 +1,90 @@
+name: Windows candidate
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: windows-package-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  package:
+    name: Windows x64 installer
+    runs-on: windows-2022
+    timeout-minutes: 30
+    env:
+      PYTHONUTF8: "1"
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9
+        with:
+          version: "0.11.7"
+      - name: Install pinned native Python and dependencies
+        shell: pwsh
+        run: |
+          uv python install 3.11.15
+          uv venv --python 3.11.15 .venv
+          uv pip install --python .venv/Scripts/python.exe --only-binary :all: --require-hashes -r packaging/requirements-windows-x64.lock
+          & .venv/Scripts/python.exe -m pip check
+      - name: Test Windows boundaries and offline engine
+        shell: pwsh
+        run: >-
+          .venv/Scripts/python.exe -m pytest -q
+          tests/test_windows_runtime.py tests/test_windows_packaging.py
+          tests/test_project_store.py tests/test_migrations.py
+          tests/test_onnx_detection.py tests/test_onnx_backend.py tests/test_image_ops.py
+          tests/test_focus_analyzer.py tests/test_af_focus.py tests/test_subject_locator.py
+          tests/test_technical_analysis_contracts.py
+      - name: Prepare approved runtime
+        shell: pwsh
+        run: |
+          & .venv/Scripts/python.exe scripts/prepare_windows_runtime.py --output "$env:RUNNER_TEMP/metadata-runtime"
+      - name: Diagnose native metadata runtime before packaging
+        shell: pwsh
+        run: |
+          @'
+          import os, shutil, tempfile
+          from pathlib import Path
+          from PIL import Image
+          from src.xuanpian.engine.metadata_runtime import resolve_metadata_runtime
+          from src.xuanpian.engine.af_metadata import run_metadata_command
+          runtime = resolve_metadata_runtime(bundle_root=Path(os.environ['RUNNER_TEMP']), development_executable=None)
+          failed = False
+          with tempfile.TemporaryDirectory() as folder:
+              unicode_root = Path(folder) / '中文 运行时'
+              shutil.copytree(Path(os.environ['RUNNER_TEMP']) / 'metadata-runtime', unicode_root / 'metadata-runtime')
+              runtime = resolve_metadata_runtime(bundle_root=unicode_root, development_executable=None)
+              for name in ('synthetic.jpg', '中文 路径/合成照片.jpg'):
+                  photo = Path(folder) / name
+                  photo.parent.mkdir(exist_ok=True)
+                  Image.new('RGB', (640, 480)).save(photo)
+                  result = run_metadata_command(runtime.command_prefix, ['-j', '-ImageWidth'],
+                      str(photo), runtime.environment, timeout=15)
+                  print(name, result.returncode, repr(result.stdout), repr(result.stderr), flush=True)
+                  failed = failed or bool(result.returncode)
+          if failed:
+              raise RuntimeError('Approved metadata runtime probe failed; see stdout/stderr above')
+          '@ | .venv/Scripts/python.exe -
+      - name: Build native installer
+        shell: pwsh
+        run: |
+          $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6/ISCC.exe'
+          & .venv/Scripts/python.exe scripts/build_windows.py --runtime "$env:RUNNER_TEMP/metadata-runtime" --output "$env:RUNNER_TEMP/windows-candidate" --iscc $iscc
+      - name: Verify frozen engine, installed app and data-safe uninstall
+        timeout-minutes: 5
+        shell: pwsh
+        run: .venv/Scripts/python.exe scripts/check_windows_candidate.py "$env:RUNNER_TEMP/windows-candidate"
+      - name: Upload unsigned verification candidate (not a Release)
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: XuanPian-windows-x64-unsigned-${{ github.sha }}
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/windows-candidate/XuanPian-*-windows-x64-unsigned.exe
+            ${{ runner.temp }}/windows-candidate/*.sha256
+            ${{ runner.temp }}/windows-candidate/verification.json
+            ${{ runner.temp }}/windows-candidate/app/bundle-files.json
+            ${{ runner.temp }}/windows-candidate/app/_internal/build-provenance.json

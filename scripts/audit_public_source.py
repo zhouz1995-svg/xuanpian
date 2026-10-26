@@ -68,7 +68,7 @@ _REVIEWED_EXEMPTIONS: dict[tuple[str, str], tuple[str, str]] = {
         "tests/test_packaging_metadata.py",
         "secret-assignment",
     ): (
-        "d3293fa074ac2553cd3954ec7e53e2347c4e5cce493048d7b1714ecae0bdedd2",
+        "6d32917e84fa8ee0a5ccd5b3d65cd504658b5cab3a6312dee5ad441bc7eef4eb",
         "Reviewed test comparison of tokenized metadata, not a stored secret.",
     ),
     (

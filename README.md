@@ -10,7 +10,11 @@ XuanPian（选片）是一款注重隐私的桌面照片筛选助手。它可以
 
 0.1.0 是面向 Apple 芯片 Mac 的测试版本。分析结果仅用于辅助人工复查，不会自动判定一张照片是否可用。
 
-开发分支的 `technical-v8` 已采用 ONNX Runtime CPU、YuNet 和 YOLOX-Nano，模型随源码内置，完全离线运行。跨平台目标为 macOS 12+（Intel / Apple Silicon）及 Windows 10 22H2 / Windows 11 x64；这些系统的安装包尚待单独构建和验证，当前 Release 的支持范围仍以下方安装说明为准。迁移说明见 [ONNX 分析记录](docs/onnx-analysis.md)。
+开发分支的 `technical-v8` 已采用 ONNX Runtime CPU、YuNet 和 YOLOX-Nano，模型随源码内置，完全离线运行。跨平台目标为 macOS 12+（Intel / Apple Silicon）及 Windows 10 22H2 / Windows 11 x64；各目标的正式交付与干净桌面验收仍需分别完成，当前 Release 的支持范围仍以下方安装说明为准。迁移说明见 [ONNX 分析记录](docs/onnx-analysis.md)。
+
+Windows x64 已有通过原生 CI 安装、运行和卸载验证的未签名候选，尚非正式 Release。详见 [Windows 构建说明](docs/building-windows.md) 与 [验证记录](docs/verification/windows-installer.md)。
+
+各平台进度、暂缓事项和下一步见 [当前交付状态](docs/release-status.md)。
 
 安全提示：开发分支已升级到 Pillow 13.0.0 安全版本；现有 Release 尚未包含此更新，请勿使用旧包处理不可信来源的图片。新候选包仍需完成发布验收。
 
@@ -70,7 +74,11 @@ XuanPian is a privacy-friendly desktop photo-review assistant. It helps photogra
 
 Version 0.1.0 is a beta for Apple Silicon Macs. Analysis results are review aids, not an automatic decision about whether a photo is usable.
 
-The development branch uses ONNX Runtime CPU with bundled YuNet and YOLOX-Nano models (`technical-v8`). The target platforms are macOS 12+ (Intel / Apple Silicon) and Windows 10 22H2 / Windows 11 x64. Native installers for these targets still require separate builds and validation; the existing Release keeps its documented support limits. See [the migration notes](docs/onnx-analysis.md).
+The development branch uses ONNX Runtime CPU with bundled YuNet and YOLOX-Nano models (`technical-v8`). The target platforms are macOS 12+ (Intel / Apple Silicon) and Windows 10 22H2 / Windows 11 x64. Formal delivery and clean-desktop acceptance remain separate gates for each target; the existing Release keeps its documented support limits. See [the migration notes](docs/onnx-analysis.md).
+
+An unsigned Windows x64 candidate has passed native CI installation, runtime and uninstall checks. It is not a Release. See [Windows build instructions](docs/building-windows.md) and [verification evidence](docs/verification/windows-installer.md).
+
+See [current delivery status](docs/release-status.md) for platform progress, deferred acceptance and next steps.
 
 Security: the development branch uses the Pillow 13.0.0 security release. Existing Releases do not include this update; do not use older packages for untrusted images. New candidates still require release acceptance.
 
