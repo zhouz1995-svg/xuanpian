@@ -7,6 +7,18 @@
   "inventory_limits": "Legacy r5 native/wheel observations are retained as historical evidence. Current ONNX source assets and dependency pins are separate entries; a new native bundle has not been audited.",
   "components": [
     {
+      "name": "windows-exiftool-runtime",
+      "version": "13.59",
+      "source_url": "https://sourceforge.net/projects/exiftool/files/exiftool-13.59_64.zip/download",
+      "sha256": "44b512b25af500724ba579d0a53c8fc5851628b692dd5e5d94ae4a15c2cba9ec",
+      "license_expression": null,
+      "license_file": "packaging/licenses/runtime/ExifTool-Windows-13.59-readme.txt",
+      "redistribution_notes": "Official x64 package includes ExifTool, Strawberry Perl and the Oliver Betz CC0 launcher; preserve all bundled notices including Licenses_Strawberry_Perl.zip. Exact native/source obligations remain open.",
+      "verification_source": "https://www.exiftool.org/checksums.txt; packaging/runtime-windows-sources.json",
+      "distribution_scope": "windows_runtime_input",
+      "status": "partial"
+    },
+    {
       "name": "absl-py",
       "version": "2.5.0",
       "source_url": "https://pypi.org/project/absl-py/2.5.0/",

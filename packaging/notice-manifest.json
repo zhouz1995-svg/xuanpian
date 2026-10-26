@@ -5,7 +5,7 @@
   "files": {
     "LICENSE": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
     "packaging/licenses/numpy/2.2.6-macos11-arm64-LICENSE.txt": "14410921cb870d3c9f127c14f1528dcb8c56ac2a897dd1f0b986a916e5678e5d",
-    "THIRD_PARTY_NOTICES.md": "f05939e4fa9fae793141c6f5a8e940b6282ec0dd5d9c8a37a1057ad9b0fc394c",
+    "THIRD_PARTY_NOTICES.md": "fe5564f4952301ff3d60f8c2fd3e249973368bc869194831bcdd0df658a0e0fd",
     "packaging/licenses/PyQt6_sip-BSD-2-Clause.txt": "3e6f5b427c36f94ecf86bc01698af7030a1ed6eb3748110d5dbb8d142d804611",
     "packaging/licenses/Qt-LGPL-3.0.txt": "6c671e2912ec69c0832f32066c0313cee5fdc3bbcbce237822e89f3da58edd4e",
     "packaging/licenses/models/YOLOX-Apache-2.0.txt": "577c03d505ec80f667ebf96ebd0cc4f6825c817ca1088ee348c48aaabd51bd92",
@@ -14,6 +14,7 @@
     "packaging/licenses/onnxruntime/ThirdPartyNotices.txt": "cf7342f7ba482ef715ae58f5f497a8d3564fa255164175aea324cd293c5701a0",
     "packaging/licenses/runtime/CPython-3.11.15-LICENSE.txt": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
     "packaging/licenses/runtime/ExifTool-13.59-README.txt": "e13005e5431c89910feba2309710d844f1bf4fd97df1236284e6475161bc14da",
+    "packaging/licenses/runtime/ExifTool-Windows-13.59-readme.txt": "494086293654ae4bfe268410ba215d53294465fb4e2cc1afab99125cc47ee21b",
     "packaging/licenses/runtime/Perl-5.44.0-Artistic.txt": "dd90d4f42e4dcadf5a7c09eea0189d93c7b37ae560c91f0f6d5233ed3b9292a2",
     "packaging/licenses/runtime/Perl-5.44.0-Copying.txt": "8979e6dd61852041643c5c5c40ea63b2bd1b438a67d114e62cbaef808c514315",
     "packaging/licenses/wheels/05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6.txt": "4a765ceefcddd40d6518f2f22f0fe2c6d532890be821d8bb1f2c21ebafed8817",
@@ -93,7 +94,7 @@
     "packaging/licenses/wheels/eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449.txt": "eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449",
     "packaging/licenses/wheels/f1218143d766da3fea66f13396b7f15df46a83303f29bf96ba6e98eb4d42f408.txt": "7eec27ee66da53ba5912cb00b3521ac4428834bb37d0691080bf5d543b0cbb31",
     "packaging/licenses/wheels/fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec.txt": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec",
-    "packaging/third-party-components.json": "f1b84ce0ef4d822b82fde5f713321c7861d3c7977f9b54599e29e29b9151ac9d"
+    "packaging/third-party-components.json": "e4987fb42c73c80473e86fe9086cf251771bddbfee434345fc223f2efdbfb22d"
   },
   "wheel_origins": [
     {
@@ -887,6 +888,16 @@
       "sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
       "path": "packaging/licenses/wheels/3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf.txt",
       "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    }
+  ],
+  "archive_origins": [
+    {
+      "archive": "exiftool-13.59_64.zip",
+      "archive_sha256": "44b512b25af500724ba579d0a53c8fc5851628b692dd5e5d94ae4a15c2cba9ec",
+      "member": "exiftool-13.59_64/exiftool_files/readme_windows.txt",
+      "member_sha256": "a28e6c55c8cf5bfa14458cea8ffa106a54a52dd937624bdc36ed12a178239e0f",
+      "path": "packaging/licenses/runtime/ExifTool-Windows-13.59-readme.txt",
+      "text_normalization": "CRLF to LF, trailing line whitespace removed, one final LF; no wording changes"
     }
   ],
   "runtime_origins": [

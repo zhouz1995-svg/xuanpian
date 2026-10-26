@@ -4,6 +4,23 @@ This is an evidence inventory, **not** a statement that the application or DMG m
 
 ## Evidence already located
 
+### Windows candidate inputs (2026-10-26)
+
+The Windows x64 ExifTool 13.59 input is fixed by archive SHA-256 in
+`packaging/runtime-windows-sources.json`, independently matched against the
+upstream distribution checksums. The original `exiftool_files` payload, including
+its complete `Licenses_Strawberry_Perl.zip`, LICENSE and Windows readme, is kept
+in the hashed runtime. The Windows readme is also preserved as a source notice;
+it identifies the ExifTool, Strawberry Perl and Oliver Betz launcher components
+and states the launcher's CC0 terms. This is not a classification or clearance
+of every bundled DLL or its corresponding-source obligations.
+
+`packaging/requirements-windows-x64.lock` separately identifies the Windows build
+closure. Inno Setup is used only as a compiler; its identity is recorded in each
+candidate. Its separate upstream license and commercial-support requests remain
+applicable. Public CI candidates are not treated as private storage or as a
+completed license/security review of a Windows Release.
+
 ### Pillow security update (2026-10-26)
 
 The current dependency is Pillow 13.0.0, replacing 11.3.0 in new builds to

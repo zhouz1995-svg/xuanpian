@@ -1,0 +1,59 @@
+name: Windows candidate
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: windows-package-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  package:
+    name: Windows x64 installer
+    runs-on: windows-2022
+    timeout-minutes: 30
+    env:
+      PYTHONUTF8: "1"
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9
+        with:
+          version: "0.11.7"
+      - name: Install pinned native Python and dependencies
+        shell: pwsh
+        run: |
+          uv python install 3.11.15
+          uv venv --python 3.11.15 .venv
+          uv pip install --python .venv/Scripts/python.exe --only-binary :all: --require-hashes -r packaging/requirements-windows-x64.lock
+          & .venv/Scripts/python.exe -m pip check
+      - name: Test Windows boundaries and offline engine
+        shell: pwsh
+        run: >-
+          .venv/Scripts/python.exe -m pytest -q
+          tests/test_windows_runtime.py tests/test_windows_packaging.py
+          tests/test_onnx_detection.py tests/test_onnx_backend.py tests/test_image_ops.py
+          tests/test_focus_analyzer.py tests/test_af_focus.py tests/test_subject_locator.py
+          tests/test_technical_analysis_contracts.py
+      - name: Prepare approved runtime and build native installer
+        shell: pwsh
+        run: |
+          & .venv/Scripts/python.exe scripts/prepare_windows_runtime.py --output "$env:RUNNER_TEMP/metadata-runtime"
+          $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6/ISCC.exe'
+          & .venv/Scripts/python.exe scripts/build_windows.py --runtime "$env:RUNNER_TEMP/metadata-runtime" --output "$env:RUNNER_TEMP/windows-candidate" --iscc $iscc
+      - name: Verify frozen engine, installed app and data-safe uninstall
+        shell: pwsh
+        run: .venv/Scripts/python.exe scripts/check_windows_candidate.py "$env:RUNNER_TEMP/windows-candidate"
+      - name: Upload unsigned verification candidate (not a Release)
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: XuanPian-windows-x64-unsigned-${{ github.sha }}
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/windows-candidate/XuanPian-*-windows-x64-unsigned.exe
+            ${{ runner.temp }}/windows-candidate/*.sha256
+            ${{ runner.temp }}/windows-candidate/verification.json
+            ${{ runner.temp }}/windows-candidate/app/bundle-files.json
+            ${{ runner.temp }}/windows-candidate/app/_internal/build-provenance.json
