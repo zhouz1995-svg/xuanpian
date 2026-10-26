@@ -32,6 +32,6 @@ Files: existing `packaging/licenses/wheels/` snapshot, `packaging/notice-manifes
 
 - [x] Preserve exact Pillow 13 arm64 wheel license/bundled-library texts with wheel/member hashes; reuse the byte-identical existing snapshot and update current evidence without rewriting historical records.
 - [x] Reproduce the real Pillow 13 FreeType/HarfBuzz cycle as failing native-gate tests; stop only current-load-chain cycles while retaining external dependency checks. Review and refresh the hash-bound synthetic fixture exemption because its file gained these tests; keep unknown/changed owner rejection.
-- [ ] Run full pytest, pip consistency checks, real-photo before/after comparisons, and a fresh bundle build; verify native floors, notices, model loading, startup, frozen analysis and DMG copy integrity.
-- [ ] Obtain independent read-only review; record the exact scope and remaining dependency/OS acceptance gates. Do not call the entire dependency graph secure solely because Pillow is updated.
-- [ ] Commit and update PR #2; wait for macOS arm64, Intel Mac and Windows CI results without bypassing failures or merging automatically.
+- [x] Run full pytest, pip consistency checks, real-photo before/after comparisons, and a fresh bundle build; verify native floors, notices, model loading, startup, frozen analysis and DMG copy integrity.
+- [x] Obtain independent read-only review; record the exact scope and remaining dependency/OS acceptance gates. Do not call the entire dependency graph secure solely because Pillow is updated.
+**Final PR gate:** Commit and update PR #2; require macOS arm64, Intel Mac and Windows CI to pass on the latest head without bypassing failures or merging automatically. Live results are recorded on the PR rather than copied into a checkbox that becomes stale after documentation commits.

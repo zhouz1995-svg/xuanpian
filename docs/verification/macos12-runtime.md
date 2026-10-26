@@ -1,5 +1,8 @@
 # macOS 12 构建目标验证 / Deployment-target verification
 
+后续：[Pillow 安全升级验证](pillow-security.md)记录了新的 13.0.0 候选包；
+本记录中的旧候选及其依赖警告仍按原始产物保留，不会自动获得更新。
+
 验证日期：2026-10-26。应用候选源码提交：`e7bb0fbb5b691bb89e2de5c439321021054e2d5e`。
 
 ## 结论
