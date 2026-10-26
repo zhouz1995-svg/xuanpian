@@ -10,11 +10,66 @@ import stat
 import sys
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
+from xml.etree import ElementTree as ET
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 from scripts.build_metadata_runtime import _download, _sha256, verify_archive
 from src.xuanpian.engine.metadata_runtime import RuntimeUnavailable, _relative_path, _bundle_runtime, _environment
+
+UTF8_RECIPE = "active-code-page-utf8-v1"
+
+
+def utf8_process_manifest(original: bytes) -> bytes:
+    """Preserve the upstream settings while opting this process into UTF-8."""
+    root = ET.fromstring(original.rstrip(b"\0"))
+    namespace = "urn:schemas-microsoft-com:asm.v3"
+    application = root.find(f"{{{namespace}}}application")
+    if application is None:
+        application = ET.SubElement(root, f"{{{namespace}}}application")
+    settings = application.find(f"{{{namespace}}}windowsSettings")
+    if settings is None:
+        settings = ET.SubElement(application, f"{{{namespace}}}windowsSettings")
+    tag = "{http://schemas.microsoft.com/SMI/2019/WindowsSettings}activeCodePage"
+    node = settings.find(tag)
+    if node is None:
+        node = ET.SubElement(settings, tag)
+    node.text = "UTF-8"
+    ET.register_namespace("", "urn:schemas-microsoft-com:asm.v1")
+    ET.register_namespace("asmv3", namespace)
+    ET.register_namespace("ws2", "http://schemas.microsoft.com/SMI/2016/WindowsSettings")
+    ET.register_namespace("ws3", "http://schemas.microsoft.com/SMI/2019/WindowsSettings")
+    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
+
+
+def read_launcher_manifest(executable: Path) -> bytes:
+    from PyInstaller.utils.win32.winresource import get_resources
+    # Upstream uses language 1033, not neutral. Read values explicitly rather
+    # than relying on the pinned high-level reader's non-neutral fallback.
+    resources = get_resources(str(executable), [24])[24][1]
+    manifests = list(resources.values())
+    if not manifests or any(value != manifests[0] for value in manifests):
+        raise ValueError("missing or conflicting launcher manifests")
+    return manifests[0]
+
+
+def enable_utf8_launcher(executable: Path, recipe: dict) -> None:
+    if recipe.get("recipe") != UTF8_RECIPE or _sha256(executable) != recipe.get("upstream_sha256"):
+        raise ValueError("unapproved launcher transform input")
+    if sys.platform != "win32":
+        raise RuntimeError("native Windows required for launcher resource transform")
+    from PyInstaller.utils.win32.winmanifest import write_manifest_to_executable
+    original = read_launcher_manifest(executable)
+    manifest = utf8_process_manifest(original)
+    write_manifest_to_executable(str(executable), manifest)
+    if read_launcher_manifest(executable).rstrip(b"\0") != manifest:
+        raise ValueError("launcher manifest resource verification failed")
+    root = executable.parent.parent
+    (root / "launcher-utf8.manifest").write_bytes(manifest)
+    (root / "launcher-transform.json").write_text(json.dumps({
+        "recipe": UTF8_RECIPE, "upstream_sha256": recipe["upstream_sha256"],
+        "derived_sha256": _sha256(executable), "manifest_sha256": hashlib.sha256(manifest).hexdigest(),
+    }, indent=2) + "\n", encoding="utf-8")
 
 
 def prepare_runtime(source_manifest: Path, archive: Path, output: Path) -> Path:
@@ -72,6 +127,8 @@ def prepare_runtime(source_manifest: Path, archive: Path, output: Path) -> Path:
             raise ValueError("unexpected pre-renamed launcher")
         (vendor / "exiftool(-k).exe").rename(executable)
         executable.chmod(0o755)
+        if config.get("launcher_transform") is not None:
+            enable_utf8_launcher(executable, config["launcher_transform"])
         generated = {
             "schema_version": 2,
             "target": config["target"],

@@ -95,6 +95,19 @@ def inspect_bundle(app: Path) -> list[str]:
         for name in files:
             _relative_path(name)
         resolve_metadata_runtime(bundle_root=internal, development_executable=None)
+        metadata_root = internal / "metadata-runtime"
+        transform = json.loads((metadata_root / "launcher-transform.json").read_text())
+        recipe = json.loads((ROOT / "packaging/runtime-windows-sources.json").read_text())["launcher_transform"]
+        if (transform.get("recipe") != recipe["recipe"]
+                or transform.get("upstream_sha256") != recipe["upstream_sha256"]
+                or transform.get("derived_sha256") != _sha256(metadata_root / "exiftool/exiftool.exe")
+                or transform.get("manifest_sha256") != _sha256(metadata_root / "launcher-utf8.manifest")):
+            problems.append("invalid launcher transform provenance")
+        if sys.platform == "win32":
+            from scripts.prepare_windows_runtime import read_launcher_manifest
+            embedded = read_launcher_manifest(metadata_root / "exiftool/exiftool.exe")
+            if embedded.rstrip(b"\0") != (metadata_root / "launcher-utf8.manifest").read_bytes():
+                problems.append("launcher embedded manifest mismatch")
         for name, expected in notice_payload(ROOT).items():
             if (internal / "legal" / name).read_bytes() != expected:
                 problems.append("notice mismatch: " + name)

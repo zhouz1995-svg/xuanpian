@@ -208,3 +208,16 @@ except ProjectDatabaseLockedError:
         assert busy.returncode == 23, busy.stderr
     reopened = subprocess.run(command, capture_output=True)
     assert reopened.returncode == 0, reopened.stderr
+
+
+def test_launcher_utf8_manifest_preserves_long_path_setting():
+    from xml.etree import ElementTree as ET
+    from scripts.prepare_windows_runtime import utf8_process_manifest
+    original = b'''<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+<application xmlns="urn:schemas-microsoft-com:asm.v3"><windowsSettings>
+<longPathAware xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">true</longPathAware>
+</windowsSettings></application></assembly>'''
+    root = ET.fromstring(utf8_process_manifest(original))
+    assert root.find(".//{http://schemas.microsoft.com/SMI/2019/WindowsSettings}activeCodePage").text == "UTF-8"
+    assert root.find(".//{http://schemas.microsoft.com/SMI/2016/WindowsSettings}longPathAware").text == "true"
+    assert root.tag == "{urn:schemas-microsoft-com:asm.v1}assembly"

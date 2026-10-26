@@ -21,6 +21,8 @@ Mac 只进行源码测试与静态准备，Windows 原生包在 GitHub windows-2
 
 Windows 子进程环境仅保留必要系统与临时目录，不继承 PERL 注入变量或用户 PATH；关闭控制台窗口，按 UTF-8 接收 JSON。Mac 环境与调用约定保持兼容。
 
+2026-10-27 原生验收修订：照片中文名通过 UTF-8 `-@ -` 标准输入传入，拒绝 CR/LF/NUL 与相对文件名。官方 launcher 在中文安装目录下会因 ANSI 自身路径转换找不到 Perl DLL；仅给该 launcher 的已有 PE 清单添加微软支持的进程级 `activeCodePage=UTF-8`。保留 longPathAware 和全部 Perl 文件，原始 launcher 哈希与配方绑定，派生 launcher、清单和变换记录进入完整哈希清单。无需全局 UTF-8 区域设置、管理员权限、ASCII 目录别名或 8.3 短路径。Windows 10 22H2+ 满足该机制的 1903+ 下限。中文 runtime 目录的原生预检先于打包执行，安装后再次读取中文照片。
+
 ## 构建与安装
 
 Windows 专用 hash lock、spec、builder 和验证脚本分别管理，不复用 Mac 的 arm64/Info.plist/代码签名规则。资源包含 QSS、ICO/PNG、两个 ONNX 模型、legal snapshot 和校验后的 metadata-runtime。构建输出必须是新目录，并记录源码提交、脏状态、Python、依赖锁和运行时摘要。

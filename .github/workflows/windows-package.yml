@@ -44,7 +44,7 @@ jobs:
         shell: pwsh
         run: |
           @'
-          import os, subprocess, tempfile
+          import os, shutil, tempfile
           from pathlib import Path
           from PIL import Image
           from src.xuanpian.engine.metadata_runtime import resolve_metadata_runtime
@@ -52,6 +52,9 @@ jobs:
           runtime = resolve_metadata_runtime(bundle_root=Path(os.environ['RUNNER_TEMP']), development_executable=None)
           failed = False
           with tempfile.TemporaryDirectory() as folder:
+              unicode_root = Path(folder) / '中文 运行时'
+              shutil.copytree(Path(os.environ['RUNNER_TEMP']) / 'metadata-runtime', unicode_root / 'metadata-runtime')
+              runtime = resolve_metadata_runtime(bundle_root=unicode_root, development_executable=None)
               for name in ('synthetic.jpg', '中文 路径/合成照片.jpg'):
                   photo = Path(folder) / name
                   photo.parent.mkdir(exist_ok=True)

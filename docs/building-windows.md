@@ -36,6 +36,17 @@ ExifTool，避免 Windows ANSI 命令行转换；保留禁用外部配置的 `-c
 此路径与官方 ExifTool 的 [Windows Unicode 文件名说明](https://github.com/exiftool/exiftool/blob/13.59/exiftool)
 所推荐的 UTF-8 参数文件方式一致；不宣称所有特殊 Unicode 文件名均已验证。
 
+官方 launcher 的自身目录还受 ANSI 代码页影响。原生 Windows 准备阶段使用
+已锁定 PyInstaller 的资源 API，在校验过原始哈希的 launcher 内嵌清单中添加
+进程级 `activeCodePage=UTF-8`，保留上游 longPathAware；不改注册表、系统区域、
+安装位置、Perl DLL/脚本或许可证。该 Windows 10 1903+ 机制属于
+[微软支持的 UTF-8 进程代码页方案](https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page)，
+处于本项目 Windows 10 22H2+ 目标之内。
+原始压缩包 SHA-256 不变；`launcher-transform.json` 记录派生前后哈希和配方，
+`launcher-utf8.manifest` 保存嵌入内容，两者均进入运行时全文件清单。
+包检查器还核对真实 PE 清单资源。声明此配方的实际运行时必须在 Windows
+准备，不能将 Mac 静态解压产物当作最终 Windows 运行时。
+
 ## 验证与交付边界
 
 `verify_windows_bundle.py` 校验全文件清单、PE x64、所需 DLL、离线模型、notice、

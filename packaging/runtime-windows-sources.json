@@ -1,6 +1,10 @@
 {
   "schema_version": 1,
   "target": {"platform": "windows", "architecture": "x86_64"},
+  "launcher_transform": {
+    "recipe": "active-code-page-utf8-v1",
+    "upstream_sha256": "68c079c32fdae0d6c7130e9a5fb73f8ac9dabdf9ab8da312da4f6c549d6d3385"
+  },
   "exiftool": {
     "version": "13.59",
     "url": "https://sourceforge.net/projects/exiftool/files/exiftool-13.59_64.zip/download",
