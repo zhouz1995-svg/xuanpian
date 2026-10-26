@@ -3,9 +3,32 @@
 from __future__ import annotations
 
 import errno
-import fcntl
 from pathlib import Path
+import sys
 from typing import BinaryIO
+
+if sys.platform == "win32":
+    import msvcrt
+else:
+    import fcntl
+
+
+def _lock_file(handle: BinaryIO) -> None:
+    if sys.platform == "win32":
+        # Windows permits byte-range locks beyond EOF; keep the lock file
+        # unchanged and always lock the same byte, including when empty.
+        handle.seek(0)
+        msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+    else:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+
+def _unlock_file(handle: BinaryIO) -> None:
+    if sys.platform == "win32":
+        handle.seek(0)
+        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+    else:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
 class ProjectDatabaseLockedError(RuntimeError):
@@ -30,7 +53,7 @@ class ProjectDatabaseLock:
         lock_path.parent.mkdir(parents=True, exist_ok=True)
         handle = lock_path.open("a+b")
         try:
-            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            _lock_file(handle)
         except OSError as error:
             handle.close()
             if error.errno in (errno.EACCES, errno.EAGAIN):
@@ -68,7 +91,7 @@ class ProjectDatabaseLock:
             return
         self._handle = None
         try:
-            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+            _unlock_file(handle)
         finally:
             handle.close()
 

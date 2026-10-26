@@ -168,3 +168,43 @@ def test_failed_frozen_probe_terminates_its_workers_before_pool_shutdown():
             if worker.is_alive():
                 worker.terminate()
         pool.shutdown(wait=True, cancel_futures=True)
+
+
+def test_database_lock_backend_excludes_another_open_handle(tmp_path):
+    from src.xuanpian.store.database_lock import _lock_file
+    path = tmp_path / "项目.lock"
+    with path.open("a+b") as first:
+        _lock_file(first)
+        with path.open("a+b") as second:
+            with pytest.raises(OSError):
+                _lock_file(second)
+    with path.open("a+b") as reopened:
+        _lock_file(reopened)
+
+
+def test_desktop_entrypoint_imports_on_the_native_platform():
+    from src.main import main
+    assert callable(main)
+
+
+def test_database_lock_excludes_other_process_and_releases_on_close(tmp_path):
+    import subprocess
+    import sys
+    from src.xuanpian.store.database_lock import ProjectDatabaseLock
+    path = tmp_path / "中文项目.sqlite3"
+    probe = """
+import sys
+from pathlib import Path
+from src.xuanpian.store.database_lock import ProjectDatabaseLock, ProjectDatabaseLockedError
+try:
+    with ProjectDatabaseLock.acquire(Path(sys.argv[1])):
+        pass
+except ProjectDatabaseLockedError:
+    sys.exit(23)
+"""
+    command = [sys.executable, "-c", probe, str(path)]
+    with ProjectDatabaseLock.acquire(path):
+        busy = subprocess.run(command, capture_output=True)
+        assert busy.returncode == 23, busy.stderr
+    reopened = subprocess.run(command, capture_output=True)
+    assert reopened.returncode == 0, reopened.stderr

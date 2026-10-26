@@ -110,12 +110,18 @@ def frozen_analysis(app: Path, photo: Path):
                 version = pool.submit(eval, "__import__('PIL').__version__").result(timeout=60)
                 print(f"Frozen Pillow loaded: {version}", flush=True)
                 assert version == "13.0.0", version
+                project = photo.parent / "冻结项目.sqlite3"
+                expression = ("__import__('src.xuanpian.store.project_store', fromlist=['ProjectStore'])"
+                              f".ProjectStore.open({str(project)!r}).close()")
+                pool.submit(eval, expression).result(timeout=60)
+                assert project.is_file(), "frozen project store did not create its database"
                 result = pool.submit(analyze_photo, PhotoAnalysisRequest("synthetic", str(photo), ("technical",))).result(timeout=60)
                 outcome = result.outcomes[0]
                 assert outcome.failure is None, outcome.failure
                 assert outcome.result.algorithm_version == "technical-v8"
                 assert outcome.result.portrait_assessed is True
-                return {"pillow": version, "algorithm": outcome.result.algorithm_version}
+                return {"pillow": version, "algorithm": outcome.result.algorithm_version,
+                        "project_store": "PASS"}
             except BaseException:
                 abort_frozen_workers(pool)
                 raise
