@@ -28,6 +28,10 @@ thresholds, requested tags, or read-only invocation.
 
 The source manifest links the upstream release pages, checksum evidence, and license
 identifiers. Perl's `INSTALL` and `README.macosx` are authoritative for the build.
+The manifest pins `build.deployment_target` to `12.0`. The builder exports this
+as `MACOSX_DEPLOYMENT_TARGET` for Configure, compilation, linking and upstream
+tests, overriding an inherited host target and removing inherited compiler/linker
+overrides. Perl's Darwin hints add the corresponding minimum-version flags.
 Those source references and the runtime's copied license files are preliminary
 evidence, not a complete source/notice compliance review of the final DMG.
 The build uses `-Duserelocatableinc`, a static libperl, and system library search
@@ -129,7 +133,11 @@ keep hash verification enabled:
 
 ```bash
 python3.11 -m venv build/macos-arm64-venv
-build/macos-arm64-venv/bin/python -m pip install --require-hashes \
+build/macos-arm64-venv/bin/python -m pip download \
+  --platform macosx_12_0_arm64 --only-binary=:all: --require-hashes \
+  -r packaging/requirements-macos-arm64.lock -d build/macos12-wheels
+build/macos-arm64-venv/bin/python -m pip install --no-index \
+  --find-links build/macos12-wheels --require-hashes \
   -r packaging/requirements-macos-arm64.lock
 build/macos-arm64-venv/bin/python -m pip check
 build/macos-arm64-venv/bin/python scripts/build_macos.py \
@@ -137,8 +145,15 @@ build/macos-arm64-venv/bin/python scripts/build_macos.py \
   --output build/macos-candidate-0.1.0-arm64
 ```
 
-Always choose a new output directory. The builder rejects existing paths, including
-symlinks, and does not replace the source runtime. It validates that runtime with the
+Always choose new output and wheel-cache directories. Use a fresh environment
+and the target-aware download command above: a normal host-targeted pip install
+on macOS 14+ can select NumPy's
+macOS-14-only wheel even though a compatible macOS-11 wheel exists at the same
+version. Both wheels are in the hash lock; pinning a package version alone does
+not pin its operating-system floor. Inspect the final bundle before delivery.
+
+The builder rejects existing paths, including symlinks, and does not replace the
+source runtime. It validates that runtime with the
 application resolver, then stages a regular, symlink-free copy under
 `Contents/Resources/metadata-runtime`. The frozen AF reader accepts that exact
 resource directory only when it belongs to the running `.app` and still verifies its
@@ -150,9 +165,10 @@ notarization.
 `Contents/Resources/build-provenance.json` records the source commit, whether it was
 dirty, project version, Python version, SDK, lock digest, source-runtime provenance,
 and final runtime-manifest digest without absolute local paths. The source version
-in `pyproject.toml` is the only version authority. This candidate's bundled Perl
-declares macOS 26.0 as its binary floor; `LSMinimumSystemVersion` reflects that floor,
-not a claim of testing on macOS 26.0. Actual tested macOS versions, clean-machine
+in `pyproject.toml` is the only version authority. New candidates target macOS 12.0,
+with a rebuilt Perl runtime and target-selected NumPy wheel. The bundle inspector
+rejects any native component whose deployment floor exceeds that declaration.
+Older macOS-26 candidates are unchanged. Actual tested macOS versions, clean-machine
 portability, app launch, DMG installation, and signing/notarization status must be
 recorded separately before any public release claim.
 
@@ -201,8 +217,8 @@ the copied app without separate authorization. This artifact is locally ad-hoc
 signed, not Developer ID signed or notarized, and must not be described as a
 publicly releasable signed distribution.
 
-The declared binary floor is macOS 26.0; only the macOS 26.3.1(a) build host
-has actually been exercised. A clean Mac, drag-and-drop GUI launch, offline
+The new binary target is macOS 12.0; only the macOS 26.3.1(a) build host
+has actually been exercised locally. A clean macOS 12 Mac, drag-and-drop GUI launch, offline
 workflow, exact third-party notice inclusion, and model/native rights remain
 unverified release gates. The wheel staging script currently copies only
 `pyproject.toml` and `src/`; root `LICENSE` and third-party notices must not be

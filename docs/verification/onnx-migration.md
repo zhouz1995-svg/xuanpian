@@ -1,5 +1,9 @@
 # ONNX migration verification — 2026-10-23
 
+Follow-up: the separate [macOS 12 runtime verification](macos12-runtime.md)
+records the replacement of this report's macOS-26 Perl runtime and macOS-14
+NumPy wheel. The original candidate and results below are historical and unchanged.
+
 ## Implemented scope
 
 The default technical analysis service now uses CPU ONNX Runtime with two

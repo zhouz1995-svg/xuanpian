@@ -4,7 +4,8 @@
   "scope": "Historical wheel texts plus current ONNX/model source notices; current pins do not imply the historical native observations are shipped. New bundle audit pending.",
   "files": {
     "LICENSE": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
-    "THIRD_PARTY_NOTICES.md": "101913a28c8a4d439b147c284a0fb3332fccae934459766ac2046b1cb5c45b57",
+    "packaging/licenses/numpy/2.2.6-macos11-arm64-LICENSE.txt": "14410921cb870d3c9f127c14f1528dcb8c56ac2a897dd1f0b986a916e5678e5d",
+    "THIRD_PARTY_NOTICES.md": "f05939e4fa9fae793141c6f5a8e940b6282ec0dd5d9c8a37a1057ad9b0fc394c",
     "packaging/licenses/PyQt6_sip-BSD-2-Clause.txt": "3e6f5b427c36f94ecf86bc01698af7030a1ed6eb3748110d5dbb8d142d804611",
     "packaging/licenses/Qt-LGPL-3.0.txt": "6c671e2912ec69c0832f32066c0313cee5fdc3bbcbce237822e89f3da58edd4e",
     "packaging/licenses/models/YOLOX-Apache-2.0.txt": "577c03d505ec80f667ebf96ebd0cc4f6825c817ca1088ee348c48aaabd51bd92",
@@ -92,9 +93,25 @@
     "packaging/licenses/wheels/eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449.txt": "eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449",
     "packaging/licenses/wheels/f1218143d766da3fea66f13396b7f15df46a83303f29bf96ba6e98eb4d42f408.txt": "7eec27ee66da53ba5912cb00b3521ac4428834bb37d0691080bf5d543b0cbb31",
     "packaging/licenses/wheels/fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec.txt": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec",
-    "packaging/third-party-components.json": "6902df18fe8baad8d0ce675638eb1ab2e632e3855a42750d035a7a56a69e1735"
+    "packaging/third-party-components.json": "f1b84ce0ef4d822b82fde5f713321c7861d3c7977f9b54599e29e29b9151ac9d"
   },
   "wheel_origins": [
+    {
+      "wheel": "pillow-13.0.0-cp311-cp311-macosx_11_0_arm64.whl",
+      "wheel_sha256": "37290fbef0c73e2d51d594eb78fded7dc7170d1c3ad0a890269e6fd8c8c4e061",
+      "member": "pillow-13.0.0.dist-info/licenses/LICENSE",
+      "sha256": "dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce",
+      "path": "packaging/licenses/wheels/dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce.txt",
+      "text_normalization": "None; exact installed wheel member bytes, equal to the already preserved text."
+    },
+    {
+      "wheel": "numpy-2.2.6-cp311-cp311-macosx_11_0_arm64.whl",
+      "wheel_sha256": "c820a93b0255bc360f53eca31a0e676fd1101f673dda8da93454a12e23fc5f7a",
+      "member": "numpy-2.2.6.dist-info/LICENSE.txt",
+      "sha256": "14410921cb870d3c9f127c14f1528dcb8c56ac2a897dd1f0b986a916e5678e5d",
+      "path": "packaging/licenses/numpy/2.2.6-macos11-arm64-LICENSE.txt",
+      "text_normalization": "None; exact installed wheel member bytes. Includes the wheel's bundled-library notices."
+    },
     {
       "wheel": "absl_py-2.5.0-py3-none-any.whl",
       "wheel_sha256": "0f17b89f2a4eaaedc4f28c622998aa690564b3012a396a4ffad0821007fe03ba",

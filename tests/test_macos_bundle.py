@@ -56,6 +56,34 @@ def test_inherited_rpath_is_resolved_from_declaring_loader(tmp_path, monkeypatch
     assert gate._inspect_native_dependencies(app, binary, list(infos)) == []
 
 
+@pytest.mark.parametrize("external", [None, "/opt/homebrew/lib/libbad.dylib"])
+def test_circular_native_loads_terminate_without_skipping_external_edges(
+    tmp_path, monkeypatch, external,
+):
+    app, binary = _native(tmp_path, "")
+    first = app / "Contents/Frameworks/libfirst.dylib"
+    second = app / "Contents/Frameworks/libsecond.dylib"
+    first.parent.mkdir(parents=True)
+    for library in (first, second):
+        library.write_bytes(b"\xcf\xfa\xed\xfe")
+    infos = {
+        binary: gate.NativeInfo(("@rpath/libfirst.dylib",),
+                               ("@executable_path/../Frameworks",), "arm64", "11.0"),
+        first: gate.NativeInfo(("@rpath/libsecond.dylib",), ("@loader_path",), "arm64", "11.0"),
+        second: gate.NativeInfo(("@rpath/libfirst.dylib",) + ((external,) if external else ()),
+                                ("@loader_path",), "arm64", "11.0"),
+    }
+    monkeypatch.setattr(gate, "_native_metadata", infos.__getitem__)
+
+    violations = gate._inspect_native_dependencies(app, binary, list(infos))
+
+    if external:
+        assert any(item["kind"] == "dependency" and external in item["detail"]
+                   for item in violations)
+    else:
+        assert violations == []
+
+
 @pytest.mark.parametrize("runpaths,should_fail", [
     (("/opt/homebrew/lib", "@executable_path/../Frameworks"), True),
     (("@executable_path/../Frameworks", "/opt/homebrew/lib"), False),

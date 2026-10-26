@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -121,6 +122,12 @@ def _load_source_manifest(path: Path) -> dict[str, Any]:
     target = data.get("target")
     if target != {"platform": "macos", "architecture": "arm64"}:
         raise ValueError("source manifest target must be macOS arm64")
+    build = data.get("build")
+    deployment_target = build.get("deployment_target") if isinstance(build, dict) else None
+    if (not isinstance(deployment_target, str)
+            or not re.fullmatch(r"[0-9]+\.[0-9]+", deployment_target)
+            or tuple(map(int, deployment_target.split("."))) < (11, 0)):
+        raise ValueError("build.deployment_target must be a macOS arm64 version >= 11.0")
     sources = data.get("sources")
     if not isinstance(sources, dict) or set(sources) != {"perl", "exiftool"}:
         raise ValueError("source manifest must contain perl and exiftool sources")
@@ -133,7 +140,7 @@ def _load_source_manifest(path: Path) -> dict[str, Any]:
     return data
 
 
-def _clean_build_environment(sdkroot: str) -> dict[str, str]:
+def _clean_build_environment(sdkroot: str, deployment_target: str) -> dict[str, str]:
     environment = os.environ.copy()
     for key in _PERL_ENVIRONMENT_KEYS:
         environment.pop(key, None)
@@ -141,7 +148,13 @@ def _clean_build_environment(sdkroot: str) -> dict[str, str]:
     environment.pop("DYLD_FALLBACK_LIBRARY_PATH", None)
     environment.pop("LIBRARY_PATH", None)
     environment.pop("CPATH", None)
+    for key in ("CFLAGS", "CPPFLAGS", "CXXFLAGS", "LDFLAGS", "CC", "CXX", "LD",
+                "MAKEFLAGS", "MFLAGS"):
+        environment.pop(key, None)
     environment["SDKROOT"] = sdkroot
+    # Perl's Darwin hints propagate this into compile and link flags, including
+    # XS modules. Never silently inherit the build host's deployment target.
+    environment["MACOSX_DEPLOYMENT_TARGET"] = deployment_target
     return environment
 
 
@@ -232,7 +245,7 @@ def build_runtime(source_manifest: Path, output: Path) -> Path:
     source_config = _load_source_manifest(source_manifest)
     compiler_path, sdk_path = _validate_host(source_config["build"])
     output.parent.mkdir(parents=True, exist_ok=True)
-    environment = _clean_build_environment(sdk_path)
+    environment = _clean_build_environment(sdk_path, source_config["build"]["deployment_target"])
 
     with tempfile.TemporaryDirectory(
         prefix=".metadata-runtime-build-", dir=output.parent

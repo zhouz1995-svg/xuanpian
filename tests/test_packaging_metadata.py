@@ -126,7 +126,7 @@ def test_spec_embeds_project_version_and_runtime_macos_floor(
     assert isinstance(info, dict)
     assert info["CFBundleShortVersionString"] == metadata["project"]["version"]
     assert info["CFBundleVersion"] == metadata["project"]["version"]
-    assert info["LSMinimumSystemVersion"] == "26.0"
+    assert info["LSMinimumSystemVersion"] == "12.0"
 
 
 def _project_scripts() -> dict[str, str]:

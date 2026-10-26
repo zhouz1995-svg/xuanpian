@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 import io
+import json
+import shutil
+import subprocess
+import sys
 import tarfile
 from pathlib import Path
 
@@ -9,6 +13,7 @@ import pytest
 from scripts.build_metadata_runtime import (
     _absolute_output,
     _clean_build_environment,
+    _load_source_manifest,
     build_runtime,
     safe_extract,
     verify_archive,
@@ -105,10 +110,54 @@ def test_build_environment_selects_verified_sdk_and_removes_external_perl_paths(
     monkeypatch.setenv("SDKROOT", "/untrusted/sdk")
     monkeypatch.setenv("PERL5LIB", "/untrusted/perl")
 
-    environment = _clean_build_environment("/verified/MacOSX.sdk")
+    environment = _clean_build_environment("/verified/MacOSX.sdk", "12.0")
 
     assert environment["SDKROOT"] == "/verified/MacOSX.sdk"
     assert "PERL5LIB" not in environment
+
+
+def test_build_target_overrides_host_and_removes_compiler_overrides(monkeypatch):
+    monkeypatch.setenv("MACOSX_DEPLOYMENT_TARGET", "26.0")
+    for key in ("CFLAGS", "CPPFLAGS", "CXXFLAGS", "LDFLAGS", "CC", "CXX", "LD"):
+        monkeypatch.setenv(key, "untrusted -mmacosx-version-min=26.0")
+
+    environment = _clean_build_environment("/verified/MacOSX.sdk", "12.0")
+
+    assert environment["MACOSX_DEPLOYMENT_TARGET"] == "12.0"
+    for key in ("CFLAGS", "CPPFLAGS", "CXXFLAGS", "LDFLAGS", "CC", "CXX", "LD"):
+        assert key not in environment
+
+
+@pytest.mark.skipif(shutil.which("make") is None, reason="make is not installed")
+def test_inherited_make_overrides_cannot_raise_link_deployment_target(monkeypatch):
+    monkeypatch.setenv("MAKEFLAGS", "LDDLFLAGS=-mmacosx-version-min=26.0")
+    monkeypatch.setenv("MFLAGS", "")
+    # Unlike dictionary-only tests, this invokes the real toolchain launcher:
+    # full-Xcode runners reject a fabricated SDK even for a make printf rule.
+    sdkroot = subprocess.run(
+        ["/usr/bin/xcrun", "--sdk", "macosx", "--show-sdk-path"],
+        check=True, capture_output=True, text=True,
+    ).stdout.strip() if sys.platform == "darwin" else "/"
+    environment = _clean_build_environment(sdkroot, "12.0")
+
+    result = subprocess.run(
+        [shutil.which("make"), "-f", "-", "print"],
+        input="LDDLFLAGS = -mmacosx-version-min=12.0\nprint:\n\t@printf '%s' '$(LDDLFLAGS)'\n",
+        env=environment, text=True, capture_output=True, check=True,
+    )
+
+    assert result.stdout == "-mmacosx-version-min=12.0"
+
+
+@pytest.mark.parametrize("target", [None, "", "12", "12.0 -bad", 12.0, "10.15"])
+def test_manifest_rejects_invalid_arm64_deployment_target(tmp_path, target):
+    manifest = json.loads((Path(__file__).parents[1] / "packaging/runtime-sources.json").read_text())
+    manifest["build"]["deployment_target"] = target
+    path = tmp_path / "sources.json"
+    path.write_text(json.dumps(manifest))
+
+    with pytest.raises(ValueError, match="deployment_target"):
+        _load_source_manifest(path)
 
 
 def test_relative_output_is_resolved_before_creating_staging_paths(

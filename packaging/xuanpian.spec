@@ -92,8 +92,9 @@ app = BUNDLE(
         "CFBundleDisplayName": "选片工作台",
         "CFBundleShortVersionString": VERSION,
         "CFBundleVersion": VERSION,
-        # The bundled Perl executable itself declares macOS 26.0 as its floor.
-        "LSMinimumSystemVersion": "26.0",
+        # Rebuilt metadata runtime and target-selected wheels must pass the
+        # native minimum-OS gate before delivery; this is not OS acceptance.
+        "LSMinimumSystemVersion": "12.0",
         "NSHighResolutionCapable": True,
         # Force dark native chrome so the macOS title bar (traffic lights
         # row) blends with the dark UI instead of a light strip.

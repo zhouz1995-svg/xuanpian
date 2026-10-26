@@ -4268,11 +4268,11 @@
       "version": "2.2.6",
       "source_url": "https://pypi.org/project/numpy/2.2.6/",
       "license_expression": null,
-      "license_file": null,
-      "redistribution_notes": "Current ONNX migration build input. Native bundle closure and notices remain to be checked against the next installer.",
+      "license_file": "packaging/licenses/numpy/2.2.6-macos11-arm64-LICENSE.txt",
+      "redistribution_notes": "macOS-12 arm64 candidate selects the macosx_11_0_arm64 wheel (SHA-256 c820a93b0255bc360f53eca31a0e676fd1101f673dda8da93454a12e23fc5f7a); exact wheel LICENSE.txt including bundled-library notices preserved. Native closure/source obligations still require review.",
       "verification_source": "packaging/requirements-macos-arm64.lock (2026-10-23)",
       "distribution_scope": "current_build_input",
-      "status": "unresolved"
+      "status": "partial"
     },
     {
       "name": "onnxruntime",
@@ -4298,14 +4298,14 @@
     },
     {
       "name": "pillow",
-      "version": "11.3.0",
-      "source_url": "https://pypi.org/project/pillow/11.3.0/",
-      "license_expression": null,
-      "license_file": null,
-      "redistribution_notes": "Current ONNX migration build input. Native bundle closure and notices remain to be checked against the next installer.",
-      "verification_source": "packaging/requirements-macos-arm64.lock (2026-10-23)",
+      "version": "13.0.0",
+      "source_url": "https://pypi.org/project/pillow/13.0.0/",
+      "license_expression": "MIT-CMU",
+      "license_file": "packaging/licenses/wheels/dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce.txt",
+      "redistribution_notes": "Security update to upstream 13.0.0. Exact macosx_11_0_arm64 wheel LICENSE and bundled-library notice bytes match the already preserved text; new wheel/member identity is recorded separately. Final native source/notice duties still require review.",
+      "verification_source": "packaging/requirements-macos-arm64.lock (2026-10-26); upstream Pillow 13.0.0 release notes",
       "distribution_scope": "current_build_input",
-      "status": "unresolved"
+      "status": "partial"
     },
     {
       "name": "pillow-heif",
