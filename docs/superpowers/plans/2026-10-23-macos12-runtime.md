@@ -21,16 +21,16 @@
 
 Files: `packaging/runtime-sources.json`, `scripts/build_metadata_runtime.py`, `tests/test_metadata_runtime_build.py`.
 
-- [ ] Add tests for rejecting missing/malformed deployment targets and for overriding inherited host targets/compiler flags.
-- [ ] Run `.venv/bin/python -m pytest tests/test_metadata_runtime_build.py -q` and confirm the new tests fail.
-- [ ] Require a numeric `build.deployment_target`, export it as `MACOSX_DEPLOYMENT_TARGET`, and remove inherited compiler/linker overrides. Pin `12.0` in the source manifest.
-- [ ] Run the tests again and build a fresh runtime with `scripts/build_metadata_runtime.py --manifest packaging/runtime-sources.json --output <fresh-runtime>`; retain upstream Perl and ExifTool test results.
+- [x] Add tests for rejecting missing/malformed deployment targets and for overriding inherited host targets/compiler flags.
+- [x] Run `.venv/bin/python -m pytest tests/test_metadata_runtime_build.py -q` and confirm the new tests fail.
+- [x] Require a numeric `build.deployment_target`, export it as `MACOSX_DEPLOYMENT_TARGET`, and remove inherited compiler/linker overrides. Pin `12.0` in the source manifest.
+- [x] Run the tests again and build a fresh runtime with `scripts/build_metadata_runtime.py --manifest packaging/runtime-sources.json --output <fresh-runtime>`; retain upstream Perl and ExifTool test results.
 
 ## Task 2: Compatible application candidate
 
 Files: `packaging/xuanpian.spec`, `docs/verification/macos12-runtime.md`.
 
-- [ ] Install the existing hash-locked requirements with `uv pip install --python-platform aarch64-apple-darwin --python ...` using a macOS 12 target selection; inspect NumPy's installed Mach-O files before proceeding.
-- [ ] Once all native components have floors at most 12.0, set `LSMinimumSystemVersion` to `12.0`.
-- [ ] Run the complete test suite, build a fresh app with the new runtime, run `verify_macos_bundle.py` and `smoke_test_bundle.py`, and test metadata extraction on an existing read-only photo sample.
-- [ ] Document actual native floors, host-only verification, artifact paths, and outstanding macOS 12/Intel/Windows acceptance. Review changes and commit on the feature branch; do not push directly to main.
+- [x] Install the existing hash-locked requirements with `uv pip install --python-platform aarch64-apple-darwin --python ...` using a macOS 12 target selection; inspect NumPy's installed Mach-O files before proceeding.
+- [x] Once all native components have floors at most 12.0, set `LSMinimumSystemVersion` to `12.0`.
+- [x] Run the complete test suite, build a fresh app with the new runtime, run `verify_macos_bundle.py` and `smoke_test_bundle.py`, and test metadata extraction on an existing read-only photo sample.
+- [x] Document actual native floors, host-only verification, artifact paths, and outstanding macOS 12/Intel/Windows acceptance. Review changes and commit on the feature branch; do not push directly to main.
