@@ -38,6 +38,49 @@ def boot(executable: Path):
         process.communicate(timeout=15)
 
 
+def abort_frozen_workers(pool: ProcessPoolExecutor) -> None:
+    """Diagnose and stop only this probe's workers before blocking shutdown.
+
+    Python 3.11 has no public terminate_workers API. This CI-only verifier uses
+    its pinned executor's process handles, never a global process-name kill.
+    """
+    workers = list((pool._processes or {}).values())
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            from ctypes import wintypes
+            user32 = ctypes.WinDLL("user32", use_last_error=True)
+            callback_type = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
+            user32.GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
+            user32.GetWindowTextW.argtypes = [wintypes.HWND, wintypes.LPWSTR, ctypes.c_int]
+            user32.EnumWindows.argtypes = [callback_type, wintypes.LPARAM]
+            user32.EnumChildWindows.argtypes = [wintypes.HWND, callback_type, wintypes.LPARAM]
+            pids = {worker.pid for worker in workers}
+            @callback_type
+            def text(hwnd, unused):
+                pid = wintypes.DWORD()
+                user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+                if pid.value in pids:
+                    buffer = ctypes.create_unicode_buffer(16000)
+                    user32.GetWindowTextW(hwnd, buffer, len(buffer))
+                    if buffer.value:
+                        print(f"Frozen worker {pid.value} window: {buffer.value}", flush=True)
+                return True
+            @callback_type
+            def window(hwnd, unused):
+                text(hwnd, 0)
+                user32.EnumChildWindows(hwnd, text, 0)
+                return True
+            user32.EnumWindows(window, 0)
+        except Exception as error:
+            print(f"Worker window diagnostics unavailable: {error!r}", flush=True)
+    for worker in workers:
+        if worker.is_alive():
+            worker.terminate()
+    for worker in workers:
+        worker.join(timeout=5)
+
+
 def frozen_analysis(app: Path, photo: Path):
     print(f"Frozen analysis: {app}", flush=True)
     internal = app / "_internal"
@@ -55,15 +98,19 @@ def frozen_analysis(app: Path, photo: Path):
     sys.frozen = True
     try:
         with ProcessPoolExecutor(max_workers=1, mp_context=mp.get_context("spawn")) as pool:
-            version = pool.submit(eval, "__import__('PIL').__version__").result(timeout=60)
-            print(f"Frozen Pillow loaded: {version}", flush=True)
-            assert version == "13.0.0", version
-            result = pool.submit(analyze_photo, PhotoAnalysisRequest("synthetic", str(photo), ("technical",))).result(timeout=60)
-            outcome = result.outcomes[0]
-            assert outcome.failure is None, outcome.failure
-            assert outcome.result.algorithm_version == "technical-v8"
-            assert outcome.result.portrait_assessed is True
-            return {"pillow": version, "algorithm": outcome.result.algorithm_version}
+            try:
+                version = pool.submit(eval, "__import__('PIL').__version__").result(timeout=60)
+                print(f"Frozen Pillow loaded: {version}", flush=True)
+                assert version == "13.0.0", version
+                result = pool.submit(analyze_photo, PhotoAnalysisRequest("synthetic", str(photo), ("technical",))).result(timeout=60)
+                outcome = result.outcomes[0]
+                assert outcome.failure is None, outcome.failure
+                assert outcome.result.algorithm_version == "technical-v8"
+                assert outcome.result.portrait_assessed is True
+                return {"pillow": version, "algorithm": outcome.result.algorithm_version}
+            except BaseException:
+                abort_frozen_workers(pool)
+                raise
     finally:
         mp.spawn.get_preparation_data = original
         mp.set_executable(original_executable)

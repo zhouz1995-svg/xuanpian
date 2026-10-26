@@ -148,3 +148,23 @@ def test_installer_language_rejects_unapproved_download_without_writing(tmp_path
     with pytest.raises(ValueError, match="language digest"):
         stage_installer_language(target, b"unapproved translation")
     assert not target.exists()
+
+
+def test_failed_frozen_probe_terminates_its_workers_before_pool_shutdown():
+    from concurrent.futures import ProcessPoolExecutor, TimeoutError
+    import multiprocessing as mp
+    import time
+    from scripts.check_windows_candidate import abort_frozen_workers
+    pool = ProcessPoolExecutor(max_workers=1, mp_context=mp.get_context("spawn"))
+    try:
+        future = pool.submit(time.sleep, 60)
+        with pytest.raises(TimeoutError):
+            future.result(timeout=0.1)
+        workers = list(pool._processes.values())
+        abort_frozen_workers(pool)
+        assert all(not worker.is_alive() for worker in workers)
+    finally:
+        for worker in (pool._processes or {}).values():
+            if worker.is_alive():
+                worker.terminate()
+        pool.shutdown(wait=True, cancel_futures=True)
