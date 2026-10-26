@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import platform
 from pathlib import Path
@@ -15,6 +16,19 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 from scripts.build_metadata_runtime import _sha256
 from src.xuanpian.engine.metadata_runtime import resolve_metadata_runtime
+
+
+def stage_msvc_runtime(internal: Path, qt_bin: Path) -> None:
+    """Relocate VC runtime from the locked Qt wheel, never host System32."""
+    for name in ("msvcp140.dll", "msvcp140_1.dll", "msvcp140_2.dll", "vcruntime140.dll",
+                 "vcruntime140_1.dll", "concrt140.dll"):
+        target = internal / name
+        if target.exists():
+            continue
+        source = qt_bin / name
+        if not source.is_file() or source.is_symlink():
+            raise ValueError("locked Qt wheel is missing VC runtime: " + name)
+        shutil.copy2(source, target)
 
 
 def build_app(*, runtime_root: Path, output: Path, iscc: Path) -> Path:
@@ -40,6 +54,9 @@ def build_app(*, runtime_root: Path, output: Path, iscc: Path) -> Path:
         app = delivery / "app"
         shutil.move(str(stage / "dist/XuanPian"), app)
         internal = app / "_internal"
+        qt_package = importlib.util.find_spec("PyQt6")
+        qt_bin = Path(next(iter(qt_package.submodule_search_locations))) / "Qt6/bin"
+        stage_msvc_runtime(internal, qt_bin)
         shutil.copytree(runtime_root, internal / "metadata-runtime")
         resolve_metadata_runtime(bundle_root=internal, development_executable=None)
         compiler = subprocess.run([str(iscc), "/?"], capture_output=True, text=True, errors="replace")
@@ -48,6 +65,7 @@ def build_app(*, runtime_root: Path, output: Path, iscc: Path) -> Path:
             "python_version": platform.python_version(), "signing": "unsigned",
             "requirements_lock_sha256": _sha256(ROOT / "packaging/requirements-windows-x64.lock"),
             "runtime_manifest_sha256": _sha256(internal / "metadata-runtime/manifest.json"),
+            "msvc_runtime_source": "locked PyQt6-Qt6 wheel; no host System32 fallback",
             "inno_compiler_sha256": _sha256(iscc), "inno_compiler_banner": compiler.stdout.splitlines()[:3]}
         (internal / "build-provenance.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8")
         inventory = {"schema_version": 1, "files": {p.relative_to(app).as_posix(): _sha256(p)

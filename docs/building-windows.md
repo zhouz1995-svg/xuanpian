@@ -31,7 +31,13 @@ $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6/ISCC.exe'
 ## 验证与交付边界
 
 `verify_windows_bundle.py` 校验全文件清单、PE x64、所需 DLL、离线模型、notice、
-运行时和构建溯源。`check_windows_candidate.py` 仅在临时目录生成合成照片，验证
+运行时和构建溯源。
+
+运行库从已锁定 Qt 轮子中补齐到 bootstrap 可见目录，不从构建主机 System32
+复制 MSVC DLL。校验按具体 loader 和对应包/Perl 子进程的 DLL 目录判断依赖，
+不会用任意 vendor 子目录的同名文件充数；可选 delay-load 导入不作为普通
+必需导入的清场结论。
+`check_windows_candidate.py` 仅在临时目录生成合成照片，验证
 中文路径、包内 Pillow/technical-v8、真实 ExifTool、离屏启动、静默安装、已安装
 程序及卸载后的项目数据哨兵。它不读取或上传用户照片。
 

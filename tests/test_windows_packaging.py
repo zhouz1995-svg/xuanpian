@@ -127,3 +127,16 @@ def test_package_dll_directory_is_not_globally_visible(tmp_path):
     (libs / "example.dll").write_bytes(b"dll")
     assert dll_visible("example.dll", app / "_internal/PIL/_imaging.pyd", app)
     assert not dll_visible("example.dll", app / "_internal/PyQt6/QtCore.pyd", app)
+
+
+def test_msvc_runtime_is_collected_from_approved_qt_wheel_not_system(tmp_path):
+    from scripts.build_windows import stage_msvc_runtime
+    internal, qt = tmp_path / "_internal", tmp_path / "wheel/Qt6/bin"
+    internal.mkdir()
+    qt.mkdir(parents=True)
+    for name in ("msvcp140.dll", "msvcp140_1.dll", "msvcp140_2.dll", "vcruntime140.dll", "vcruntime140_1.dll", "concrt140.dll"):
+        (qt / name).write_bytes(name.encode())
+    (internal / "vcruntime140.dll").write_bytes(b"already collected")
+    stage_msvc_runtime(internal, qt)
+    assert (internal / "msvcp140_1.dll").read_bytes() == b"msvcp140_1.dll"
+    assert (internal / "vcruntime140.dll").read_bytes() == b"already collected"
