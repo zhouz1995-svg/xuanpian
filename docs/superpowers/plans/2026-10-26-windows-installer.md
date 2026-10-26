@@ -39,4 +39,4 @@ Files: `scripts/verify_windows_bundle.py`, `scripts/check_windows_candidate.py`,
 
 - [x] Add resource/hash/model/PE x64 checks and a native smoke verifier that uses generated Chinese-path images, actual frozen analysis, and a fresh install/uninstall cycle with retained project sentinel.
 - [x] Run local tests and independent read-only review; publish a separate PR based on the preceding safety branch.
-- [ ] Run Windows build/installer verification in CI, fetch candidate artifacts and report exact source/hash/test evidence. Fix failures using root-cause tests; do not label unavailable or failing native verification complete.
+- [x] Run Windows build/installer verification in CI, fetch candidate artifacts and report exact source/hash/test evidence. Native run 40366403686 passed; downloaded artifact archive and installer hashes verified against GitHub metadata, checksum file and verification.json. Evidence: docs/verification/windows-installer.md.
