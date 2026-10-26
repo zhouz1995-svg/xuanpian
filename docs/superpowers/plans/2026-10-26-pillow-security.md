@@ -21,16 +21,17 @@
 
 Files: `tests/test_metadata_runtime_build.py`, `pyproject.toml`, `packaging/requirements-macos-arm64.lock`.
 
-- [ ] Read the failing CI stderr and reproduce the toolchain/fixture mismatch; remove the fabricated SDK override only from the real-make test, preserving production SDK validation and target assertions.
-- [ ] Create a separate Python 3.11 environment and run the existing suite with Pillow 13.0.0 before modifying application code.
-- [ ] For each reproduced API break, add or retain a real behavioral regression, observe failure, and implement the smallest compatibility change. Do not refactor unrelated paths.
-- [ ] Pin `Pillow==13.0.0`, regenerate the existing hash lock without upgrading unrelated packages, and install only target-compatible binary wheels.
+- [x] Read the failing CI output and resolve the toolchain/fixture mismatch; remove the fabricated SDK override only from the real-make test, preserving production SDK validation and target assertions. The corrected test passed on the full-Xcode CI runner.
+- [x] Create a separate Python 3.11 environment and run the existing suite with Pillow 13.0.0 before modifying application code.
+- [x] Check reproduced API breaks against behavioral regressions. None were found: all 1436 original tests passed without application changes.
+- [x] Pin `Pillow==13.0.0`, regenerate the existing hash lock without upgrading unrelated packages, and install only target-compatible binary wheels.
 
 ## Task 2: Verify deliverable and security scope
 
-Files: `packaging/licenses/pillow/`, `packaging/notice-manifest.json`, `packaging/third-party-components.json`, `THIRD_PARTY_NOTICES.md`, `docs/verification/pillow-security.md`.
+Files: existing `packaging/licenses/wheels/` snapshot, `packaging/notice-manifest.json`, `packaging/third-party-components.json`, `THIRD_PARTY_NOTICES.md`, `scripts/verify_macos_bundle.py`, `scripts/audit_public_source.py`, `tests/test_macos_bundle.py`, `docs/verification/pillow-security.md`.
 
-- [ ] Preserve exact Pillow 13 arm64 wheel license/bundled-library texts with wheel/member hashes; update current component evidence without rewriting historical records.
+- [x] Preserve exact Pillow 13 arm64 wheel license/bundled-library texts with wheel/member hashes; reuse the byte-identical existing snapshot and update current evidence without rewriting historical records.
+- [x] Reproduce the real Pillow 13 FreeType/HarfBuzz cycle as failing native-gate tests; stop only current-load-chain cycles while retaining external dependency checks. Review and refresh the hash-bound synthetic fixture exemption because its file gained these tests; keep unknown/changed owner rejection.
 - [ ] Run full pytest, pip consistency checks, real-photo before/after comparisons, and a fresh bundle build; verify native floors, notices, model loading, startup, frozen analysis and DMG copy integrity.
 - [ ] Obtain independent read-only review; record the exact scope and remaining dependency/OS acceptance gates. Do not call the entire dependency graph secure solely because Pillow is updated.
 - [ ] Commit and update PR #2; wait for macOS arm64, Intel Mac and Windows CI results without bypassing failures or merging automatically.

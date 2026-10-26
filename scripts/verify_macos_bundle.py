@@ -135,13 +135,18 @@ def _inspect_native_dependencies(app: Path, executable: Path, objects: list[Path
     reached: set[Path] = set()
     visited: set[tuple[Path, tuple[tuple[Path, bool], ...]]] = set()
 
-    def walk(loader: Path, inherited: tuple[tuple[Path, bool], ...]) -> None:
+    def walk(loader: Path, inherited: tuple[tuple[Path, bool], ...],
+             ancestors: frozenset[Path] = frozenset()) -> None:
         resolved = loader.resolve()
-        if resolved not in info or (resolved, inherited) in visited:
+        # dyld permits cycles (e.g. FreeType <-> HarfBuzz). Re-entering an
+        # active loader would grow inherited runpaths indefinitely. Its outer
+        # invocation still checks every edge; other load contexts remain checked.
+        if resolved in ancestors or resolved not in info or (resolved, inherited) in visited:
             return
         loader = original[resolved]
         visited.add((resolved, inherited))
         reached.add(resolved)
+        ancestors = ancestors | {resolved}
         item = info[resolved]
         paths = tuple((base, rpath.startswith("/")) for rpath in item.rpaths
                       if (base := _rpath_base(rpath, loader, executable)) is not None) + inherited
@@ -184,7 +189,7 @@ def _inspect_native_dependencies(app: Path, executable: Path, objects: list[Path
             elif found.resolve() not in info:
                 violations.append(_issue("dependency", app, loader, f"not a checked Mach-O: {dependency}"))
             else:
-                walk(found, paths)
+                walk(found, paths, ancestors)
 
     walk(executable, ())
     # PyInstaller loads extensions dynamically, so inspect disconnected objects too.
