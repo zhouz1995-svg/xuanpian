@@ -4,6 +4,17 @@ This is an evidence inventory, **not** a statement that the application or DMG m
 
 ## Evidence already located
 
+### Pillow security update (2026-10-26)
+
+The current dependency is Pillow 13.0.0, replacing 11.3.0 in new builds to
+consume upstream security fixes. The macOS-11 arm64 wheel's complete LICENSE,
+including bundled-library notices, is byte-identical to the preserved
+`dda12a98...` text under `packaging/licenses/wheels/`; the notice manifest adds
+the exact 13.0.0 wheel and member hashes without rewriting historical origins.
+Upstream release notes: https://pillow.readthedocs.io/en/stable/releasenotes/13.0.0.html.
+This update is not a security or license clearance of other dependencies or
+older released binaries.
+
 ### ONNX migration (2026-10-23)
 
 The current source engine replaces MediaPipe and OpenCV with ONNX Runtime CPU,

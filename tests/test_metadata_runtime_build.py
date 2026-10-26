@@ -4,6 +4,7 @@ import io
 import json
 import shutil
 import subprocess
+import sys
 import tarfile
 from pathlib import Path
 
@@ -131,7 +132,13 @@ def test_build_target_overrides_host_and_removes_compiler_overrides(monkeypatch)
 def test_inherited_make_overrides_cannot_raise_link_deployment_target(monkeypatch):
     monkeypatch.setenv("MAKEFLAGS", "LDDLFLAGS=-mmacosx-version-min=26.0")
     monkeypatch.setenv("MFLAGS", "")
-    environment = _clean_build_environment("/verified/MacOSX.sdk", "12.0")
+    # Unlike dictionary-only tests, this invokes the real toolchain launcher:
+    # full-Xcode runners reject a fabricated SDK even for a make printf rule.
+    sdkroot = subprocess.run(
+        ["/usr/bin/xcrun", "--sdk", "macosx", "--show-sdk-path"],
+        check=True, capture_output=True, text=True,
+    ).stdout.strip() if sys.platform == "darwin" else "/"
+    environment = _clean_build_environment(sdkroot, "12.0")
 
     result = subprocess.run(
         [shutil.which("make"), "-f", "-", "print"],
