@@ -281,9 +281,11 @@ def test_app_stage_omits_ancillary_perl_tools_without_mutating_source(tmp_path: 
 
 def test_direct_script_invocation_can_import_runtime_validator(tmp_path: Path) -> None:
     runtime = _runtime(tmp_path / "runtime")
+    # Reach runtime validation on either native Mac host, not the foreign-host guard.
     process = subprocess.run(
         [sys.executable, "-S", str(build_macos.ROOT / "scripts/build_macos.py"),
-         "--runtime", str(runtime), "--output", str(tmp_path / "app")],
+         "--runtime", str(runtime), "--output", str(tmp_path / "app"),
+         "--architecture", build_macos.platform.machine()],
         cwd=tmp_path, capture_output=True, text=True,
         env={key: value for key, value in os.environ.items() if key != "PYTHONPATH"},
     )
