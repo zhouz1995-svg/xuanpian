@@ -82,7 +82,7 @@ _REVIEWED_EXEMPTIONS: dict[tuple[str, str], tuple[str, str]] = {
         "tests/test_macos_bundle.py",
         "user-path",
     ): (
-        "bf93125e22656930dd19e83fcad7fc69213e10a83cc0ae25133b6fde9e191616",
+        "6e85d66e3d10df207b106c201f24dfc09ab1245bdfedf6b35a5fbb9e3c0a73ca",
         "Reviewed synthetic mock dependency/runpath paths; owner is synthetic-test-user.",
     ),
 }

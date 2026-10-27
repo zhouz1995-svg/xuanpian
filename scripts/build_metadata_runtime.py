@@ -120,14 +120,15 @@ def _load_source_manifest(path: Path) -> dict[str, Any]:
     if data.get("schema_version") != 1:
         raise ValueError("unsupported source manifest schema_version")
     target = data.get("target")
-    if target != {"platform": "macos", "architecture": "arm64"}:
-        raise ValueError("source manifest target must be macOS arm64")
+    if target not in ({"platform": "macos", "architecture": "arm64"},
+                      {"platform": "macos", "architecture": "x86_64"}):
+        raise ValueError("source manifest target must be macOS arm64 or x86_64")
     build = data.get("build")
     deployment_target = build.get("deployment_target") if isinstance(build, dict) else None
     if (not isinstance(deployment_target, str)
             or not re.fullmatch(r"[0-9]+\.[0-9]+", deployment_target)
             or tuple(map(int, deployment_target.split("."))) < (11, 0)):
-        raise ValueError("build.deployment_target must be a macOS arm64 version >= 11.0")
+        raise ValueError("build.deployment_target must be a macOS version >= 11.0")
     sources = data.get("sources")
     if not isinstance(sources, dict) or set(sources) != {"perl", "exiftool"}:
         raise ValueError("source manifest must contain perl and exiftool sources")
@@ -149,7 +150,7 @@ def _clean_build_environment(sdkroot: str, deployment_target: str) -> dict[str, 
     environment.pop("LIBRARY_PATH", None)
     environment.pop("CPATH", None)
     for key in ("CFLAGS", "CPPFLAGS", "CXXFLAGS", "LDFLAGS", "CC", "CXX", "LD",
-                "MAKEFLAGS", "MFLAGS"):
+                "MAKEFLAGS", "MFLAGS", "ARCHFLAGS"):
         environment.pop(key, None)
     environment["SDKROOT"] = sdkroot
     # Perl's Darwin hints propagate this into compile and link flags, including
@@ -189,9 +190,11 @@ def _runtime_files(runtime: Path) -> dict[str, str]:
     return files
 
 
-def _validate_host(build: dict[str, Any]) -> tuple[str, str]:
-    if sys.platform != "darwin" or platform.machine() != "arm64":
-        raise RuntimeError("metadata runtime builds are supported only on macOS arm64")
+def _validate_host(build: dict[str, Any], architecture: str = "arm64") -> tuple[str, str]:
+    if architecture not in {"arm64", "x86_64"}:
+        raise ValueError(f"unsupported macOS architecture: {architecture}")
+    if sys.platform != "darwin" or platform.machine() != architecture:
+        raise RuntimeError(f"metadata runtime builds require a native macOS {architecture} host")
     sdk = build.get("sdk")
     compiler = build.get("compiler")
     if not isinstance(sdk, dict) or not isinstance(compiler, dict):
@@ -243,7 +246,8 @@ def build_runtime(source_manifest: Path, output: Path) -> Path:
 
     manifest_bytes = source_manifest.read_bytes()
     source_config = _load_source_manifest(source_manifest)
-    compiler_path, sdk_path = _validate_host(source_config["build"])
+    architecture = source_config["target"]["architecture"]
+    compiler_path, sdk_path = _validate_host(source_config["build"], architecture=architecture)
     output.parent.mkdir(parents=True, exist_ok=True)
     environment = _clean_build_environment(sdk_path, source_config["build"]["deployment_target"])
 
@@ -272,7 +276,7 @@ def build_runtime(source_manifest: Path, output: Path) -> Path:
         perl_root = runtime / "perl"
         configure = [
             "/usr/bin/arch",
-            "-arm64",
+            f"-{architecture}",
             "/bin/sh",
             "Configure",
             "-des",
@@ -287,25 +291,27 @@ def build_runtime(source_manifest: Path, output: Path) -> Path:
         ]
         _run(configure, cwd=perl_source, environment=environment)
         _run(
-            ["/usr/bin/arch", "-arm64", "/usr/bin/make", "-j4"],
+            ["/usr/bin/arch", f"-{architecture}", "/usr/bin/make", "-j4"],
             cwd=perl_source,
             environment=environment,
         )
         _run(
-            ["/usr/bin/arch", "-arm64", "/usr/bin/make", "test"],
+            ["/usr/bin/arch", f"-{architecture}", "/usr/bin/make", "test"],
             cwd=perl_source,
             environment=environment,
         )
         _run(
-            ["/usr/bin/arch", "-arm64", "/usr/bin/make", "install"],
+            ["/usr/bin/arch", f"-{architecture}", "/usr/bin/make", "install"],
             cwd=perl_source,
             environment=environment,
         )
 
         perl = perl_root / "bin" / "perl"
         exiftool_source = extracted["exiftool"]
-        _run([str(perl), "Makefile.PL"], cwd=exiftool_source, environment=environment)
-        _run(["/usr/bin/make", "test"], cwd=exiftool_source, environment=environment)
+        _run(["/usr/bin/arch", f"-{architecture}", str(perl), "Makefile.PL"],
+             cwd=exiftool_source, environment=environment)
+        _run(["/usr/bin/arch", f"-{architecture}", "/usr/bin/make", "test"],
+             cwd=exiftool_source, environment=environment)
 
         exiftool_root = runtime / "exiftool"
         exiftool_root.mkdir()
@@ -356,7 +362,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--architecture", choices=("arm64", "x86_64"))
     arguments = parser.parse_args(argv)
+    if arguments.architecture is not None:
+        target = _load_source_manifest(arguments.manifest)["target"]["architecture"]
+        if arguments.architecture != target:
+            parser.error("--architecture differs from source manifest target")
     generated = build_runtime(arguments.manifest, arguments.output)
     print(generated)
     return 0

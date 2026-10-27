@@ -18,6 +18,116 @@ from scripts.build_metadata_runtime import (
     safe_extract,
     verify_archive,
 )
+from scripts import build_metadata_runtime as builder
+
+
+def test_intel_source_profile_keeps_approved_sources_and_toolchain() -> None:
+    packaging = Path(__file__).parents[1] / "packaging"
+    arm = _load_source_manifest(packaging / "runtime-sources.json")
+    intel = _load_source_manifest(packaging / "runtime-sources-macos-x86_64.json")
+    assert intel["target"] == {"platform": "macos", "architecture": "x86_64"}
+    assert intel["sources"] == arm["sources"]
+    assert intel["build"]["deployment_target"] == "12.0"
+    assert intel["build"]["sdk"] == {"name": "macosx", "version": "15.5"}
+    assert intel["build"]["compiler"]["version"] == "Apple clang version 17.0.0 (clang-1700.0.13.5)"
+
+
+@pytest.mark.parametrize("explicit", [False, True])
+def test_runtime_cli_retains_manifest_target_and_accepts_matching_architecture(tmp_path, monkeypatch, explicit):
+    manifest = Path(__file__).parents[1] / "packaging/runtime-sources-macos-x86_64.json"
+    def build(source, output):
+        assert source == manifest
+        return output / "manifest.json"
+    monkeypatch.setattr(builder, "build_runtime", build)
+    arguments = ["--manifest", str(manifest), "--output", str(tmp_path / "runtime")]
+    if explicit:
+        arguments += ["--architecture", "x86_64"]
+    assert builder.main(arguments) == 0
+
+
+def test_runtime_cli_rejects_architecture_disagreeing_with_source_before_build(tmp_path, monkeypatch, capsys):
+    manifest = Path(__file__).parents[1] / "packaging/runtime-sources.json"
+    monkeypatch.setattr(builder, "build_runtime", lambda *args: pytest.fail("must not build mismatched target"))
+    with pytest.raises(SystemExit) as error:
+        builder.main(["--manifest", str(manifest), "--output", str(tmp_path / "runtime"),
+                      "--architecture", "x86_64"])
+    assert error.value.code == 2
+    assert "source manifest" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("architecture", ["universal2", "amd64", "", None])
+def test_source_profile_rejects_unknown_architecture(tmp_path, architecture):
+    manifest = json.loads((Path(__file__).parents[1] / "packaging/runtime-sources.json").read_text())
+    manifest["target"]["architecture"] = architecture
+    path = tmp_path / "sources.json"
+    path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="target"):
+        _load_source_manifest(path)
+
+
+@pytest.mark.parametrize("architecture,host", [("x86_64", "arm64"), ("arm64", "x86_64"), ("universal2", "universal2")])
+def test_runtime_host_must_match_supported_target(monkeypatch, architecture, host):
+    monkeypatch.setattr(builder.sys, "platform", "darwin")
+    monkeypatch.setattr(builder.platform, "machine", lambda: host)
+    with pytest.raises((RuntimeError, ValueError), match="architecture|host|supported"):
+        builder._validate_host({}, architecture=architecture)
+
+
+def test_runtime_accepts_native_intel_host_with_pinned_sdk(tmp_path, monkeypatch):
+    sdk = tmp_path / "MacOSX.sdk"
+    sdk.mkdir()
+    monkeypatch.setattr(builder.sys, "platform", "darwin")
+    monkeypatch.setattr(builder.platform, "machine", lambda: "x86_64")
+    version = "Apple clang version 17.0.0 (clang-1700.0.13.5)"
+    answers = {
+        ("/usr/bin/xcrun", "--sdk", "macosx", "--show-sdk-version"): "15.5\n",
+        ("/usr/bin/xcrun", "--sdk", "macosx", "--show-sdk-path"): str(sdk) + "\n",
+        ("/usr/bin/xcrun", "--sdk", "macosx", "--find", "clang"): "/approved/clang\n",
+        ("/approved/clang", "--version"): version + "\nTarget: x86_64-apple-darwin\n",
+    }
+    monkeypatch.setattr(builder.subprocess, "run", lambda argv, **kw:
+                        subprocess.CompletedProcess(argv, 0, answers[tuple(argv)], ""))
+    assert builder._validate_host({"sdk": {"name": "macosx", "version": "15.5"},
+                                  "compiler": {"version": version}}, architecture="x86_64") == (
+        "/approved/clang", str(sdk))
+
+
+def test_intel_runtime_build_uses_target_for_all_upstream_launches(tmp_path, monkeypatch):
+    manifest = json.loads((Path(__file__).parents[1] / "packaging/runtime-sources.json").read_text())
+    manifest["target"]["architecture"] = "x86_64"
+    source = tmp_path / "sources.json"
+    source.write_text(json.dumps(manifest))
+    host_targets = []
+    def validate(build, architecture="arm64"):
+        host_targets.append(architecture)
+        return "/approved/clang", "/approved/SDK"
+    monkeypatch.setattr(builder, "_validate_host", validate)
+    def download(url, destination):
+        with tarfile.open(destination, "w") as archive:
+            names = ["perl/Artistic", "perl/Copying"] if "perl-" in url else [
+                "exiftool/exiftool", "exiftool/README", "exiftool/lib/ExifTool.pm"]
+            for name in names:
+                item = tarfile.TarInfo(name)
+                item.size = 4
+                archive.addfile(item, io.BytesIO(b"test"))
+    monkeypatch.setattr(builder, "_download", download)
+    monkeypatch.setattr(builder, "verify_archive", lambda *args: None)
+    launches = []
+    def run(command, *, cwd, environment):
+        launches.append(command)
+        if "Configure" in command:
+            prefix = Path(next(arg.removeprefix("-Dprefix=") for arg in command if arg.startswith("-Dprefix=")))
+            (prefix / "bin").mkdir(parents=True)
+            (prefix / "bin/perl").write_bytes(b"synthetic native perl")
+            (prefix / "lib/5.44.0/darwin-thread-multi-2level").mkdir(parents=True)
+    monkeypatch.setattr(builder, "_run", run)
+    result = build_runtime(source, tmp_path / "runtime")
+    assert host_targets == ["x86_64"]
+    assert len(launches) == 6
+    assert all(command[:2] == ["/usr/bin/arch", "-x86_64"] for command in launches)
+    assert any(command[2:] == ["/usr/bin/make", "test"] for command in launches)
+    generated = json.loads(result.read_text())
+    assert set(generated) == {"schema_version", "versions", "command_prefix", "files", "source_manifest_sha256"}
 
 
 def test_wrong_digest_rejected(tmp_path: Path) -> None:
@@ -118,14 +228,14 @@ def test_build_environment_selects_verified_sdk_and_removes_external_perl_paths(
 
 def test_build_target_overrides_host_and_removes_compiler_overrides(monkeypatch):
     monkeypatch.setenv("MACOSX_DEPLOYMENT_TARGET", "26.0")
-    for key in ("CFLAGS", "CPPFLAGS", "CXXFLAGS", "LDFLAGS", "CC", "CXX", "LD"):
+    for key in ("CFLAGS", "CPPFLAGS", "CXXFLAGS", "LDFLAGS", "CC", "CXX", "LD", "ARCHFLAGS"):
         monkeypatch.setenv(key, "untrusted -mmacosx-version-min=26.0")
 
     environment = _clean_build_environment("/verified/MacOSX.sdk", "12.0")
 
     assert environment["MACOSX_DEPLOYMENT_TARGET"] == "12.0"
-    for key in ("CFLAGS", "CPPFLAGS", "CXXFLAGS", "LDFLAGS", "CC", "CXX", "LD"):
-        assert key not in environment
+    assert [key for key in ("CFLAGS", "CPPFLAGS", "CXXFLAGS", "LDFLAGS", "CC", "CXX", "LD", "ARCHFLAGS")
+            if key in environment] == []
 
 
 @pytest.mark.skipif(shutil.which("make") is None, reason="make is not installed")

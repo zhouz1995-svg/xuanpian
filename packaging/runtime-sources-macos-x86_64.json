@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "target": {
+    "platform": "macos",
+    "architecture": "x86_64"
+  },
+  "build": {
+    "deployment_target": "12.0",
+    "compiler": {
+      "name": "Apple clang",
+      "version": "Apple clang version 17.0.0 (clang-1700.0.13.5)"
+    },
+    "sdk": {
+      "name": "macosx",
+      "version": "15.5"
+    }
+  },
+  "sources": {
+    "perl": {
+      "version": "5.44.0",
+      "release_date": "2026-07-15",
+      "url": "https://www.cpan.org/src/5.0/perl-5.44.0.tar.xz",
+      "sha256": "505cf43912e9480495c344c70260452e32aa2a73c546a026b3f100053b23ce91",
+      "release_evidence": "https://www.cpan.org/src/",
+      "sha256_evidence": "https://www.cpan.org/src/5.0/perl-5.44.0.tar.xz.sha256.txt",
+      "license": "Artistic-1.0-Perl OR GPL-1.0-or-later",
+      "license_files": [
+        "Artistic",
+        "Copying"
+      ]
+    },
+    "exiftool": {
+      "version": "13.59",
+      "release_date": "2026-05-27",
+      "url": "https://sourceforge.net/projects/exiftool/files/Image-ExifTool-13.59.tar.gz/download",
+      "sha256": "668ea3acececb7235fbd0f4900e72d5f12c9b07e5c778fd36cb1e9b5828fd65a",
+      "release_evidence": "https://exiftool.org/history.html#v13.59",
+      "sha256_evidence": "https://exiftool.org/checksums.txt",
+      "security_evidence": "https://exiftool.org/history.html#v13.59",
+      "git_tag": "13.59",
+      "git_commit": "2200871d9cef988051d2a99d67df3bda6cbb30a8",
+      "license": "Artistic-1.0-Perl OR GPL-1.0-or-later",
+      "license_files": [
+        "README"
+      ]
+    }
+  }
+}

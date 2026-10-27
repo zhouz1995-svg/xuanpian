@@ -14,6 +14,7 @@ and are collected explicitly as hidden imports.
 """
 
 import os
+import platform
 import tomllib
 import sys
 from pathlib import Path
@@ -70,7 +71,7 @@ exe = EXE(
     strip=False,
     upx=True,
     console=False,
-    target_arch="arm64",
+    target_arch=platform.machine(),
 )
 
 coll = COLLECT(
