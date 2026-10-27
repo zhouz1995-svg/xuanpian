@@ -69,6 +69,9 @@ def validate_frozen_probe(result: dict, frameworks: Path) -> None:
 
 def frozen_analysis(executable: Path, frameworks: Path, photo: Path) -> dict:
     """Use the bundled POSIX executable for both spawn and resource tracking."""
+    # The bootloader canonicalizes _MEIPASS. Match its importer root rather than
+    # injecting macOS's /var alias, which falls through to namespace packages.
+    canonical_frameworks = frameworks.resolve()
     original_preparation = mp.spawn.get_preparation_data
     original_mp_executable, original_executable = mp.spawn.get_executable(), sys.executable
     missing = object()
@@ -80,7 +83,7 @@ def frozen_analysis(executable: Path, frameworks: Path, photo: Path) -> dict:
         data = original_preparation(name)
         data.pop("init_main_from_path", None)
         data.pop("init_main_from_name", None)
-        data["sys_path"] = [str(frameworks), str(frameworks / "base_library.zip")]
+        data["sys_path"] = [str(canonical_frameworks), str(canonical_frameworks / "base_library.zip")]
         return data
 
     try:

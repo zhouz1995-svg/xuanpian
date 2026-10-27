@@ -98,6 +98,25 @@ def test_frozen_probe_restores_posix_executables_on_timeout(tmp_path, monkeypatc
     assert getattr(sys, "frozen", None) == original_frozen
 
 
+def test_frozen_spawn_preparation_uses_canonical_framework_path_for_directory_alias(tmp_path, monkeypatch):
+    from scripts import check_macos_candidate as gate
+    real = tmp_path / "canonical"
+    real_frameworks = real / "中文 安装位置/选片APP.app/Contents/Frameworks"
+    real_frameworks.mkdir(parents=True)
+    alias = tmp_path / "directory-alias"
+    alias.symlink_to(real, target_is_directory=True)
+    frameworks = alias / "中文 安装位置/选片APP.app/Contents/Frameworks"
+    prepared_paths = []
+    def stopped_before_launch(**kwargs):
+        prepared_paths.extend(mp.spawn.get_preparation_data("path-alias-regression")["sys_path"])
+        raise TimeoutError("stop before launching any worker")
+    monkeypatch.setattr(gate, "ProcessPoolExecutor", stopped_before_launch)
+    with pytest.raises(TimeoutError, match="stop before launching"):
+        gate.frozen_analysis(frameworks.parent / "MacOS/选片APP",
+                             frameworks, tmp_path / "synthetic.jpg")
+    assert prepared_paths == [str(real_frameworks), str(real_frameworks / "base_library.zip")]
+
+
 def test_owned_mount_gets_bounded_force_detach_if_normal_detach_times_out(tmp_path, monkeypatch):
     import subprocess
     from scripts import check_macos_candidate as gate
@@ -120,7 +139,8 @@ def test_owned_mount_gets_bounded_force_detach_if_normal_detach_times_out(tmp_pa
 
 
 @pytest.mark.parametrize("mutation", ["pillow", "algorithm", "portrait", "store",
-                                     "source_module", "missing_module"])
+                                     "source_module", "missing_module",
+                                     "null_module", "relative_module"])
 def test_frozen_result_rejects_incomplete_or_wrong_runtime_evidence(tmp_path, mutation):
     from scripts.check_macos_candidate import PROBE_MODULES, validate_frozen_probe
     frameworks = tmp_path / "选片APP.app/Contents/Frameworks"
@@ -139,6 +159,10 @@ def test_frozen_result_rejects_incomplete_or_wrong_runtime_evidence(tmp_path, mu
         result["project_store"] = "FAIL"
     elif mutation == "source_module":
         modules["PIL"] = str(tmp_path / "source/PIL/__init__.py")
+    elif mutation == "null_module":
+        modules["onnxruntime"] = None
+    elif mutation == "relative_module":
+        modules["onnxruntime"] = "onnxruntime/__init__.py"
     else:
         del modules["PIL"]
     with pytest.raises(ValueError):
