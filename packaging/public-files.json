@@ -40,6 +40,7 @@
     "docs/onnx-analysis.md",
     "docs/release-status.md",
     "docs/verification/macos12-runtime.md",
+    "docs/verification/macos-intel-installer.md",
     "docs/verification/onnx-migration.md",
     "docs/verification/pillow-security.md",
     "docs/verification/public-release.md",

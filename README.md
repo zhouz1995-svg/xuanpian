@@ -14,6 +14,8 @@ XuanPian（选片）是一款注重隐私的桌面照片筛选助手。它可以
 
 Windows x64 已有通过原生 CI 安装、运行和卸载验证的未签名候选，尚非正式 Release。详见 [Windows 构建说明](docs/building-windows.md) 与 [验证记录](docs/verification/windows-installer.md)。
 
+Intel Mac 已有通过原生 `macos-15-intel` CI 构建、包内运行及中文路径迁移验证的 macOS 12 目标候选（x86_64、本地 ad-hoc 签名）。它不是正式 Release，临时 CI 产物仅保留 7 天；macOS 12 干净机器验收、Developer ID 签名及公证仍未完成。详见 [Intel Mac 候选验证记录](docs/verification/macos-intel-installer.md)。
+
 各平台进度、暂缓事项和下一步见 [当前交付状态](docs/release-status.md)。
 
 安全提示：开发分支已升级到 Pillow 13.0.0 安全版本；现有 Release 尚未包含此更新，请勿使用旧包处理不可信来源的图片。新候选包仍需完成发布验收。
@@ -77,6 +79,8 @@ Version 0.1.0 is a beta for Apple Silicon Macs. Analysis results are review aids
 The development branch uses ONNX Runtime CPU with bundled YuNet and YOLOX-Nano models (`technical-v8`). The target platforms are macOS 12+ (Intel / Apple Silicon) and Windows 10 22H2 / Windows 11 x64. Formal delivery and clean-desktop acceptance remain separate gates for each target; the existing Release keeps its documented support limits. See [the migration notes](docs/onnx-analysis.md).
 
 An unsigned Windows x64 candidate has passed native CI installation, runtime and uninstall checks. It is not a Release. See [Windows build instructions](docs/building-windows.md) and [verification evidence](docs/verification/windows-installer.md).
+
+An Intel Mac candidate targeting macOS 12 (native x86_64, locally ad-hoc signed) passed packaging, frozen runtime and Chinese-path relocation checks on `macos-15-intel`. It is not a Release; CI artifacts are retained for only 7 days. macOS 12 clean-machine acceptance, Developer ID signing and notarization remain open. See [Intel Mac candidate evidence](docs/verification/macos-intel-installer.md).
 
 See [current delivery status](docs/release-status.md) for platform progress, deferred acceptance and next steps.
 
