@@ -5,7 +5,7 @@
   "files": {
     "LICENSE": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
     "packaging/licenses/numpy/2.2.6-macos11-arm64-LICENSE.txt": "14410921cb870d3c9f127c14f1528dcb8c56ac2a897dd1f0b986a916e5678e5d",
-    "THIRD_PARTY_NOTICES.md": "fe5564f4952301ff3d60f8c2fd3e249973368bc869194831bcdd0df658a0e0fd",
+    "THIRD_PARTY_NOTICES.md": "578525148a5f0ed25f3e7ab9292e36ded68864bbcb13c43e1010cf9bb5fd636b",
     "packaging/licenses/PyQt6_sip-BSD-2-Clause.txt": "3e6f5b427c36f94ecf86bc01698af7030a1ed6eb3748110d5dbb8d142d804611",
     "packaging/licenses/Qt-LGPL-3.0.txt": "6c671e2912ec69c0832f32066c0313cee5fdc3bbcbce237822e89f3da58edd4e",
     "packaging/licenses/models/YOLOX-Apache-2.0.txt": "577c03d505ec80f667ebf96ebd0cc4f6825c817ca1088ee348c48aaabd51bd92",
@@ -94,7 +94,32 @@
     "packaging/licenses/wheels/eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449.txt": "eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449",
     "packaging/licenses/wheels/f1218143d766da3fea66f13396b7f15df46a83303f29bf96ba6e98eb4d42f408.txt": "7eec27ee66da53ba5912cb00b3521ac4428834bb37d0691080bf5d543b0cbb31",
     "packaging/licenses/wheels/fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec.txt": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec",
-    "packaging/third-party-components.json": "e4987fb42c73c80473e86fe9086cf251771bddbfee434345fc223f2efdbfb22d"
+    "packaging/third-party-components.json": "e4987fb42c73c80473e86fe9086cf251771bddbfee434345fc223f2efdbfb22d",
+    "packaging/licenses/macos-x86_64/2004ee3ef8282a85f7dbd035dfacf63cf03d569537bc08655ffeb140ea3671c5.txt": "2004ee3ef8282a85f7dbd035dfacf63cf03d569537bc08655ffeb140ea3671c5",
+    "packaging/licenses/macos-x86_64/0bef4ffb1855b65570304f2018c6d44e4bab97bd5df8716ecd7800014d717267.txt": "0bef4ffb1855b65570304f2018c6d44e4bab97bd5df8716ecd7800014d717267",
+    "packaging/licenses/macos-x86_64/4ac48f4117809f2734066150450f120b3bb110ac1d3b32170795e0560dbbc1f5.txt": "4ac48f4117809f2734066150450f120b3bb110ac1d3b32170795e0560dbbc1f5",
+    "packaging/licenses/macos-x86_64/c26cae81da4508e5e249985777a33821f183223ebb74d7f8cfbf90fe7eef2fb7.txt": "c26cae81da4508e5e249985777a33821f183223ebb74d7f8cfbf90fe7eef2fb7",
+    "packaging/licenses/macos-x86_64/b4ae62887f4dd6e9430b1a8d7017a3ba84c5d7aa630b9d17ed6f25c21b0ec5b4.txt": "b4ae62887f4dd6e9430b1a8d7017a3ba84c5d7aa630b9d17ed6f25c21b0ec5b4",
+    "packaging/licenses/macos-x86_64/05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6.txt": "05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6",
+    "packaging/licenses/macos-x86_64/4eb1fb1705e2def898e81bcba19c3aac80620d27ba3569d6a6df7b4629d1b5c2.txt": "4eb1fb1705e2def898e81bcba19c3aac80620d27ba3569d6a6df7b4629d1b5c2",
+    "packaging/licenses/macos-x86_64/634300a669d49aeae65b12c6c48c924c51a4cdf3d1ff086dc3456dc8bcaa2104.txt": "634300a669d49aeae65b12c6c48c924c51a4cdf3d1ff086dc3456dc8bcaa2104",
+    "packaging/licenses/macos-x86_64/86eeee87be2a43f3ff1f56496f451f69243926f025fedbb033666c304c4c161b.txt": "86eeee87be2a43f3ff1f56496f451f69243926f025fedbb033666c304c4c161b",
+    "packaging/licenses/macos-x86_64/808e10c8a6ab8deb149ff9b3fb19f447a808094606d712a9ca57fead3552599d.txt": "808e10c8a6ab8deb149ff9b3fb19f447a808094606d712a9ca57fead3552599d",
+    "packaging/licenses/macos-x86_64/cb5e8e7e5f4a3988e1063c142c60dc2df75605f4c46515e776e3aca6df976e14.txt": "cb5e8e7e5f4a3988e1063c142c60dc2df75605f4c46515e776e3aca6df976e14",
+    "packaging/licenses/macos-x86_64/1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04.txt": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04",
+    "packaging/licenses/macos-x86_64/492dedba85da5872f78e6091bcd1fea474d660d35acb4dee964b8aab3f007427.txt": "492dedba85da5872f78e6091bcd1fea474d660d35acb4dee964b8aab3f007427",
+    "packaging/licenses/macos-x86_64/1b22b049b5267d6dfc23a67bf4a84d8ec04b9fdfb1a51d360e42b4342c8b4154.txt": "1b22b049b5267d6dfc23a67bf4a84d8ec04b9fdfb1a51d360e42b4342c8b4154",
+    "packaging/licenses/macos-x86_64/09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b.txt": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+    "packaging/licenses/macos-x86_64/f388fd38cad13112c1dc0f669bbe80e7f84541edbafb72f3030d2ca7642c3c9d.txt": "f388fd38cad13112c1dc0f669bbe80e7f84541edbafb72f3030d2ca7642c3c9d",
+    "packaging/licenses/macos-x86_64/deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15.txt": "deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15",
+    "packaging/licenses/macos-x86_64/33be7b7e8fa4fd19b1760e1a8ed8a668bdab852c91b692dd41424bcb725a9fca.txt": "33be7b7e8fa4fd19b1760e1a8ed8a668bdab852c91b692dd41424bcb725a9fca",
+    "packaging/licenses/macos-x86_64/130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686.txt": "130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686",
+    "packaging/licenses/macos-x86_64/6e5e117324afd944dcf67f36cf329843bc1a92229a8cd9bb573d7a83130fea7d.txt": "6e5e117324afd944dcf67f36cf329843bc1a92229a8cd9bb573d7a83130fea7d",
+    "packaging/licenses/macos-x86_64/ddb94f90ceb2ebb3d88d5354fa635c1d7404d6624b15ed1954a14255f348f119.txt": "ddb94f90ceb2ebb3d88d5354fa635c1d7404d6624b15ed1954a14255f348f119",
+    "packaging/licenses/macos-x86_64/ade78d04982d69972d444a8e14a94f87a2334dd3855cc80348ea8e240aa0df2d.txt": "ade78d04982d69972d444a8e14a94f87a2334dd3855cc80348ea8e240aa0df2d",
+    "packaging/licenses/macos-x86_64/82b1038521b0696c63c90b31ed4a0a2c9c4c16871c648b157b07ca44b6f18f8d.txt": "82b1038521b0696c63c90b31ed4a0a2c9c4c16871c648b157b07ca44b6f18f8d",
+    "packaging/licenses/macos-x86_64/07a5e9819f727b4986ad2829c7a29a6320d42575f720eb24d71b7fef573a0286.txt": "07a5e9819f727b4986ad2829c7a29a6320d42575f720eb24d71b7fef573a0286",
+    "packaging/licenses/macos-x86_64/007bc30a58fa40a996e772047120de4eaf31f5110e4f9c3b5f93fcdfbe2eaca1.txt": "007bc30a58fa40a996e772047120de4eaf31f5110e4f9c3b5f93fcdfbe2eaca1"
   },
   "wheel_origins": [
     {
@@ -888,6 +913,542 @@
       "sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
       "path": "packaging/licenses/wheels/3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf.txt",
       "text_normalization": "CRLF to LF; trailing document whitespace replaced by one LF; no wording changes."
+    },
+    {
+      "wheel": "PyQt6_Qt6-6.7.3-py3-none-macosx_10_14_x86_64.whl",
+      "wheel_sha256": "f517a93b6b1a814d4aa6587adc312e812ebaf4d70415bb15cfb44268c5ad3f5f",
+      "member": "PyQt6_Qt6-6.7.3.dist-info/LICENSE",
+      "sha256": "2004ee3ef8282a85f7dbd035dfacf63cf03d569537bc08655ffeb140ea3671c5",
+      "path": "packaging/licenses/macos-x86_64/2004ee3ef8282a85f7dbd035dfacf63cf03d569537bc08655ffeb140ea3671c5.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "coloredlogs-15.0.1-py2.py3-none-any.whl",
+      "wheel_sha256": "612ee75c546f53e92e70049c9dbfcc18c935a2b9a53b66085ce9ef6a6e5c0934",
+      "member": "coloredlogs-15.0.1.dist-info/LICENSE.txt",
+      "sha256": "0bef4ffb1855b65570304f2018c6d44e4bab97bd5df8716ecd7800014d717267",
+      "path": "packaging/licenses/macos-x86_64/0bef4ffb1855b65570304f2018c6d44e4bab97bd5df8716ecd7800014d717267.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "humanfriendly-10.0-py2.py3-none-any.whl",
+      "wheel_sha256": "1697e1a8a8f550fd43c2865cd84542fc175a61dcb779b6fee18cf6b6ccba1477",
+      "member": "humanfriendly-10.0.dist-info/LICENSE.txt",
+      "sha256": "4ac48f4117809f2734066150450f120b3bb110ac1d3b32170795e0560dbbc1f5",
+      "path": "packaging/licenses/macos-x86_64/4ac48f4117809f2734066150450f120b3bb110ac1d3b32170795e0560dbbc1f5.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "mpmath-1.3.0-py3-none-any.whl",
+      "wheel_sha256": "a0b2b9fe80bbcd81a6647ff13108738cfb482d481d826cc0e02f5b35e5c88d2c",
+      "member": "mpmath-1.3.0.dist-info/LICENSE",
+      "sha256": "c26cae81da4508e5e249985777a33821f183223ebb74d7f8cfbf90fe7eef2fb7",
+      "path": "packaging/licenses/macos-x86_64/c26cae81da4508e5e249985777a33821f183223ebb74d7f8cfbf90fe7eef2fb7.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "numpy-2.2.6-cp311-cp311-macosx_10_9_x86_64.whl",
+      "wheel_sha256": "f9f1adb22318e121c5c69a09142811a201ef17ab257a1e66ca3025065b7f53ae",
+      "member": "numpy-2.2.6.dist-info/LICENSE.txt",
+      "sha256": "b4ae62887f4dd6e9430b1a8d7017a3ba84c5d7aa630b9d17ed6f25c21b0ec5b4",
+      "path": "packaging/licenses/macos-x86_64/b4ae62887f4dd6e9430b1a8d7017a3ba84c5d7aa630b9d17ed6f25c21b0ec5b4.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "numpy-2.2.6-cp311-cp311-macosx_10_9_x86_64.whl",
+      "wheel_sha256": "f9f1adb22318e121c5c69a09142811a201ef17ab257a1e66ca3025065b7f53ae",
+      "member": "numpy/_core/include/numpy/random/LICENSE.txt",
+      "sha256": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec",
+      "path": "packaging/licenses/wheels/fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "numpy-2.2.6-cp311-cp311-macosx_10_9_x86_64.whl",
+      "wheel_sha256": "f9f1adb22318e121c5c69a09142811a201ef17ab257a1e66ca3025065b7f53ae",
+      "member": "numpy/ma/LICENSE",
+      "sha256": "05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6",
+      "path": "packaging/licenses/macos-x86_64/05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "numpy-2.2.6-cp311-cp311-macosx_10_9_x86_64.whl",
+      "wheel_sha256": "f9f1adb22318e121c5c69a09142811a201ef17ab257a1e66ca3025065b7f53ae",
+      "member": "numpy/random/LICENSE.md",
+      "sha256": "103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f",
+      "path": "packaging/licenses/wheels/103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "onnxruntime-1.19.2-cp311-cp311-macosx_11_0_universal2.whl",
+      "wheel_sha256": "d863e8acdc7232d705d49e41087e10b274c42f09e259016a46f32c34e06dc4fd",
+      "member": "onnxruntime/LICENSE",
+      "sha256": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c",
+      "path": "packaging/licenses/onnxruntime/LICENSE.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "onnxruntime-1.19.2-cp311-cp311-macosx_11_0_universal2.whl",
+      "wheel_sha256": "d863e8acdc7232d705d49e41087e10b274c42f09e259016a46f32c34e06dc4fd",
+      "member": "onnxruntime/ThirdPartyNotices.txt",
+      "sha256": "cf7342f7ba482ef715ae58f5f497a8d3564fa255164175aea324cd293c5701a0",
+      "path": "packaging/licenses/onnxruntime/ThirdPartyNotices.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pillow-13.0.0-cp311-cp311-macosx_10_10_x86_64.whl",
+      "wheel_sha256": "6f38f3f885a09cafc93fd667b1173a92f379e43785d635e7983c893f0da319fb",
+      "member": "pillow-13.0.0.dist-info/licenses/LICENSE",
+      "sha256": "dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce",
+      "path": "packaging/licenses/wheels/dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pillow_heif-1.5.0-cp311-cp311-macosx_10_15_x86_64.whl",
+      "wheel_sha256": "e07ad41fde21396c01b14f2f3026b26c85a4d8696e7b9514b6f43b29f9cc08fa",
+      "member": "pillow_heif-1.5.0.dist-info/licenses/LICENSE.txt",
+      "sha256": "9e2635f155b00af5a46cb2f2c9b052072ec546d59837ee74efc9cba2cbb83f3d",
+      "path": "packaging/licenses/wheels/9e2635f155b00af5a46cb2f2c9b052072ec546d59837ee74efc9cba2cbb83f3d.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pillow_heif-1.5.0-cp311-cp311-macosx_10_15_x86_64.whl",
+      "wheel_sha256": "e07ad41fde21396c01b14f2f3026b26c85a4d8696e7b9514b6f43b29f9cc08fa",
+      "member": "pillow_heif-1.5.0.dist-info/licenses/LICENSES_bundled.txt",
+      "sha256": "200ce164421a7ec6f0742dcacf100551847ad7b16ac58e6f30dd0f36fd8fcf7e",
+      "path": "packaging/licenses/wheels/200ce164421a7ec6f0742dcacf100551847ad7b16ac58e6f30dd0f36fd8fcf7e.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/AUTHORS.txt",
+      "sha256": "4eb1fb1705e2def898e81bcba19c3aac80620d27ba3569d6a6df7b4629d1b5c2",
+      "path": "packaging/licenses/macos-x86_64/4eb1fb1705e2def898e81bcba19c3aac80620d27ba3569d6a6df7b4629d1b5c2.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/LICENSE.txt",
+      "sha256": "634300a669d49aeae65b12c6c48c924c51a4cdf3d1ff086dc3456dc8bcaa2104",
+      "path": "packaging/licenses/macos-x86_64/634300a669d49aeae65b12c6c48c924c51a4cdf3d1ff086dc3456dc8bcaa2104.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/cachecontrol/LICENSE.txt",
+      "sha256": "86eeee87be2a43f3ff1f56496f451f69243926f025fedbb033666c304c4c161b",
+      "path": "packaging/licenses/macos-x86_64/86eeee87be2a43f3ff1f56496f451f69243926f025fedbb033666c304c4c161b.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/certifi/LICENSE",
+      "sha256": "e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7",
+      "path": "packaging/licenses/wheels/e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/distlib/LICENSE.txt",
+      "sha256": "808e10c8a6ab8deb149ff9b3fb19f447a808094606d712a9ca57fead3552599d",
+      "path": "packaging/licenses/macos-x86_64/808e10c8a6ab8deb149ff9b3fb19f447a808094606d712a9ca57fead3552599d.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/distro/LICENSE",
+      "sha256": "cb5e8e7e5f4a3988e1063c142c60dc2df75605f4c46515e776e3aca6df976e14",
+      "path": "packaging/licenses/macos-x86_64/cb5e8e7e5f4a3988e1063c142c60dc2df75605f4c46515e776e3aca6df976e14.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/idna/LICENSE.md",
+      "sha256": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04",
+      "path": "packaging/licenses/macos-x86_64/1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/msgpack/COPYING",
+      "sha256": "492dedba85da5872f78e6091bcd1fea474d660d35acb4dee964b8aab3f007427",
+      "path": "packaging/licenses/macos-x86_64/492dedba85da5872f78e6091bcd1fea474d660d35acb4dee964b8aab3f007427.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/packaging/LICENSE",
+      "sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48",
+      "path": "packaging/licenses/wheels/cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/packaging/LICENSE.APACHE",
+      "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+      "path": "packaging/licenses/wheels/0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/packaging/LICENSE.BSD",
+      "sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5",
+      "path": "packaging/licenses/wheels/b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/pkg_resources/LICENSE",
+      "sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+      "path": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/platformdirs/LICENSE",
+      "sha256": "29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6",
+      "path": "packaging/licenses/wheels/29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/pygments/LICENSE",
+      "sha256": "a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17",
+      "path": "packaging/licenses/wheels/a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/pyproject_hooks/LICENSE",
+      "sha256": "1b22b049b5267d6dfc23a67bf4a84d8ec04b9fdfb1a51d360e42b4342c8b4154",
+      "path": "packaging/licenses/macos-x86_64/1b22b049b5267d6dfc23a67bf4a84d8ec04b9fdfb1a51d360e42b4342c8b4154.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/requests/LICENSE",
+      "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+      "path": "packaging/licenses/macos-x86_64/09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/resolvelib/LICENSE",
+      "sha256": "f388fd38cad13112c1dc0f669bbe80e7f84541edbafb72f3030d2ca7642c3c9d",
+      "path": "packaging/licenses/macos-x86_64/f388fd38cad13112c1dc0f669bbe80e7f84541edbafb72f3030d2ca7642c3c9d.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/rich/LICENSE",
+      "sha256": "deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15",
+      "path": "packaging/licenses/macos-x86_64/deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/tomli/LICENSE",
+      "sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe",
+      "path": "packaging/licenses/wheels/b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/tomli_w/LICENSE",
+      "sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe",
+      "path": "packaging/licenses/wheels/b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/truststore/LICENSE",
+      "sha256": "33be7b7e8fa4fd19b1760e1a8ed8a668bdab852c91b692dd41424bcb725a9fca",
+      "path": "packaging/licenses/macos-x86_64/33be7b7e8fa4fd19b1760e1a8ed8a668bdab852c91b692dd41424bcb725a9fca.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/urllib3/LICENSE.txt",
+      "sha256": "130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686",
+      "path": "packaging/licenses/macos-x86_64/130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/cachecontrol/LICENSE.txt",
+      "sha256": "86eeee87be2a43f3ff1f56496f451f69243926f025fedbb033666c304c4c161b",
+      "path": "packaging/licenses/macos-x86_64/86eeee87be2a43f3ff1f56496f451f69243926f025fedbb033666c304c4c161b.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/certifi/LICENSE",
+      "sha256": "e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7",
+      "path": "packaging/licenses/wheels/e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/distlib/LICENSE.txt",
+      "sha256": "808e10c8a6ab8deb149ff9b3fb19f447a808094606d712a9ca57fead3552599d",
+      "path": "packaging/licenses/macos-x86_64/808e10c8a6ab8deb149ff9b3fb19f447a808094606d712a9ca57fead3552599d.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/distro/LICENSE",
+      "sha256": "cb5e8e7e5f4a3988e1063c142c60dc2df75605f4c46515e776e3aca6df976e14",
+      "path": "packaging/licenses/macos-x86_64/cb5e8e7e5f4a3988e1063c142c60dc2df75605f4c46515e776e3aca6df976e14.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/idna/LICENSE.md",
+      "sha256": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04",
+      "path": "packaging/licenses/macos-x86_64/1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/msgpack/COPYING",
+      "sha256": "492dedba85da5872f78e6091bcd1fea474d660d35acb4dee964b8aab3f007427",
+      "path": "packaging/licenses/macos-x86_64/492dedba85da5872f78e6091bcd1fea474d660d35acb4dee964b8aab3f007427.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/packaging/LICENSE",
+      "sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48",
+      "path": "packaging/licenses/wheels/cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/packaging/LICENSE.APACHE",
+      "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+      "path": "packaging/licenses/wheels/0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/packaging/LICENSE.BSD",
+      "sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5",
+      "path": "packaging/licenses/wheels/b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/pkg_resources/LICENSE",
+      "sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+      "path": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/platformdirs/LICENSE",
+      "sha256": "29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6",
+      "path": "packaging/licenses/wheels/29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/pygments/LICENSE",
+      "sha256": "a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17",
+      "path": "packaging/licenses/wheels/a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/pyproject_hooks/LICENSE",
+      "sha256": "1b22b049b5267d6dfc23a67bf4a84d8ec04b9fdfb1a51d360e42b4342c8b4154",
+      "path": "packaging/licenses/macos-x86_64/1b22b049b5267d6dfc23a67bf4a84d8ec04b9fdfb1a51d360e42b4342c8b4154.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/requests/LICENSE",
+      "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+      "path": "packaging/licenses/macos-x86_64/09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/resolvelib/LICENSE",
+      "sha256": "f388fd38cad13112c1dc0f669bbe80e7f84541edbafb72f3030d2ca7642c3c9d",
+      "path": "packaging/licenses/macos-x86_64/f388fd38cad13112c1dc0f669bbe80e7f84541edbafb72f3030d2ca7642c3c9d.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/rich/LICENSE",
+      "sha256": "deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15",
+      "path": "packaging/licenses/macos-x86_64/deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/tomli/LICENSE",
+      "sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe",
+      "path": "packaging/licenses/wheels/b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/tomli_w/LICENSE",
+      "sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe",
+      "path": "packaging/licenses/wheels/b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/truststore/LICENSE",
+      "sha256": "33be7b7e8fa4fd19b1760e1a8ed8a668bdab852c91b692dd41424bcb725a9fca",
+      "path": "packaging/licenses/macos-x86_64/33be7b7e8fa4fd19b1760e1a8ed8a668bdab852c91b692dd41424bcb725a9fca.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pip-26.2.2-py3-none-any.whl",
+      "wheel_sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "member": "pip/_vendor/urllib3/LICENSE.txt",
+      "sha256": "130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686",
+      "path": "packaging/licenses/macos-x86_64/130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "protobuf-7.36.2-cp310-abi3-macosx_10_9_universal2.whl",
+      "wheel_sha256": "cbc70b17ee27e28894c7fee8bb04be1abead49e936bc70eb60052531eee2079e",
+      "member": "protobuf-7.36.2.dist-info/LICENSE",
+      "sha256": "6e5e117324afd944dcf67f36cf329843bc1a92229a8cd9bb573d7a83130fea7d",
+      "path": "packaging/licenses/macos-x86_64/6e5e117324afd944dcf67f36cf329843bc1a92229a8cd9bb573d7a83130fea7d.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pyqt6_sip-13.11.1-cp311-cp311-macosx_10_9_universal2.whl",
+      "wheel_sha256": "c0ec2128c174db352bec1c8d23a437e970e8d5a78ac50315d8dfc671fcf7a7da",
+      "member": "pyqt6_sip-13.11.1.dist-info/licenses/LICENSE",
+      "sha256": "3e6f5b427c36f94ecf86bc01698af7030a1ed6eb3748110d5dbb8d142d804611",
+      "path": "packaging/licenses/PyQt6_sip-BSD-2-Clause.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "pytest_qt-4.5.0-py3-none-any.whl",
+      "wheel_sha256": "ed21ea9b861247f7d18090a26bfbda8fb51d7a8a7b6f776157426ff2ccf26eff",
+      "member": "pytest_qt-4.5.0.dist-info/licenses/LICENSE",
+      "sha256": "ddb94f90ceb2ebb3d88d5354fa635c1d7404d6624b15ed1954a14255f348f119",
+      "path": "packaging/licenses/macos-x86_64/ddb94f90ceb2ebb3d88d5354fa635c1d7404d6624b15ed1954a14255f348f119.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "rawpy-0.24.0-cp311-cp311-macosx_10_9_x86_64.whl",
+      "wheel_sha256": "4c684fa8766055ec5e0af1e5cc83cf1959f72b730eaed9baa4b1e57bc50f202f",
+      "member": "rawpy-0.24.0.dist-info/LICENSE",
+      "sha256": "2cc0e98a169e1a9927dee3c82d59dfac898a2aad5a1fcdd295db40c2f2fed516",
+      "path": "packaging/licenses/wheels/2cc0e98a169e1a9927dee3c82d59dfac898a2aad5a1fcdd295db40c2f2fed516.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "rawpy-0.24.0-cp311-cp311-macosx_10_9_x86_64.whl",
+      "wheel_sha256": "4c684fa8766055ec5e0af1e5cc83cf1959f72b730eaed9baa4b1e57bc50f202f",
+      "member": "rawpy-0.24.0.dist-info/LICENSE.LibRaw",
+      "sha256": "eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449",
+      "path": "packaging/licenses/wheels/eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/autocommand-2.2.2.dist-info/LICENSE",
+      "sha256": "ade78d04982d69972d444a8e14a94f87a2334dd3855cc80348ea8e240aa0df2d",
+      "path": "packaging/licenses/macos-x86_64/ade78d04982d69972d444a8e14a94f87a2334dd3855cc80348ea8e240aa0df2d.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "setuptools-79.0.1-py3-none-any.whl",
+      "wheel_sha256": "e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51",
+      "member": "setuptools/_vendor/typing_extensions-4.12.2.dist-info/LICENSE",
+      "sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
+      "path": "packaging/licenses/runtime/CPython-3.11.15-LICENSE.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "sympy-1.14.0-py3-none-any.whl",
+      "wheel_sha256": "e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5",
+      "member": "sympy-1.14.0.dist-info/licenses/AUTHORS",
+      "sha256": "82b1038521b0696c63c90b31ed4a0a2c9c4c16871c648b157b07ca44b6f18f8d",
+      "path": "packaging/licenses/macos-x86_64/82b1038521b0696c63c90b31ed4a0a2c9c4c16871c648b157b07ca44b6f18f8d.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "sympy-1.14.0-py3-none-any.whl",
+      "wheel_sha256": "e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5",
+      "member": "sympy-1.14.0.dist-info/licenses/LICENSE",
+      "sha256": "07a5e9819f727b4986ad2829c7a29a6320d42575f720eb24d71b7fef573a0286",
+      "path": "packaging/licenses/macos-x86_64/07a5e9819f727b4986ad2829c7a29a6320d42575f720eb24d71b7fef573a0286.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "sympy-1.14.0-py3-none-any.whl",
+      "wheel_sha256": "e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5",
+      "member": "sympy/parsing/latex/LICENSE.txt",
+      "sha256": "007bc30a58fa40a996e772047120de4eaf31f5110e4f9c3b5f93fcdfbe2eaca1",
+      "path": "packaging/licenses/macos-x86_64/007bc30a58fa40a996e772047120de4eaf31f5110e4f9c3b5f93fcdfbe2eaca1.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "typing_extensions-4.16.0-py3-none-any.whl",
+      "wheel_sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+      "member": "typing_extensions-4.16.0.dist-info/licenses/LICENSE",
+      "sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
+      "path": "packaging/licenses/runtime/CPython-3.11.15-LICENSE.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
+    },
+    {
+      "wheel": "wheel-0.48.0-py3-none-any.whl",
+      "wheel_sha256": "3217dcc807155e45db462d7ef2431f5ddda0d7273b700d05a67b271ceb1287ab",
+      "member": "wheel-0.48.0.dist-info/licenses/LICENSE.txt",
+      "sha256": "30c23618679108f3e8ea1d2a658c7ca417bdfc891c98ef1a89fa4ff0c9828654",
+      "path": "packaging/licenses/wheels/30c23618679108f3e8ea1d2a658c7ca417bdfc891c98ef1a89fa4ff0c9828654.txt",
+      "text_normalization": "None; exact selected Intel wheel member bytes."
     }
   ],
   "archive_origins": [

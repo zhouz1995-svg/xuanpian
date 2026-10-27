@@ -4,6 +4,24 @@ This is an evidence inventory, **not** a statement that the application or DMG m
 
 ## Evidence already located
 
+### Intel macOS candidate inputs (2026-10-27)
+
+`packaging/macos-x86_64-wheel-notices.json` records the exact 28 selected
+macOS-12-compatible Intel build/test wheel filenames and archive SHA-256 values,
+with every discovered license/notice member and its raw source snapshot digest.
+The stdlib-only wheel-input gate checks archive, member and snapshot bytes before
+offline installation. Identical existing snapshots are reused; unmatched texts
+under `packaging/licenses/macos-x86_64/` retain original bytes, including CRLF.
+The receipt is a public build input, not an additional bundled legal document.
+The actual text snapshots remain in the existing hashed legal payload.
+
+This covers notice preservation, not legal clearance or proof of complete
+corresponding-source/relinking materials. The selected PyQt6 and FlatBuffers
+wheels have no standalone license-text member; existing evidence and unresolved
+review boundaries remain applicable. Build/test-only notices do not imply those
+packages ship in the frozen app. Native HEIF/Qt/runtime and final-bundle rights
+remain unreviewed; release status stays BLOCKED.
+
 ### Windows candidate inputs (2026-10-26)
 
 The Windows x64 ExifTool 13.59 input is fixed by archive SHA-256 in
