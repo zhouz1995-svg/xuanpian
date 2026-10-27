@@ -25,7 +25,7 @@
 
 **Interfaces:** Keep all current arm64 defaults. Add `architecture: str = 'arm64'` to `build_app`, `_preflight`, `_provenance`, `inspect_bundle`, native dependency/identity inspection and `build_dmg` (keyword-only for public APIs). Add `macos_lock(architecture: str) -> Path` and `macos_runtime_sources(architecture: str) -> Path` in build_macos, rejecting unknown values and preserving existing `LOCK` behavior for arm64 tests. `_validate_host(build, architecture='arm64')` consumes source target; `_native_metadata(path, architecture='arm64')` queries that slice explicitly. CLI wrappers pass `--architecture`. The x86_64 lock file is supplied by Task 2; Task 1 unit fixtures can supply a temporary Intel lock.
 
-- [ ] **Step 1:** Add red behavior tests for accepting Intel source profile, rejecting foreign/unknown host architecture, preserving no-overwrite, and selecting the matching provenance lock. Example native-slice gate regression:
+- [x] **Step 1:** Add red behavior tests for accepting Intel source profile, rejecting foreign/unknown host architecture, preserving no-overwrite, and selecting the matching provenance lock. Example native-slice gate regression:
 
 ```python
 def test_intel_gate_rejects_arm_only_metadata(tmp_path, monkeypatch):
@@ -36,16 +36,18 @@ def test_intel_gate_rejects_arm_only_metadata(tmp_path, monkeypatch):
         gate._inspect_native_dependencies(app, binary, [binary], architecture="x86_64"))
 ```
 
-- [ ] **Step 2:** Run `python -m pytest -q tests/test_metadata_runtime_build.py tests/test_macos_build.py tests/test_macos_bundle.py tests/test_build_dmg.py`; capture expected red failures in the task report.
-- [ ] **Step 3:** Implement native architecture selection and the Intel source profile from the spec. Preserve arm64 source manifest bytes. Propagate expected architecture through graph and provenance checks. Select Mach-O load commands with `otool -arch`; adapt existing tool fakes for the explicit slice and retain cycle/external-loader tests. Require the provenance source-manifest and lock identities for the selected profile. Do not modify engine runtime schema or application modules.
-- [ ] **Step 4:** Run focused tests, then the complete suite with `QT_QPA_PLATFORM=offscreen`. Add unsupported architecture, Intel-only accepted, arm-only rejected, and slice-specific minOS tests. Existing arm64 invocation must retain its behavior.
-- [ ] **Step 5:** Self-review and commit the task; report SHA, exact RED/GREEN commands/output and any limitations. No push or subagents from the implementer.
+- [x] **Step 2:** Run `python -m pytest -q tests/test_metadata_runtime_build.py tests/test_macos_build.py tests/test_macos_bundle.py tests/test_build_dmg.py`; capture expected red failures in the task report.
+- [x] **Step 3:** Implement native architecture selection and the Intel source profile from the spec. Preserve arm64 source manifest bytes. Propagate expected architecture through graph and provenance checks. Select Mach-O load commands with `otool -arch`; adapt existing tool fakes for the explicit slice and retain cycle/external-loader tests. Require the provenance source-manifest and lock identities for the selected profile. Do not modify engine runtime schema or application modules.
+- [x] **Step 4:** Run focused tests, then the complete suite with `QT_QPA_PLATFORM=offscreen`. Add unsupported architecture, Intel-only accepted, arm-only rejected, and slice-specific minOS tests. Existing arm64 invocation must retain its behavior.
+- [x] **Step 5:** Self-review and commit the task; report SHA, exact RED/GREEN commands/output and any limitations. No push or subagents from the implementer.
 
 ## Task 2: Intel dependency closure, native candidate verifier and CI
 
-**Files:** Create `packaging/requirements-macos-x86_64.lock`, `scripts/check_macos_candidate.py`, `.github/workflows/macos-intel-package.yml`, `packaging/macos-x86_64-wheel-notices.json` and any unmatched notice texts under `packaging/licenses/macos-x86_64/`. Modify `packaging/notice-manifest.json`, `packaging/public-files.json`, `THIRD_PARTY_NOTICES.md`, `docs/building-macos.md`; add `tests/test_macos_candidate.py` and notice contract tests in `tests/test_license_notices.py` as needed. Preserve arm64 lock bytes.
+**Files:** Create `packaging/requirements-macos-x86_64.lock`, `scripts/check_macos_candidate.py`, `scripts/verify_macos_wheel_inputs.py`, `.github/workflows/macos-intel-package.yml`, `packaging/macos-x86_64-wheel-notices.json` and any unmatched notice texts under `packaging/licenses/macos-x86_64/`. Modify `packaging/notice-manifest.json`, `packaging/public-files.json`, `THIRD_PARTY_NOTICES.md`, `docs/building-macos.md`, and `.gitattributes` only if needed to retain raw vendor notice bytes; add `tests/test_macos_candidate.py`, `tests/test_macos_wheel_inputs.py` and notice contract tests in `tests/test_license_notices.py` as needed. Preserve arm64 lock bytes.
 
 **Interfaces:** Consume Task 1 architecture-aware CLIs and `macos_lock`/`macos_runtime_sources`. New verifier interface `check(candidate: Path, *, architecture: str = 'x86_64') -> dict` expects `candidate/选片APP.app` and exactly one Intel DMG, writes `candidate/verification.json` only after success. Its frozen probe takes explicit executable/framework paths and returns Pillow version, module containment, project-store status and technical-v8/portrait assessment. On POSIX, set and restore `sys.executable` plus multiprocessing executable; use only owned worker handles for failure cleanup. Do not refactor the existing Windows verifier.
+
+The stdlib-only `verify_macos_wheel_inputs.py` exposes `verify_wheel_inputs(wheel_directory: Path, receipt: Path) -> None` and CLI `--wheels <directory> --receipt <json>` so it can run before dependency installation. Receipt schema: `schema_version=1`, `target={platform:macos,architecture:x86_64,minimum_macos:12.0,python:3.11}`, `rights_status=unreviewed`, `wheel_files={filename:{sha256:<digest>,notices:[{member:<zip member>,member_sha256:<digest>,snapshot:<source-relative text>,snapshot_sha256:<digest>}]}}`. Check the exact wheel set, each archive digest and each listed member/snapshot's actual bytes; reject unsafe paths and symlink inputs. The receipt is a public source build input, not a new legal-payload file type: preserve notice_payload's existing exact required documents plus all `packaging/licenses/**/*.txt` contract. Only the actual notice texts enter that hashed legal payload.
 
 - [ ] **Step 1:** Generate the Intel lock with:
 
