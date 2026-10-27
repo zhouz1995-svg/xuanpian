@@ -32,7 +32,9 @@
 
 此候选仅为本地 ad-hoc 签名，无 Developer ID 签名或 Apple 公证；不应关闭 Gatekeeper。较新 Intel CI 和静态 minOS 检查不能证明 macOS 12 干净机器可用。Windows 10/11 真机试用仍暂缓。本任务不自动合并 PR，不创建正式 Release。
 
-在 `9cad60a` 的独立本地回归为 `1586 passed, 2 skipped`（27.04 秒），同一提交的新建 allowlist 源码导出审计为 0 blocking、23 项既有 provenance/binary review；这些结果不属于后续文档 HEAD。文档提交后的全量回归、已提交源码的新导出/审计及完整分支复审仍为后续门禁。许可、来源、对应源码、重新链接及安全审查保持开放，`rights_status=unreviewed`；零阻塞和功能测试通过均不构成法律或安全放行。
+在 `9cad60a` 的独立本地回归为 `1586 passed, 2 skipped`（27.04 秒），同一提交的新建 allowlist 源码导出审计为 0 blocking、23 项既有 provenance/binary review。首轮文档提交 `ac28ecaa8e1103b27d95a27ab4c9b41fa52d76d5` 后，主控完成全量回归：`1586 passed, 2 skipped`（27.42 秒），以及该已提交源码的新建 allowlist 导出/审计：0 blocking、23 项既有 review。完整分支的 GPT-6-astra 复审批准，无 Critical 或 Important 问题。这些结果严格属于 `ac28eca`，不表示后续收尾文档提交已获同轮全量验证，也不改变上述候选二进制的构建源码身份。
+
+一项已确认的小问题延后处理：`scripts/check_macos_candidate.py:162` 的外层 inspector 超时可能遗留原生工具后代进程；此时验证失败，不会误报 PASS 或上传候选产物，且 CI 作业总时限提供边界。本次仅记录，不修改应用或验证器。许可、来源、对应源码、重新链接及安全审查保持开放，`rights_status=unreviewed`；零阻塞和功能测试通过均不构成法律或安全放行。
 
 参阅 [macOS 构建说明](../building-macos.md) 和 [当前交付状态](../release-status.md)。
 
@@ -40,4 +42,6 @@
 
 This native x86_64 candidate targets macOS 12.0 and passed packaging/runtime checks on `macos-15-intel` in the linked run. The exact source, DMG digest and provenance hashes above identify the tested binary, not a later documentation commit. Native tests passed (1586 passed, 2 Windows-only skips), as did both upstream runtime suites, frozen-app probes and the Chinese-path relocated DMG copy. Downloaded bytes matched the sidecar and verification JSON; static-only arm64 reinspection found 135 selected x86_64 Mach-O slices with minOS at most 12.0 and no inspection violations.
 
-The artifact is temporary (7-day retention), locally ad-hoc signed, and neither Developer ID signed nor notarized. It is not a Release. macOS 12 clean-machine acceptance and Windows 10/11 hands-on acceptance are not complete. Rights/source/relinking/security review and post-documentation full regression/export/audit/branch review remain separate gates; zero blocking audit findings are not clearance. Historical candidates retain their original identities. No Rosetta, universal deliverable, automatic merge or formal Release is implied.
+The controller completed full regression at documentation commit `ac28ecaa8e1103b27d95a27ab4c9b41fa52d76d5` (1586 passed, 2 skipped, 27.42s) and a fresh committed-source allowlist export/audit (0 blocking, 23 existing review items). GPT-6-astra approved the whole-branch review with no Critical or Important findings. These results apply only to `ac28eca`, not a later closure commit, and do not change the binary source identity. One confirmed minor follow-up is deferred: the outer inspector timeout at `scripts/check_macos_candidate.py:162` may leave native-tool descendants; verification fails without a false PASS or artifact upload, within the bounded CI job.
+
+The artifact is temporary (7-day retention), locally ad-hoc signed, and neither Developer ID signed nor notarized. It is not a Release. macOS 12 clean-machine acceptance and Windows 10/11 hands-on acceptance are not complete. Rights/source/relinking/security review remains open; zero blocking audit findings are not clearance. Historical candidates retain their original identities. No Rosetta, universal deliverable, automatic merge or formal Release is implied.
