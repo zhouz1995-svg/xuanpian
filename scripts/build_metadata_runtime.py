@@ -301,6 +301,15 @@ def build_runtime(source_manifest: Path, output: Path) -> Path:
 
         perl_source = extracted["perl"]
         perl_root = runtime / "perl"
+        library_options = ["-Uloclibpth", "-Dlibpth=/usr/lib"]
+        if architecture == "x86_64":
+            # Configure adds glibpth/compiler paths even with an explicit libpth.
+            # Empty -U paths prevent local -I/-L flags; a space (not empty) keeps
+            # libswanted from falling back to an automatic optional-library scan.
+            library_options = [
+                "-Uloclibpth=", "-Ulocincpth=", "-Dglibpth=/usr/lib", "-Dlibpth=/usr/lib",
+                "-Dlibswanted= ", "-Dlibs= ",
+            ]
         configure = [
             "/usr/bin/arch",
             f"-{architecture}",
@@ -311,8 +320,7 @@ def build_runtime(source_manifest: Path, output: Path) -> Path:
             "-Duserelocatableinc",
             "-Uuseshrplib",
             f"-Dcc={compiler_path}",
-            "-Uloclibpth",
-            "-Dlibpth=/usr/lib",
+            *library_options,
             "-Dman1dir=none",
             "-Dman3dir=none",
         ]

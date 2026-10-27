@@ -159,9 +159,10 @@ def test_runtime_host_distinguishes_native_intel_from_rosetta_and_query_failures
         assert builder._validate_host(build, architecture="x86_64") == ("/approved/clang", str(sdk))
 
 
-def test_intel_runtime_build_uses_target_for_all_upstream_launches(tmp_path, monkeypatch):
-    manifest = json.loads((Path(__file__).parents[1] / "packaging/runtime-sources.json").read_text())
-    manifest["target"]["architecture"] = "x86_64"
+@pytest.mark.parametrize("architecture", ["arm64", "x86_64"])
+def test_runtime_build_uses_target_and_isolates_intel_optional_libraries(tmp_path, monkeypatch, architecture):
+    profile = "runtime-sources.json" if architecture == "arm64" else "runtime-sources-macos-x86_64.json"
+    manifest = json.loads((Path(__file__).parents[1] / "packaging" / profile).read_text())
     source = tmp_path / "sources.json"
     source.write_text(json.dumps(manifest))
     host_targets = []
@@ -189,10 +190,22 @@ def test_intel_runtime_build_uses_target_for_all_upstream_launches(tmp_path, mon
             (prefix / "lib/5.44.0/darwin-thread-multi-2level").mkdir(parents=True)
     monkeypatch.setattr(builder, "_run", run)
     result = build_runtime(source, tmp_path / "runtime")
-    assert host_targets == ["x86_64"]
+    assert host_targets == [architecture]
     assert len(launches) == 6
-    assert all(command[:2] == ["/usr/bin/arch", "-x86_64"] for command in launches)
-    assert any(command[2:] == ["/usr/bin/make", "test"] for command in launches)
+    assert all(command[:2] == ["/usr/bin/arch", f"-{architecture}"] for command in launches)
+    assert sum(command[2:] == ["/usr/bin/make", "test"] for command in launches) == 2
+    configure = launches[0]
+    if architecture == "x86_64":
+        assert all(option in configure for option in [
+            "-Uloclibpth=", "-Ulocincpth=", "-Dglibpth=/usr/lib", "-Dlibpth=/usr/lib",
+            "-Dlibswanted= ", "-Dlibs= ",
+        ])
+        assert "-Uloclibpth" not in configure
+    else:
+        assert "-Uloclibpth" in configure
+        assert "-Dlibpth=/usr/lib" in configure
+        assert not any(option.startswith(("-Ulocincpth", "-Dglibpth", "-Dlibswanted", "-Dlibs="))
+                       for option in configure)
     generated = json.loads(result.read_text())
     assert set(generated) == {"schema_version", "versions", "command_prefix", "files", "source_manifest_sha256"}
 
