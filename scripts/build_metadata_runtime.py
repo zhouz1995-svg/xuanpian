@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import argparse
+import ctypes
+import errno
 import hashlib
 import json
 import os
@@ -190,11 +192,36 @@ def _runtime_files(runtime: Path) -> dict[str, str]:
     return files
 
 
-def _validate_host(build: dict[str, Any], architecture: str = "arm64") -> tuple[str, str]:
+def _is_translated_process() -> bool:
+    """Query Darwin lazily; only ENOENT is an accepted native fallback."""
+    sysctl = ctypes.CDLL(None, use_errno=True).sysctlbyname
+    sysctl.argtypes = [ctypes.c_char_p, ctypes.c_void_p, ctypes.POINTER(ctypes.c_size_t),
+                      ctypes.c_void_p, ctypes.c_size_t]
+    sysctl.restype = ctypes.c_int
+    translated = ctypes.c_int()
+    size = ctypes.c_size_t(ctypes.sizeof(translated))
+    ctypes.set_errno(0)
+    if sysctl(b"sysctl.proc_translated", ctypes.byref(translated), ctypes.byref(size), None, 0) != 0:
+        error = ctypes.get_errno()
+        if error == errno.ENOENT:
+            return False
+        raise OSError(error, "sysctl.proc_translated query failed")
+    if size.value != ctypes.sizeof(translated) or translated.value not in (0, 1):
+        raise RuntimeError("invalid process translation query result")
+    return bool(translated.value)
+
+
+def _require_native_host(architecture: str) -> None:
     if architecture not in {"arm64", "x86_64"}:
         raise ValueError(f"unsupported macOS architecture: {architecture}")
-    if sys.platform != "darwin" or platform.machine() != architecture:
-        raise RuntimeError(f"metadata runtime builds require a native macOS {architecture} host")
+    if platform.system() != "Darwin" or platform.machine() != architecture:
+        raise RuntimeError(f"native macOS {architecture} host required")
+    if _is_translated_process():
+        raise RuntimeError("Rosetta-translated processes cannot build native macOS candidates")
+
+
+def _validate_host(build: dict[str, Any], architecture: str = "arm64") -> tuple[str, str]:
+    _require_native_host(architecture)
     sdk = build.get("sdk")
     compiler = build.get("compiler")
     if not isinstance(sdk, dict) or not isinstance(compiler, dict):

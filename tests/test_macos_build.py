@@ -15,6 +15,7 @@ import plistlib
 import pytest
 
 from scripts import build_macos
+from scripts import build_metadata_runtime
 
 
 @pytest.mark.parametrize("architecture", ["arm64", "x86_64"])
@@ -48,6 +49,23 @@ def test_intel_build_rejects_foreign_host(tmp_path, monkeypatch, host):
         build_macos.build_app(runtime_root=runtime, output=tmp_path / "app", architecture="x86_64")
 
 
+@pytest.mark.parametrize("query_error", [False, True])
+def test_intel_app_rejects_rosetta_before_runtime_staging(tmp_path, monkeypatch, query_error):
+    runtime = _runtime(tmp_path / "runtime")
+    monkeypatch.setattr(build_macos.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(build_macos.platform, "machine", lambda: "x86_64")
+    def translated():
+        if query_error:
+            raise OSError("translation query failed")
+        return True
+    monkeypatch.setattr(build_metadata_runtime, "_is_translated_process", translated, raising=False)
+    monkeypatch.setattr(build_macos, "_verify_input_runtime",
+                        lambda root: pytest.fail("must reject translated host before staging runtime"))
+    with pytest.raises(OSError if query_error else RuntimeError, match="translation|Rosetta|translated"):
+        build_macos.build_app(runtime_root=runtime, output=tmp_path / "app", architecture="x86_64")
+    assert not (tmp_path / "app").exists()
+
+
 @pytest.mark.parametrize("existing", ["directory", "symlink"])
 def test_intel_existing_output_is_preserved(tmp_path, existing):
     output = tmp_path / "app"
@@ -73,6 +91,7 @@ def test_intel_preflight_requires_selected_runtime_profile(tmp_path, monkeypatch
     monkeypatch.setattr(build_macos, "ROOT", tmp_path)
     monkeypatch.setattr(build_macos.platform, "system", lambda: "Darwin")
     monkeypatch.setattr(build_macos.platform, "machine", lambda: "x86_64")
+    monkeypatch.setattr(build_metadata_runtime, "_is_translated_process", lambda: False, raising=False)
     monkeypatch.setattr(build_macos, "_verify_input_runtime", lambda root: None)
     if matching:
         build_macos._preflight(runtime, tmp_path / "app", architecture="x86_64")
@@ -120,6 +139,7 @@ def test_intel_app_build_publishes_selected_profile_provenance(tmp_path, monkeyp
     monkeypatch.setattr(build_macos, "ROOT", packaging.parent)
     monkeypatch.setattr(build_macos.platform, "system", lambda: "Darwin")
     monkeypatch.setattr(build_macos.platform, "machine", lambda: "x86_64")
+    monkeypatch.setattr(build_metadata_runtime, "_is_translated_process", lambda: False, raising=False)
     monkeypatch.setattr(build_macos, "_verify_input_runtime", lambda root: None)
     monkeypatch.setattr(metadata_runtime, "resolve_metadata_runtime", lambda **kwargs: None)
     def run(command):

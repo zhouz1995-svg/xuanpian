@@ -133,6 +133,9 @@ def _inspect_native_dependencies(app: Path, executable: Path, objects: list[Path
         path = original[resolved]
         if architecture not in item.architectures.split():
             violations.append(_issue("architecture", app, path, f"missing {architecture} slice: {item.architectures}"))
+        elif resolved == executable.resolve() and item.architectures.split() != [architecture]:
+            violations.append(_issue("architecture", app, path,
+                                     f"main executable must contain only {architecture}: {item.architectures}"))
         if not item.minos:
             violations.append(_issue("minimum_os", app, path, "missing macOS deployment target"))
     reached: set[Path] = set()

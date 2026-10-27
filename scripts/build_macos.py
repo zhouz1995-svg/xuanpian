@@ -17,6 +17,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
+from scripts.build_metadata_runtime import _require_native_host  # noqa: E402
+
 SPEC = ROOT / "packaging" / "xuanpian.spec"
 LOCK = ROOT / "packaging" / "requirements-macos-arm64.lock"
 APP_NAME = "选片APP.app"
@@ -113,8 +115,7 @@ def _preflight(runtime_root: Path, output: Path, architecture: str = "arm64") ->
         raise FileExistsError(f"output already exists: {output}")
     if not runtime_root.is_dir() or runtime_root.is_symlink():
         raise ValueError("runtime is missing or is not a regular directory")
-    if platform.system() != "Darwin" or platform.machine() != architecture:
-        raise RuntimeError(f"macOS {architecture} host required")
+    _require_native_host(architecture)
     _regular_runtime_files(runtime_root)
     _verify_input_runtime(runtime_root)
     manifest = json.loads((runtime_root / "manifest.json").read_text(encoding="utf-8"))

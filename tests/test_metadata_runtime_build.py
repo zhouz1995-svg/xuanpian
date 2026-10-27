@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import io
+import ctypes
+import errno
 import json
 import shutil
 import subprocess
@@ -30,6 +32,26 @@ def test_intel_source_profile_keeps_approved_sources_and_toolchain() -> None:
     assert intel["build"]["deployment_target"] == "12.0"
     assert intel["build"]["sdk"] == {"name": "macosx", "version": "15.5"}
     assert intel["build"]["compiler"]["version"] == "Apple clang version 17.0.0 (clang-1700.0.13.5)"
+
+
+def test_windows_preparation_helpers_import_without_darwin_sysctl(tmp_path):
+    archive = tmp_path / "archive"
+    archive.write_bytes(b"test")
+    script = """
+import ctypes
+import sys
+from pathlib import Path
+def unavailable(*args, **kwargs):
+    raise AssertionError('Darwin sysctl must remain lazy')
+ctypes.CDLL = unavailable
+from scripts.prepare_windows_runtime import verify_archive
+from scripts.build_metadata_runtime import _sha256
+print(_sha256(Path(sys.argv[1])))
+"""
+    result = subprocess.run([sys.executable, "-c", script, str(archive)],
+                            cwd=Path(__file__).parents[1], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
 
 
 @pytest.mark.parametrize("explicit", [False, True])
@@ -77,7 +99,9 @@ def test_runtime_accepts_native_intel_host_with_pinned_sdk(tmp_path, monkeypatch
     sdk = tmp_path / "MacOSX.sdk"
     sdk.mkdir()
     monkeypatch.setattr(builder.sys, "platform", "darwin")
+    monkeypatch.setattr(builder.platform, "system", lambda: "Darwin")
     monkeypatch.setattr(builder.platform, "machine", lambda: "x86_64")
+    monkeypatch.setattr(builder, "_is_translated_process", lambda: False, raising=False)
     version = "Apple clang version 17.0.0 (clang-1700.0.13.5)"
     answers = {
         ("/usr/bin/xcrun", "--sdk", "macosx", "--show-sdk-version"): "15.5\n",
@@ -90,6 +114,49 @@ def test_runtime_accepts_native_intel_host_with_pinned_sdk(tmp_path, monkeypatch
     assert builder._validate_host({"sdk": {"name": "macosx", "version": "15.5"},
                                   "compiler": {"version": version}}, architecture="x86_64") == (
         "/approved/clang", str(sdk))
+
+
+@pytest.mark.parametrize("translated,sysctl_error", [(0, 0), (1, 0), (0, errno.ENOENT),
+                                                     (0, errno.EPERM), (0, errno.EIO), (2, 0)])
+def test_runtime_host_distinguishes_native_intel_from_rosetta_and_query_failures(
+    tmp_path, monkeypatch, translated, sysctl_error,
+):
+    sdk = tmp_path / "MacOSX.sdk"
+    sdk.mkdir()
+    monkeypatch.setattr(builder.sys, "platform", "darwin")
+    monkeypatch.setattr(builder.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(builder.platform, "machine", lambda: "x86_64")
+    def sysctl(name, value, size, new_value, new_size):
+        assert name == b"sysctl.proc_translated"
+        assert new_value is None and new_size == 0
+        ctypes.cast(value, ctypes.POINTER(ctypes.c_int)).contents.value = translated
+        ctypes.set_errno(sysctl_error)
+        return -1 if sysctl_error else 0
+    class Library:
+        sysctlbyname = staticmethod(sysctl)
+    monkeypatch.setattr(ctypes, "CDLL", lambda name, *, use_errno: Library())
+    version = "Apple clang version 17.0.0 (clang-1700.0.13.5)"
+    answers = {
+        ("/usr/bin/xcrun", "--sdk", "macosx", "--show-sdk-version"): "15.5\n",
+        ("/usr/bin/xcrun", "--sdk", "macosx", "--show-sdk-path"): str(sdk) + "\n",
+        ("/usr/bin/xcrun", "--sdk", "macosx", "--find", "clang"): "/approved/clang\n",
+        ("/approved/clang", "--version"): version + "\n",
+    }
+    monkeypatch.setattr(builder.subprocess, "run", lambda argv, **kwargs:
+                        subprocess.CompletedProcess(argv, 0, answers[tuple(argv)], ""))
+    build = {"sdk": {"name": "macosx", "version": "15.5"}, "compiler": {"version": version}}
+    if translated == 1:
+        with pytest.raises(RuntimeError, match="Rosetta|translated"):
+            builder._validate_host(build, architecture="x86_64")
+    elif sysctl_error not in (0, errno.ENOENT):
+        with pytest.raises(OSError) as failure:
+            builder._validate_host(build, architecture="x86_64")
+        assert failure.value.errno == sysctl_error
+    elif translated not in (0, 1):
+        with pytest.raises(RuntimeError, match="translation"):
+            builder._validate_host(build, architecture="x86_64")
+    else:
+        assert builder._validate_host(build, architecture="x86_64") == ("/approved/clang", str(sdk))
 
 
 def test_intel_runtime_build_uses_target_for_all_upstream_launches(tmp_path, monkeypatch):

@@ -8,6 +8,24 @@ import sys
 import pytest
 
 from scripts import build_dmg
+from scripts import verify_macos_bundle as gate
+
+
+def test_intel_dmg_rejects_universal_main_before_staging(tmp_path, monkeypatch):
+    app = tmp_path / "选片APP.app"
+    binary = app / "Contents/MacOS/选片APP"
+    binary.parent.mkdir(parents=True)
+    binary.write_bytes(b"\xcf\xfa\xed\xfe")
+    monkeypatch.setattr(gate, "_native_metadata", lambda path, architecture="arm64":
+                        gate.NativeInfo((), (), "arm64 x86_64", "12.0"))
+    monkeypatch.setattr(build_dmg, "inspect_bundle", lambda path, *, architecture="arm64":
+                        gate._inspect_native_dependencies(path, binary, [binary], architecture=architecture))
+    monkeypatch.setattr(build_dmg.subprocess, "run",
+                        lambda *args, **kwargs: pytest.fail("must not stage a universal main executable"))
+    output = tmp_path / "Intel.dmg"
+    with pytest.raises(ValueError, match="failed bundle inspection"):
+        build_dmg.build_dmg(app, output, architecture="x86_64")
+    assert not output.exists()
 
 
 def test_intel_dmg_passes_requested_architecture_to_inspection(tmp_path, monkeypatch):

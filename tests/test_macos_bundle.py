@@ -15,13 +15,33 @@ from scripts import build_macos
 
 @pytest.mark.parametrize("actual,expected,violation", [
     ("x86_64", "x86_64", False), ("arm64", "x86_64", True),
-    ("arm64 x86_64", "x86_64", False), ("x86_64", "arm64", True),
+    ("arm64 x86_64", "x86_64", True), ("x86_64", "arm64", True),
+    ("arm64 x86_64", "arm64", True),
 ])
 def test_native_gate_requires_selected_slice(tmp_path, monkeypatch, actual, expected, violation):
     app, binary = _native(tmp_path, "")
     monkeypatch.setattr(gate, "_native_metadata", lambda path, architecture="arm64":
                         gate.NativeInfo((), (), actual, "12.0"))
     issues = gate._inspect_native_dependencies(app, binary, [binary], architecture=expected)
+    assert any(item["kind"] == "architecture" for item in issues) is violation
+
+
+@pytest.mark.parametrize("dependency_architectures,violation", [
+    ("arm64 x86_64", False), ("x86_64", False), ("arm64", True),
+])
+def test_intel_gate_allows_universal_dependencies_only_with_selected_slice(
+    tmp_path, monkeypatch, dependency_architectures, violation,
+):
+    app, binary = _native(tmp_path, "")
+    library = app / "Contents/Frameworks/library.dylib"
+    library.parent.mkdir(parents=True)
+    library.write_bytes(b"\xcf\xfa\xed\xfe")
+    def metadata(path, architecture="arm64"):
+        if path == binary:
+            return gate.NativeInfo(("@loader_path/../Frameworks/library.dylib",), (), "x86_64", "12.0")
+        return gate.NativeInfo((), (), dependency_architectures, "12.0")
+    monkeypatch.setattr(gate, "_native_metadata", metadata)
+    issues = gate._inspect_native_dependencies(app, binary, [binary, library], architecture="x86_64")
     assert any(item["kind"] == "architecture" for item in issues) is violation
 
 
