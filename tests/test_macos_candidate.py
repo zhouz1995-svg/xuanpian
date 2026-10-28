@@ -4,7 +4,10 @@ import hashlib
 import json
 import multiprocessing as mp
 import multiprocessing.spawn
+import os
 from pathlib import Path
+import signal
+import subprocess
 import sys
 import time
 
@@ -177,7 +180,62 @@ def test_app_inspection_is_bounded_before_boot(tmp_path, monkeypatch):
     def run(command, **kwargs):
         assert kwargs.get("timeout") == 180
         raise subprocess.TimeoutExpired(command, 180)
-    monkeypatch.setattr(gate.subprocess, "run", run)
+    monkeypatch.setattr(gate, "_run_inspection", run)
     with pytest.raises(subprocess.TimeoutExpired):
         gate._exercise_app(app, tmp_path / "photo.jpg", architecture="x86_64",
                            home=tmp_path / "home")
+
+
+def _process_is_running(pid):
+    status = subprocess.run(["/bin/ps", "-o", "stat=", "-p", str(pid)],
+                            capture_output=True, text=True, timeout=3)
+    return status.returncode == 0 and bool(status.stdout.strip()) and not status.stdout.strip().startswith("Z")
+
+
+@pytest.mark.skipif(os.name != "posix", reason="Mac inspector owns a POSIX session")
+@pytest.mark.parametrize("failure", ["timeout", "nonzero"])
+def test_inspection_failure_stops_owned_descendant_but_not_unrelated_process(tmp_path, failure):
+    # Replacing group cleanup with parent-only termination must leave this child alive.
+    from scripts import check_macos_candidate as gate
+    child_pid_file = tmp_path / "child.pid"
+    child_code = (
+        "import os,signal,time; from pathlib import Path; "
+        "signal.signal(signal.SIGTERM, signal.SIG_IGN); "
+        f"Path({str(child_pid_file)!r}).write_text(str(os.getpid())); time.sleep(60)"
+    )
+    parent_code = (
+        "import subprocess,sys,time; from pathlib import Path\n"
+        f"subprocess.Popen([sys.executable, '-c', {child_code!r}], "
+        "stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)\n"
+        f"while not Path({str(child_pid_file)!r}).exists(): time.sleep(0.01)\n"
+        + ("time.sleep(60)\n" if failure == "timeout" else
+           "print('inspection diagnostic', file=sys.stderr); sys.exit(7)\n")
+    )
+    unrelated = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"])
+    try:
+        command = [sys.executable, "-c", parent_code]
+        if failure == "timeout":
+            with pytest.raises(subprocess.TimeoutExpired):
+                gate._run_inspection(command, timeout=5)
+        else:
+            result = gate._run_inspection(command, timeout=5)
+            assert result.returncode == 7
+            assert "inspection diagnostic" in result.stderr
+        assert child_pid_file.is_file(), "descendant must actually start before failure"
+        assert not _process_is_running(int(child_pid_file.read_text()))
+        assert unrelated.poll() is None
+    finally:
+        if child_pid_file.exists():
+            child_pid = int(child_pid_file.read_text())
+            if _process_is_running(child_pid):
+                os.kill(child_pid, signal.SIGKILL)
+        unrelated.terminate()
+        unrelated.wait(timeout=5)
+
+
+def test_inspection_returns_real_successful_output():
+    from scripts import check_macos_candidate as gate
+    result = gate._run_inspection([sys.executable, "-c", "print('inspection passed')"], timeout=5)
+    assert result.returncode == 0
+    assert result.stdout == "inspection passed\n"
+    assert result.stderr == ""

@@ -10,6 +10,7 @@ import multiprocessing.spawn
 import os
 from pathlib import Path
 import re
+import signal
 import subprocess
 import sys
 from tempfile import TemporaryDirectory
@@ -157,12 +158,45 @@ def boot(executable: Path, synthetic_home: Path) -> None:
                 raise RuntimeError("frozen stylesheet missing")
 
 
+def _stop_inspection_group(process: subprocess.Popen) -> None:
+    """Signal only the private session created for this inspector."""
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        return
+    deadline = time.monotonic() + 2
+    while time.monotonic() < deadline:
+        process.poll()  # Reap our parent even when descendants keep its group alive.
+        try:
+            os.killpg(process.pid, 0)
+        except ProcessLookupError:
+            return
+        time.sleep(0.05)
+    try:
+        os.killpg(process.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+
+
+def _run_inspection(command: list[str], *, timeout: float = 180) -> subprocess.CompletedProcess:
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               text=True, start_new_session=True)
+    try:
+        stdout, stderr = process.communicate(timeout=timeout)
+    except BaseException:
+        _stop_inspection_group(process)
+        process.communicate(timeout=5)
+        raise
+    if process.returncode:
+        _stop_inspection_group(process)
+    return subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
+
+
 def _exercise_app(app: Path, photo: Path, *, architecture: str, home: Path) -> dict:
-    # Bound the existing gate as a whole, including its native-tool subprocesses.
-    inspection = subprocess.run(
+    inspection = _run_inspection(
         [sys.executable, str(ROOT / "scripts/verify_macos_bundle.py"),
          "--architecture", architecture, str(app)],
-        check=False, capture_output=True, text=True, timeout=180)
+        timeout=180)
     if inspection.returncode:
         raise ValueError(f"bundle inspection failed: {inspection.stdout[-4000:]} "
                          f"{inspection.stderr[-4000:]}")
