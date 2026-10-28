@@ -4464,14 +4464,14 @@
     },
     {
       "name": "setuptools",
-      "version": "79.0.1",
-      "source_url": "https://pypi.org/project/setuptools/79.0.1/",
-      "license_expression": null,
-      "license_file": null,
-      "redistribution_notes": "Current ONNX migration build input. Native bundle closure and notices remain to be checked against the next installer.",
-      "verification_source": "packaging/requirements-macos-arm64.lock (2026-10-23)",
+      "version": "84.1.0",
+      "source_url": "https://pypi.org/project/setuptools/84.1.0/",
+      "license_expression": "MIT",
+      "license_file": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+      "redistribution_notes": "Build-tool security update for GHSA-h35f-9h28-mq5c and GHSA-xmj3-9gf7-h52w. Exact wheel and vendored notices preserved; this entry does not assert that setuptools is shipped or clear the frozen native closure.",
+      "verification_source": "Three platform locks (2026-10-28); PyPI wheel SHA-256 5231689c6ac8156cd155cfb98c3fd6fb252c3e7e9bd3d78b64d3c55f132624c9; packaging/macos-x86_64-wheel-notices.json",
       "distribution_scope": "current_build_input",
-      "status": "unresolved"
+      "status": "partial"
     },
     {
       "name": "sympy",
