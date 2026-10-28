@@ -56,6 +56,12 @@ Intel 发布证明关联的 workflow 为 `wheels.yml`，源码 commit 为 `16c3d
 
 ## 接下来的优先级
 
+进一步源码核对：x265 4.2 的官方 `source/x265.h` 声明 GPL-2.0-or-later（另有商业授权选项）；libheif 1.23.1 和 libde265 1.1.1 的公开头文件声明 LGPL-3.0-or-later。不能仅凭旧 notice 的“GPLv2”推断 x265 是 GPL-2.0-only，也不能由一个头文件推断全部源码文件或实际轮子已完成授权审查。[x265 4.2 头文件](https://bitbucket.org/multicoreware/x265_git/raw/4.2/source/x265.h)、[libheif 头文件](https://github.com/strukturag/libheif/blob/v1.23.1/libheif/api/libheif/heif.h)、[libde265 头文件](https://github.com/strukturag/libde265/blob/v1.1.1/libde265/de265.h)
+
+Windows 的固定发布脚本使用独立的 [PKGBUILD](https://github.com/bigcat88/pillow_heif/blob/16c3dd8249f56fa07ab4f1350bd73e7a20b95bb1/libheif/windows/mingw-w64-libheif/PKGBUILD)：libheif 1.23.1 源码归档指定 SHA-256 `0de0327f60fcd47de90d5654c6fe152232738d60d84fe084ec3e0f35e03b166a`，x265/libde265 则为外部 MSYS2 依赖。此处只是脚本中的预期摘要，尚非本地下载复算；不能把 macOS 构建脚本的依赖版本直接套到 Windows 轮子。
+
+最新源码 `682f8f0` 的常规测试和 Windows CI 通过，Intel run `40697481593` 在应用测试阶段失败：`test_slow_preflight_is_off_thread_with_immediate_pending_and_safe_close[False]` 测得 0.165 秒，未满足硬编码的 0.1 秒上限（1588 通过、1 失败、2 跳过）。本轮与上一源码仅文档不同；目前证据支持检查此测试对机器调度的敏感性，但尚未据此排除真实响应问题。该轮没有新安装包，不以旧候选通过代替最新结果；不扩大超时、跳过或自动重跑来掩盖失败。
+
 下载后复核：run `40611971947` 的 artifact `12783959446` 实际 ZIP SHA-256 为 `d9342fa187dd1190c6fd65242c41daed05c93c4c7ec96863e354c3d5b1bdcaf4`；DMG SHA-256 为 `a423de658fef9aacc40a028dafbdb0d3603519f83e62fb54ca23702dc47c94bd`，与 sidecar、验证 JSON 和上述源码身份一致。本地只读挂载复查 135 个原生组件，x86_64 切片、最低系统版本不超过 12.0、签名、模型及通知检查全部通过；未执行 Intel 代码。
 
 后续纯文档源码 `fb4aafb` 的常规测试及 Windows CI 通过。Intel run `40685464334` 的构建和验收步骤全部通过，但 GitHub `CreateArtifact` 接口连续五次请求超时，最终上传步骤失败；整轮仍记为失败，没有可交付的新上传产物，不把这一轮标为成功，也不修改已下载候选的身份。无需为上传错误修改应用算法或跳过测试。
