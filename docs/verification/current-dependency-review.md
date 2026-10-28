@@ -10,7 +10,7 @@
 - 重新下载并验证 macOS arm64 28 个、macOS x86_64 28 个、Windows x64 31 个锁定轮子。Windows 的跨平台下载使用 `--no-deps`：pip 在 Darwin 主机上会误按宿主 marker 追加 macholib，真实 Windows 依赖一致性仍须由原生 CI 的安装与 `pip check` 验证。没有安装或执行外国架构轮子。
 - Intel 输入收据更新为 28 个轮子、94 个原始 notice 成员，新增 4 个原文快照；历史 wheel-origin 记录和既有文本保留，不用新版本覆盖历史证据。独立的新 arm64 环境离线安装并通过 `pip check`，旧测试环境未改动。
 
-两个问题的上游范围分别是：macOS sdist 的 Unicode 规范化排除绕过（83.0.0 修复）以及 Windows legacy wheel 安装的路径逃逸（84.1.0 修复）。这是构建/安装工具风险，不能据此断言应用处理照片存在同类漏洞。[sdist 公告](https://github.com/pypa/setuptools/security/advisories/GHSA-h35f-9h28-mq5c)、[legacy wheel 公告](https://github.com/pypa/setuptools/security/advisories/GHSA-xmj3-9gf7-h52w)
+两个问题的上游范围分别是：macOS sdist 的 Unicode 规范化排除绕过（83.0.0 修复）以及 Windows legacy wheel 安装的路径逃逸（84.1.0 修复）。这是构建/安装工具风险，不能据此断言应用处理照片存在同类漏洞。[sdist 公告](https://github.com/pypa/setuptools/security/advisories/GHSA-h35f-9h28-mq5c)、[83.0.0 修复日志](https://setuptools.pypa.io/en/latest/history.html#v83-0-0)、[legacy wheel 公告](https://github.com/pypa/setuptools/security/advisories/GHSA-xmj3-9gf7-h52w)
 
 setuptools 的目标纯 Python 轮子为 `setuptools-84.1.0-py3-none-any.whl`，PyPI 公布且实际下载匹配的 SHA-256 为 `5231689c6ac8156cd155cfb98c3fd6fb252c3e7e9bd3d78b64d3c55f132624c9`；发行文件未被 yanked，要求 Python >=3.10，与当前 3.11 匹配。[PyPI 发行数据](https://pypi.org/pypi/setuptools/84.1.0/json)
 
