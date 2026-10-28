@@ -38,9 +38,25 @@ setuptools 的目标纯 Python 轮子为 `setuptools-84.1.0-py3-none-any.whl`，
 | Windows ExifTool / Strawberry Perl / MSVC DLL | 原始 runtime 及 `Licenses_Strawberry_Perl.zip` 已保留，DLL 输入来源固定。 | 仍需逐 DLL 的许可和适用再分发条件核对；Windows 10/11 真机验收保持暂缓。 |
 | FlatBuffers / 构建工具 notice | 固定 FlatBuffers tag 的 Apache-2.0 文本可定位，轮子自身无独立许可证成员；setuptools 新轮子及其 vendored notice 已保存。 | 将缺失的上游归属材料补入实际发行材料；不把构建环境完整包列表直接写成应用 SBOM。[FlatBuffers 固定许可](https://github.com/google/flatbuffers/blob/v25.12.19/LICENSE) |
 
+## HEIF 发布来源核验（2026-10-28）
+
+在独立工具环境中使用 PyPI 推荐的 `pypi-attestations 0.0.30`，对三份实际锁定轮子执行 `verify pypi --repository https://github.com/bigcat88/pillow_heif <本地轮子>`；三次均退出 0 并输出 `OK`。这是发布身份与文件完整性的密码学验证，不是仅解析证明 JSON，也未安装或执行外国架构代码。[PyPI 核验方法](https://docs.pypi.org/attestations/consuming-attestations/)
+
+| pillow-heif 1.5.0 / CPython 3.11 轮子目标 | 实际 SHA-256 | 发布证明核验 |
+| --- | --- | --- |
+| macOS 11+ arm64 | `88d74a74b144c2e6e99e18e23a1637aef5f63ad32c718c8358da87ea81f94194` | 通过 |
+| macOS 10.15+ x86_64 | `e07ad41fde21396c01b14f2f3026b26c85a4d8696e7b9514b6f43b29f9cc08fa` | 通过 |
+| Windows amd64 | `d3cb8c18e5939839cf76a1617f4df5e0b497d1e3a8260b273590168e72d7f8f8` | 通过 |
+
+Intel 发布证明关联的 workflow 为 `wheels.yml`，源码 commit 为 `16c3dd8249f56fa07ab4f1350bd73e7a20b95bb1`（`v1.5.0`）。该固定 commit 的 macOS/Linux 构建脚本指向 x265 4.2、libheif 1.23.1 和 libde265 1.1.1；Intel 轮子内 x265 静态字符串为 `4.2+1-e444744`。这为旧 notice 的版本偏差提供了进一步线索，但 dylib ABI 文件名不等于源码版本。[固定构建脚本](https://github.com/bigcat88/pillow_heif/blob/16c3dd8249f56fa07ab4f1350bd73e7a20b95bb1/libheif/build_libs.py)
+
+上述脚本未校验所下载源码归档的内容哈希；PyPI Publish attestation 也不是完整的构建材料证明。因此不能据此把三个平台全部内嵌库标记为已归源，不能认定授权、对应源码、重新链接或专利条件已闭合。保留原轮子 notice 不作改写；下一步仍须核对精确编解码器源码、构建选项与发行义务，不移除 HEIF 功能。
+
+本次源码 `3114025` 的 Windows 构建 run `40611971939`、常规测试 run `40611972008` 和 Intel run `40611971947` 均已通过。Intel 包含完整 Perl/ExifTool 上游测试、原生构建、包内检查及中文路径迁移运行；实际构建的 PR test-merge 源码为 `33deb6389b8326838fa8e0a0e85a1a22ff17e191`。这不替代下面保留的历史失败记录或旧候选身份，也不等于 macOS 12 / Windows 10、11 真机验收。
+
 ## 接下来的优先级
 
-1. 用新锁在原生 Intel/Windows CI 完整安装、构建和验收；保留原有 Perl/ExifTool 上游测试，不通过删除或修改失败测试获得绿色结果。
+1. 新锁已通过原生 Intel/Windows CI 完整安装、构建和自动验收；保留原有 Perl/ExifTool 上游测试，未删除或修改失败测试来获得绿色结果。继续保留系统真机验收门禁。
 2. 先闭合 HEIF/x265 的精确源与授权差异，再核对 Qt/LibRaw 等实际原生闭包。若需更换编解码构建，应另行评估三平台兼容性；本轮不移除 HEIF 功能、不静默替换依赖。
 3. 准备与实际二进制匹配的第三方源码/通知及适用替换说明，再进行系统实机、签名和正式发行门禁。项目 GPL-3.0-only 选择不重新许可第三方作品。
 
@@ -50,4 +66,4 @@ setuptools 的目标纯 Python 轮子为 `setuptools-84.1.0-py3-none-any.whl`，
 
 This engineering review separates the current 32 top-level Python packages and 12 setuptools-vendored versions from historical inventories and the shipped native closure. setuptools is raised to 84.1.0 for two distinct upstream advisories; duplicate database aliases are not counted as additional issues. Exact platform wheels and raw notices are checked, while old candidate identities and original notice evidence remain immutable.
 
-The dated OSV snapshot returned no matches for the 44 selected Python name/version pairs. It does not clear bundled native libraries, models, installers, licensing, patents or corresponding-source duties. HEIF/x265 version/license attribution and the actual Qt/LibRaw/native closure remain priority release work. No application feature, algorithm, database format or user photo was changed. Native verification with the new build tool is a separate gate; Windows hands-on remains deferred. No automatic merge or formal Release is authorized.
+The dated OSV snapshot returned no matches for the 44 selected Python name/version pairs. It does not clear bundled native libraries, models, installers, licensing, patents or corresponding-source duties. PyPI publisher attestations for the three exact pillow-heif wheels were cryptographically verified; this does not prove the complete native build materials or resolve stale bundled notices. HEIF/x265 version/license attribution and the actual Qt/LibRaw/native closure remain priority release work. No application feature, algorithm, database format or user photo was changed. Windows, regular test and full Intel native verification runs passed for source `3114025` (Intel test-merge source `33deb6389b8326838fa8e0a0e85a1a22ff17e191`). Windows hands-on remains deferred. No automatic merge or formal Release is authorized.
