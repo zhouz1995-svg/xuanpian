@@ -6,8 +6,10 @@
 > technical integrity; it is not a substitute for license review, Developer ID
 > signing, notarization, or clean-machine acceptance testing.
 
-The public macOS build is Apple Silicon only. It uses the exact source versions,
-digests, compiler, and SDK recorded in `packaging/runtime-sources.json`. The build
+The existing macOS build defaults to Apple Silicon. A separate native Intel
+candidate uses the explicit `--architecture x86_64` profile described below.
+Both use exact source versions, digests, compiler and SDK from their selected
+runtime-source manifests. The build
 downloads source archives only into a temporary directory, verifies SHA-256 before
 extraction, builds Perl from source, runs the Perl and ExifTool upstream test suites,
 and refuses to replace an existing output directory.
@@ -25,6 +27,12 @@ thresholds, requested tags, or read-only invocation.
 - The repository's Python 3.11 environment.
 - Network access during this build only. The finished application must not download
   a runtime or model.
+
+For the Intel profile, use a native x86_64 Mac (no Rosetta), CPython 3.11.15,
+Xcode 16.4 at `/Applications/Xcode_16.4.app/Contents/Developer`, SDK 15.5 and
+`Apple clang version 17.0.0 (clang-1700.0.13.5)`. These are fixed inputs,
+not suggestions to select a newer toolchain. The native guard rejects
+host/target mismatch and translation; the runtime builder verifies the SDK/compiler.
 
 The source manifest links the upstream release pages, checksum evidence, and license
 identifiers. Perl's `INSTALL` and `README.macosx` are authoritative for the build.
@@ -173,6 +181,69 @@ portability, app launch, DMG installation, and signing/notarization status must 
 recorded separately before any public release claim.
 
 ## Inspect and package a candidate
+
+### Native Intel candidate
+
+`.github/workflows/macos-intel-package.yml` runs on `macos-15-intel` with
+uv 0.11.7, the pinned Python/toolchain above, `MACOSX_DEPLOYMENT_TARGET=12.0`
+and offscreen Qt. Pull requests affecting build inputs and manual dispatches
+run the full native test suite, build Perl and ExifTool from approved source,
+run both upstream test suites, assemble/inspect the x86_64 app, create a new DMG
+and exercise the original and relocated app. There is no binary runtime cache.
+The ordinary regression workflow still runs for every PR.
+
+For a local native build, choose fresh paths for every directory below:
+
+```bash
+export DEVELOPER_DIR=/Applications/Xcode_16.4.app/Contents/Developer
+export MACOSX_DEPLOYMENT_TARGET=12.0
+export QT_QPA_PLATFORM=offscreen
+python3.11 -m venv build/macos-intel-venv
+build/macos-intel-venv/bin/python -m pip download \
+  --platform macosx_12_0_x86_64 --only-binary=:all: --require-hashes \
+  -r packaging/requirements-macos-x86_64.lock -d build/macos12-intel-wheels
+build/macos-intel-venv/bin/python -I -S scripts/verify_macos_wheel_inputs.py \
+  --wheels build/macos12-intel-wheels \
+  --receipt packaging/macos-x86_64-wheel-notices.json
+build/macos-intel-venv/bin/python -m pip install --no-index \
+  --find-links build/macos12-intel-wheels --require-hashes \
+  -r packaging/requirements-macos-x86_64.lock
+build/macos-intel-venv/bin/python -m pip check
+build/macos-intel-venv/bin/python -m pytest -q
+build/macos-intel-venv/bin/python scripts/build_metadata_runtime.py \
+  --manifest packaging/runtime-sources-macos-x86_64.json --architecture x86_64 \
+  --output build/metadata-runtime-intel
+build/macos-intel-venv/bin/python scripts/build_macos.py --architecture x86_64 \
+  --runtime build/metadata-runtime-intel --output build/macos-intel-candidate
+build/macos-intel-venv/bin/python scripts/build_dmg.py --architecture x86_64 \
+  --app build/macos-intel-candidate/选片APP.app \
+  --output build/macos-intel-candidate/XuanPian-0.1.0-macos12-x86_64-local-ad-hoc.dmg
+build/macos-intel-venv/bin/python scripts/check_macos_candidate.py \
+  --architecture x86_64 build/macos-intel-candidate
+```
+
+The Intel lock preserves all arm64 package versions but approves the selected
+Intel wheel hashes separately. The receipt enforces the exact wheel set,
+archive digests, raw license/notice members and hashed source snapshots before
+offline installation. Do not substitute a macOS-14 wheel on a newer build host.
+Raw notices are preserved without line-ending normalization. The receipt itself
+is a public build input; only actual legal texts enter the existing legal payload.
+
+Candidate verification uses generated JPEGs/projects only. It checks frozen
+Pillow 13.0.0, contained module paths, a real project store, technical-v8 with
+portrait assessment, bundled ExifTool dimensions and unchanged photo SHA-256.
+It verifies the DMG checksum and `hdiutil verify`, mounts read-only at a fresh
+owned mount point, copies with `ditto`, detaches in `finally`, and repeats app
+inspection/signature, startup and engine checks on a Chinese/space-containing
+relocated path. Existing verification output is never replaced.
+
+On success CI uploads only the DMG, checksum, verification JSON and
+build-provenance JSON for seven days. It does not create a Release.
+A native newer-macOS CI run is not clean macOS-12 acceptance, Developer ID
+signing, notarization or license/security clearance. Arm64 defaults and the
+Windows application path remain unchanged.
+
+### Existing Apple Silicon inspection
 
 Inspect the exact `.app` that will ship. The gate returns JSON violations and a
 nonzero exit status on failure. It checks all Mach-O objects and required load

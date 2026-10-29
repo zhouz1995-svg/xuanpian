@@ -544,10 +544,19 @@ class MainWindow(QMainWindow):
                 8000,
             )
             return
+        try:
+            root = Path(folder).expanduser().resolve()
+            if not root.is_dir():
+                raise ValueError("import source is not a directory")
+        except (OSError, RuntimeError, ValueError):
+            self._status_bar.showMessage(
+                "所选文件夹不存在或无法访问；请重新选择，当前项目未切换",
+                8000,
+            )
+            return
         if self._stack.currentWidget() is self._culling_workspace:
             self.exit_culling()
         self._flush_thumbnail_invalidations()
-        root = Path(folder).expanduser().resolve()
         old_import = self._import_handle
         old_analysis = self._analysis_handle
         old_export = self._export_handle

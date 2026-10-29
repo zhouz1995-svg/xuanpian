@@ -13,6 +13,7 @@ import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from scripts.verify_macos_bundle import inspect_bundle
+from scripts.build_macos import macos_lock
 
 
 def _publish_pair(candidate: Path, staged_sidecar: Path, output: Path, sidecar: Path) -> None:
@@ -42,15 +43,16 @@ def _publish_pair(candidate: Path, staged_sidecar: Path, output: Path, sidecar: 
         os.close(directory_fd)
 
 
-def build_dmg(app: Path, output: Path) -> Path:
+def build_dmg(app: Path, output: Path, *, architecture: str = "arm64") -> Path:
     """Create a new unsigned-for-distribution DMG and SHA-256 sidecar."""
+    macos_lock(architecture)
     app, output = Path(app), Path(output)
     if app.is_symlink() or not app.is_dir() or app.suffix != ".app":
         raise ValueError(f"app must be an existing regular .app: {app}")
     sidecar = output.with_suffix(output.suffix + ".sha256")
     if output.exists() or output.is_symlink() or sidecar.exists() or sidecar.is_symlink():
         raise FileExistsError(f"DMG output or sidecar already exists: {output}")
-    violations = inspect_bundle(app)
+    violations = inspect_bundle(app, architecture=architecture)
     if violations:
         raise ValueError(f"app failed bundle inspection: {len(violations)} violation(s): {violations[:3]}")
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -80,8 +82,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--app", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--architecture", choices=("arm64", "x86_64"), default="arm64")
     args = parser.parse_args()
-    print(build_dmg(args.app, args.output))
+    print(build_dmg(args.app, args.output, architecture=args.architecture))
     return 0
 
 

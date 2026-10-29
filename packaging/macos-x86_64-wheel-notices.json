@@ -1,0 +1,714 @@
+{
+  "schema_version": 1,
+  "target": {
+    "platform": "macos",
+    "architecture": "x86_64",
+    "minimum_macos": "12.0",
+    "python": "3.11"
+  },
+  "rights_status": "unreviewed",
+  "wheel_files": {
+    "PyQt6-6.7.1-cp38-abi3-macosx_11_0_universal2.whl": {
+      "sha256": "f053378e3aef6248fa612c8afddda17f942fb63f9fe8a9aeb2a6b6b4cbb0eba9",
+      "notices": []
+    },
+    "PyQt6_Qt6-6.7.3-py3-none-macosx_10_14_x86_64.whl": {
+      "sha256": "f517a93b6b1a814d4aa6587adc312e812ebaf4d70415bb15cfb44268c5ad3f5f",
+      "notices": [
+        {
+          "member": "PyQt6_Qt6-6.7.3.dist-info/LICENSE",
+          "member_sha256": "2004ee3ef8282a85f7dbd035dfacf63cf03d569537bc08655ffeb140ea3671c5",
+          "snapshot": "packaging/licenses/macos-x86_64/2004ee3ef8282a85f7dbd035dfacf63cf03d569537bc08655ffeb140ea3671c5.txt",
+          "snapshot_sha256": "2004ee3ef8282a85f7dbd035dfacf63cf03d569537bc08655ffeb140ea3671c5"
+        }
+      ]
+    },
+    "altgraph-0.17.5-py2.py3-none-any.whl": {
+      "sha256": "f3a22400bce1b0c701683820ac4f3b159cd301acab067c51c653e06961600597",
+      "notices": [
+        {
+          "member": "altgraph-0.17.5.dist-info/LICENSE",
+          "member_sha256": "6c194d6db0c64d45535d10c95142b9b0cda7b7dcc7f1ddee302b3d536f3dbe46",
+          "snapshot": "packaging/licenses/wheels/6c194d6db0c64d45535d10c95142b9b0cda7b7dcc7f1ddee302b3d536f3dbe46.txt",
+          "snapshot_sha256": "6c194d6db0c64d45535d10c95142b9b0cda7b7dcc7f1ddee302b3d536f3dbe46"
+        }
+      ]
+    },
+    "coloredlogs-15.0.1-py2.py3-none-any.whl": {
+      "sha256": "612ee75c546f53e92e70049c9dbfcc18c935a2b9a53b66085ce9ef6a6e5c0934",
+      "notices": [
+        {
+          "member": "coloredlogs-15.0.1.dist-info/LICENSE.txt",
+          "member_sha256": "0bef4ffb1855b65570304f2018c6d44e4bab97bd5df8716ecd7800014d717267",
+          "snapshot": "packaging/licenses/macos-x86_64/0bef4ffb1855b65570304f2018c6d44e4bab97bd5df8716ecd7800014d717267.txt",
+          "snapshot_sha256": "0bef4ffb1855b65570304f2018c6d44e4bab97bd5df8716ecd7800014d717267"
+        }
+      ]
+    },
+    "flatbuffers-25.12.19-py2.py3-none-any.whl": {
+      "sha256": "7634f50c427838bb021c2d66a3d1168e9d199b0607e6329399f04846d42e20b4",
+      "notices": []
+    },
+    "humanfriendly-10.0-py2.py3-none-any.whl": {
+      "sha256": "1697e1a8a8f550fd43c2865cd84542fc175a61dcb779b6fee18cf6b6ccba1477",
+      "notices": [
+        {
+          "member": "humanfriendly-10.0.dist-info/LICENSE.txt",
+          "member_sha256": "4ac48f4117809f2734066150450f120b3bb110ac1d3b32170795e0560dbbc1f5",
+          "snapshot": "packaging/licenses/macos-x86_64/4ac48f4117809f2734066150450f120b3bb110ac1d3b32170795e0560dbbc1f5.txt",
+          "snapshot_sha256": "4ac48f4117809f2734066150450f120b3bb110ac1d3b32170795e0560dbbc1f5"
+        }
+      ]
+    },
+    "iniconfig-2.3.0-py3-none-any.whl": {
+      "sha256": "f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12",
+      "notices": [
+        {
+          "member": "iniconfig-2.3.0.dist-info/licenses/LICENSE",
+          "member_sha256": "3409fa91f7ace557894632676656e32264fe5ef7581535725dc9a23774551bd4",
+          "snapshot": "packaging/licenses/wheels/3409fa91f7ace557894632676656e32264fe5ef7581535725dc9a23774551bd4.txt",
+          "snapshot_sha256": "3409fa91f7ace557894632676656e32264fe5ef7581535725dc9a23774551bd4"
+        }
+      ]
+    },
+    "macholib-1.16.4-py2.py3-none-any.whl": {
+      "sha256": "da1a3fa8266e30f0ce7e97c6a54eefaae8edd1e5f86f3eb8b95457cae90265ea",
+      "notices": [
+        {
+          "member": "macholib-1.16.4.dist-info/LICENSE",
+          "member_sha256": "47082ab2bc0184123ec9f10fdf80c70723ee68f07d44382e17615c2a6ba70b09",
+          "snapshot": "packaging/licenses/wheels/47082ab2bc0184123ec9f10fdf80c70723ee68f07d44382e17615c2a6ba70b09.txt",
+          "snapshot_sha256": "47082ab2bc0184123ec9f10fdf80c70723ee68f07d44382e17615c2a6ba70b09"
+        }
+      ]
+    },
+    "mpmath-1.3.0-py3-none-any.whl": {
+      "sha256": "a0b2b9fe80bbcd81a6647ff13108738cfb482d481d826cc0e02f5b35e5c88d2c",
+      "notices": [
+        {
+          "member": "mpmath-1.3.0.dist-info/LICENSE",
+          "member_sha256": "c26cae81da4508e5e249985777a33821f183223ebb74d7f8cfbf90fe7eef2fb7",
+          "snapshot": "packaging/licenses/macos-x86_64/c26cae81da4508e5e249985777a33821f183223ebb74d7f8cfbf90fe7eef2fb7.txt",
+          "snapshot_sha256": "c26cae81da4508e5e249985777a33821f183223ebb74d7f8cfbf90fe7eef2fb7"
+        }
+      ]
+    },
+    "numpy-2.2.6-cp311-cp311-macosx_10_9_x86_64.whl": {
+      "sha256": "f9f1adb22318e121c5c69a09142811a201ef17ab257a1e66ca3025065b7f53ae",
+      "notices": [
+        {
+          "member": "numpy-2.2.6.dist-info/LICENSE.txt",
+          "member_sha256": "b4ae62887f4dd6e9430b1a8d7017a3ba84c5d7aa630b9d17ed6f25c21b0ec5b4",
+          "snapshot": "packaging/licenses/macos-x86_64/b4ae62887f4dd6e9430b1a8d7017a3ba84c5d7aa630b9d17ed6f25c21b0ec5b4.txt",
+          "snapshot_sha256": "b4ae62887f4dd6e9430b1a8d7017a3ba84c5d7aa630b9d17ed6f25c21b0ec5b4"
+        },
+        {
+          "member": "numpy/_core/include/numpy/random/LICENSE.txt",
+          "member_sha256": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec",
+          "snapshot": "packaging/licenses/wheels/fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec.txt",
+          "snapshot_sha256": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec"
+        },
+        {
+          "member": "numpy/ma/LICENSE",
+          "member_sha256": "05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6",
+          "snapshot": "packaging/licenses/macos-x86_64/05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6.txt",
+          "snapshot_sha256": "05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6"
+        },
+        {
+          "member": "numpy/random/LICENSE.md",
+          "member_sha256": "103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f",
+          "snapshot": "packaging/licenses/wheels/103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f.txt",
+          "snapshot_sha256": "103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f"
+        }
+      ]
+    },
+    "onnxruntime-1.19.2-cp311-cp311-macosx_11_0_universal2.whl": {
+      "sha256": "d863e8acdc7232d705d49e41087e10b274c42f09e259016a46f32c34e06dc4fd",
+      "notices": [
+        {
+          "member": "onnxruntime/LICENSE",
+          "member_sha256": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c",
+          "snapshot": "packaging/licenses/onnxruntime/LICENSE.txt",
+          "snapshot_sha256": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c"
+        },
+        {
+          "member": "onnxruntime/ThirdPartyNotices.txt",
+          "member_sha256": "cf7342f7ba482ef715ae58f5f497a8d3564fa255164175aea324cd293c5701a0",
+          "snapshot": "packaging/licenses/onnxruntime/ThirdPartyNotices.txt",
+          "snapshot_sha256": "cf7342f7ba482ef715ae58f5f497a8d3564fa255164175aea324cd293c5701a0"
+        }
+      ]
+    },
+    "packaging-26.2-py3-none-any.whl": {
+      "sha256": "5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e",
+      "notices": [
+        {
+          "member": "packaging-26.2.dist-info/licenses/LICENSE",
+          "member_sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48",
+          "snapshot": "packaging/licenses/wheels/cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48.txt",
+          "snapshot_sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48"
+        },
+        {
+          "member": "packaging-26.2.dist-info/licenses/LICENSE.APACHE",
+          "member_sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+          "snapshot": "packaging/licenses/wheels/0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594.txt",
+          "snapshot_sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+        },
+        {
+          "member": "packaging-26.2.dist-info/licenses/LICENSE.BSD",
+          "member_sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5",
+          "snapshot": "packaging/licenses/wheels/b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5.txt",
+          "snapshot_sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5"
+        }
+      ]
+    },
+    "pillow-13.0.0-cp311-cp311-macosx_10_10_x86_64.whl": {
+      "sha256": "6f38f3f885a09cafc93fd667b1173a92f379e43785d635e7983c893f0da319fb",
+      "notices": [
+        {
+          "member": "pillow-13.0.0.dist-info/licenses/LICENSE",
+          "member_sha256": "dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce",
+          "snapshot": "packaging/licenses/wheels/dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce.txt",
+          "snapshot_sha256": "dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce"
+        }
+      ]
+    },
+    "pillow_heif-1.5.0-cp311-cp311-macosx_10_15_x86_64.whl": {
+      "sha256": "e07ad41fde21396c01b14f2f3026b26c85a4d8696e7b9514b6f43b29f9cc08fa",
+      "notices": [
+        {
+          "member": "pillow_heif-1.5.0.dist-info/licenses/LICENSE.txt",
+          "member_sha256": "9e2635f155b00af5a46cb2f2c9b052072ec546d59837ee74efc9cba2cbb83f3d",
+          "snapshot": "packaging/licenses/wheels/9e2635f155b00af5a46cb2f2c9b052072ec546d59837ee74efc9cba2cbb83f3d.txt",
+          "snapshot_sha256": "9e2635f155b00af5a46cb2f2c9b052072ec546d59837ee74efc9cba2cbb83f3d"
+        },
+        {
+          "member": "pillow_heif-1.5.0.dist-info/licenses/LICENSES_bundled.txt",
+          "member_sha256": "200ce164421a7ec6f0742dcacf100551847ad7b16ac58e6f30dd0f36fd8fcf7e",
+          "snapshot": "packaging/licenses/wheels/200ce164421a7ec6f0742dcacf100551847ad7b16ac58e6f30dd0f36fd8fcf7e.txt",
+          "snapshot_sha256": "200ce164421a7ec6f0742dcacf100551847ad7b16ac58e6f30dd0f36fd8fcf7e"
+        }
+      ]
+    },
+    "pip-26.2.2-py3-none-any.whl": {
+      "sha256": "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70",
+      "notices": [
+        {
+          "member": "pip-26.2.2.dist-info/licenses/AUTHORS.txt",
+          "member_sha256": "4eb1fb1705e2def898e81bcba19c3aac80620d27ba3569d6a6df7b4629d1b5c2",
+          "snapshot": "packaging/licenses/macos-x86_64/4eb1fb1705e2def898e81bcba19c3aac80620d27ba3569d6a6df7b4629d1b5c2.txt",
+          "snapshot_sha256": "4eb1fb1705e2def898e81bcba19c3aac80620d27ba3569d6a6df7b4629d1b5c2"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/LICENSE.txt",
+          "member_sha256": "634300a669d49aeae65b12c6c48c924c51a4cdf3d1ff086dc3456dc8bcaa2104",
+          "snapshot": "packaging/licenses/macos-x86_64/634300a669d49aeae65b12c6c48c924c51a4cdf3d1ff086dc3456dc8bcaa2104.txt",
+          "snapshot_sha256": "634300a669d49aeae65b12c6c48c924c51a4cdf3d1ff086dc3456dc8bcaa2104"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/cachecontrol/LICENSE.txt",
+          "member_sha256": "86eeee87be2a43f3ff1f56496f451f69243926f025fedbb033666c304c4c161b",
+          "snapshot": "packaging/licenses/macos-x86_64/86eeee87be2a43f3ff1f56496f451f69243926f025fedbb033666c304c4c161b.txt",
+          "snapshot_sha256": "86eeee87be2a43f3ff1f56496f451f69243926f025fedbb033666c304c4c161b"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/certifi/LICENSE",
+          "member_sha256": "e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7",
+          "snapshot": "packaging/licenses/wheels/e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7.txt",
+          "snapshot_sha256": "e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/distlib/LICENSE.txt",
+          "member_sha256": "808e10c8a6ab8deb149ff9b3fb19f447a808094606d712a9ca57fead3552599d",
+          "snapshot": "packaging/licenses/macos-x86_64/808e10c8a6ab8deb149ff9b3fb19f447a808094606d712a9ca57fead3552599d.txt",
+          "snapshot_sha256": "808e10c8a6ab8deb149ff9b3fb19f447a808094606d712a9ca57fead3552599d"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/distro/LICENSE",
+          "member_sha256": "cb5e8e7e5f4a3988e1063c142c60dc2df75605f4c46515e776e3aca6df976e14",
+          "snapshot": "packaging/licenses/macos-x86_64/cb5e8e7e5f4a3988e1063c142c60dc2df75605f4c46515e776e3aca6df976e14.txt",
+          "snapshot_sha256": "cb5e8e7e5f4a3988e1063c142c60dc2df75605f4c46515e776e3aca6df976e14"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/idna/LICENSE.md",
+          "member_sha256": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04",
+          "snapshot": "packaging/licenses/macos-x86_64/1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04.txt",
+          "snapshot_sha256": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/msgpack/COPYING",
+          "member_sha256": "492dedba85da5872f78e6091bcd1fea474d660d35acb4dee964b8aab3f007427",
+          "snapshot": "packaging/licenses/macos-x86_64/492dedba85da5872f78e6091bcd1fea474d660d35acb4dee964b8aab3f007427.txt",
+          "snapshot_sha256": "492dedba85da5872f78e6091bcd1fea474d660d35acb4dee964b8aab3f007427"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/packaging/LICENSE",
+          "member_sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48",
+          "snapshot": "packaging/licenses/wheels/cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48.txt",
+          "snapshot_sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/packaging/LICENSE.APACHE",
+          "member_sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+          "snapshot": "packaging/licenses/wheels/0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594.txt",
+          "snapshot_sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/packaging/LICENSE.BSD",
+          "member_sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5",
+          "snapshot": "packaging/licenses/wheels/b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5.txt",
+          "snapshot_sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/pkg_resources/LICENSE",
+          "member_sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+          "snapshot": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+          "snapshot_sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/platformdirs/LICENSE",
+          "member_sha256": "29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6",
+          "snapshot": "packaging/licenses/wheels/29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6.txt",
+          "snapshot_sha256": "29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/pygments/LICENSE",
+          "member_sha256": "a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17",
+          "snapshot": "packaging/licenses/wheels/a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17.txt",
+          "snapshot_sha256": "a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/pyproject_hooks/LICENSE",
+          "member_sha256": "1b22b049b5267d6dfc23a67bf4a84d8ec04b9fdfb1a51d360e42b4342c8b4154",
+          "snapshot": "packaging/licenses/macos-x86_64/1b22b049b5267d6dfc23a67bf4a84d8ec04b9fdfb1a51d360e42b4342c8b4154.txt",
+          "snapshot_sha256": "1b22b049b5267d6dfc23a67bf4a84d8ec04b9fdfb1a51d360e42b4342c8b4154"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/requests/LICENSE",
+          "member_sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+          "snapshot": "packaging/licenses/macos-x86_64/09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b.txt",
+          "snapshot_sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/resolvelib/LICENSE",
+          "member_sha256": "f388fd38cad13112c1dc0f669bbe80e7f84541edbafb72f3030d2ca7642c3c9d",
+          "snapshot": "packaging/licenses/macos-x86_64/f388fd38cad13112c1dc0f669bbe80e7f84541edbafb72f3030d2ca7642c3c9d.txt",
+          "snapshot_sha256": "f388fd38cad13112c1dc0f669bbe80e7f84541edbafb72f3030d2ca7642c3c9d"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/rich/LICENSE",
+          "member_sha256": "deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15",
+          "snapshot": "packaging/licenses/macos-x86_64/deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15.txt",
+          "snapshot_sha256": "deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/tomli/LICENSE",
+          "member_sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe",
+          "snapshot": "packaging/licenses/wheels/b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe.txt",
+          "snapshot_sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/tomli_w/LICENSE",
+          "member_sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe",
+          "snapshot": "packaging/licenses/wheels/b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe.txt",
+          "snapshot_sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/truststore/LICENSE",
+          "member_sha256": "33be7b7e8fa4fd19b1760e1a8ed8a668bdab852c91b692dd41424bcb725a9fca",
+          "snapshot": "packaging/licenses/macos-x86_64/33be7b7e8fa4fd19b1760e1a8ed8a668bdab852c91b692dd41424bcb725a9fca.txt",
+          "snapshot_sha256": "33be7b7e8fa4fd19b1760e1a8ed8a668bdab852c91b692dd41424bcb725a9fca"
+        },
+        {
+          "member": "pip-26.2.2.dist-info/licenses/src/pip/_vendor/urllib3/LICENSE.txt",
+          "member_sha256": "130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686",
+          "snapshot": "packaging/licenses/macos-x86_64/130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686.txt",
+          "snapshot_sha256": "130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686"
+        },
+        {
+          "member": "pip/_vendor/cachecontrol/LICENSE.txt",
+          "member_sha256": "86eeee87be2a43f3ff1f56496f451f69243926f025fedbb033666c304c4c161b",
+          "snapshot": "packaging/licenses/macos-x86_64/86eeee87be2a43f3ff1f56496f451f69243926f025fedbb033666c304c4c161b.txt",
+          "snapshot_sha256": "86eeee87be2a43f3ff1f56496f451f69243926f025fedbb033666c304c4c161b"
+        },
+        {
+          "member": "pip/_vendor/certifi/LICENSE",
+          "member_sha256": "e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7",
+          "snapshot": "packaging/licenses/wheels/e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7.txt",
+          "snapshot_sha256": "e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7"
+        },
+        {
+          "member": "pip/_vendor/distlib/LICENSE.txt",
+          "member_sha256": "808e10c8a6ab8deb149ff9b3fb19f447a808094606d712a9ca57fead3552599d",
+          "snapshot": "packaging/licenses/macos-x86_64/808e10c8a6ab8deb149ff9b3fb19f447a808094606d712a9ca57fead3552599d.txt",
+          "snapshot_sha256": "808e10c8a6ab8deb149ff9b3fb19f447a808094606d712a9ca57fead3552599d"
+        },
+        {
+          "member": "pip/_vendor/distro/LICENSE",
+          "member_sha256": "cb5e8e7e5f4a3988e1063c142c60dc2df75605f4c46515e776e3aca6df976e14",
+          "snapshot": "packaging/licenses/macos-x86_64/cb5e8e7e5f4a3988e1063c142c60dc2df75605f4c46515e776e3aca6df976e14.txt",
+          "snapshot_sha256": "cb5e8e7e5f4a3988e1063c142c60dc2df75605f4c46515e776e3aca6df976e14"
+        },
+        {
+          "member": "pip/_vendor/idna/LICENSE.md",
+          "member_sha256": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04",
+          "snapshot": "packaging/licenses/macos-x86_64/1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04.txt",
+          "snapshot_sha256": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04"
+        },
+        {
+          "member": "pip/_vendor/msgpack/COPYING",
+          "member_sha256": "492dedba85da5872f78e6091bcd1fea474d660d35acb4dee964b8aab3f007427",
+          "snapshot": "packaging/licenses/macos-x86_64/492dedba85da5872f78e6091bcd1fea474d660d35acb4dee964b8aab3f007427.txt",
+          "snapshot_sha256": "492dedba85da5872f78e6091bcd1fea474d660d35acb4dee964b8aab3f007427"
+        },
+        {
+          "member": "pip/_vendor/packaging/LICENSE",
+          "member_sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48",
+          "snapshot": "packaging/licenses/wheels/cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48.txt",
+          "snapshot_sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48"
+        },
+        {
+          "member": "pip/_vendor/packaging/LICENSE.APACHE",
+          "member_sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+          "snapshot": "packaging/licenses/wheels/0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594.txt",
+          "snapshot_sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+        },
+        {
+          "member": "pip/_vendor/packaging/LICENSE.BSD",
+          "member_sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5",
+          "snapshot": "packaging/licenses/wheels/b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5.txt",
+          "snapshot_sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5"
+        },
+        {
+          "member": "pip/_vendor/pkg_resources/LICENSE",
+          "member_sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+          "snapshot": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+          "snapshot_sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741"
+        },
+        {
+          "member": "pip/_vendor/platformdirs/LICENSE",
+          "member_sha256": "29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6",
+          "snapshot": "packaging/licenses/wheels/29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6.txt",
+          "snapshot_sha256": "29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6"
+        },
+        {
+          "member": "pip/_vendor/pygments/LICENSE",
+          "member_sha256": "a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17",
+          "snapshot": "packaging/licenses/wheels/a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17.txt",
+          "snapshot_sha256": "a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17"
+        },
+        {
+          "member": "pip/_vendor/pyproject_hooks/LICENSE",
+          "member_sha256": "1b22b049b5267d6dfc23a67bf4a84d8ec04b9fdfb1a51d360e42b4342c8b4154",
+          "snapshot": "packaging/licenses/macos-x86_64/1b22b049b5267d6dfc23a67bf4a84d8ec04b9fdfb1a51d360e42b4342c8b4154.txt",
+          "snapshot_sha256": "1b22b049b5267d6dfc23a67bf4a84d8ec04b9fdfb1a51d360e42b4342c8b4154"
+        },
+        {
+          "member": "pip/_vendor/requests/LICENSE",
+          "member_sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+          "snapshot": "packaging/licenses/macos-x86_64/09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b.txt",
+          "snapshot_sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b"
+        },
+        {
+          "member": "pip/_vendor/resolvelib/LICENSE",
+          "member_sha256": "f388fd38cad13112c1dc0f669bbe80e7f84541edbafb72f3030d2ca7642c3c9d",
+          "snapshot": "packaging/licenses/macos-x86_64/f388fd38cad13112c1dc0f669bbe80e7f84541edbafb72f3030d2ca7642c3c9d.txt",
+          "snapshot_sha256": "f388fd38cad13112c1dc0f669bbe80e7f84541edbafb72f3030d2ca7642c3c9d"
+        },
+        {
+          "member": "pip/_vendor/rich/LICENSE",
+          "member_sha256": "deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15",
+          "snapshot": "packaging/licenses/macos-x86_64/deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15.txt",
+          "snapshot_sha256": "deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15"
+        },
+        {
+          "member": "pip/_vendor/tomli/LICENSE",
+          "member_sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe",
+          "snapshot": "packaging/licenses/wheels/b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe.txt",
+          "snapshot_sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe"
+        },
+        {
+          "member": "pip/_vendor/tomli_w/LICENSE",
+          "member_sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe",
+          "snapshot": "packaging/licenses/wheels/b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe.txt",
+          "snapshot_sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe"
+        },
+        {
+          "member": "pip/_vendor/truststore/LICENSE",
+          "member_sha256": "33be7b7e8fa4fd19b1760e1a8ed8a668bdab852c91b692dd41424bcb725a9fca",
+          "snapshot": "packaging/licenses/macos-x86_64/33be7b7e8fa4fd19b1760e1a8ed8a668bdab852c91b692dd41424bcb725a9fca.txt",
+          "snapshot_sha256": "33be7b7e8fa4fd19b1760e1a8ed8a668bdab852c91b692dd41424bcb725a9fca"
+        },
+        {
+          "member": "pip/_vendor/urllib3/LICENSE.txt",
+          "member_sha256": "130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686",
+          "snapshot": "packaging/licenses/macos-x86_64/130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686.txt",
+          "snapshot_sha256": "130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686"
+        }
+      ]
+    },
+    "pluggy-1.6.0-py3-none-any.whl": {
+      "sha256": "e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746",
+      "notices": [
+        {
+          "member": "pluggy-1.6.0.dist-info/licenses/LICENSE",
+          "member_sha256": "d6b65e6c213a5d0b577911d34d6e5949b9f59d76c238c5071a2f3fc16cfb2606",
+          "snapshot": "packaging/licenses/wheels/d6b65e6c213a5d0b577911d34d6e5949b9f59d76c238c5071a2f3fc16cfb2606.txt",
+          "snapshot_sha256": "d6b65e6c213a5d0b577911d34d6e5949b9f59d76c238c5071a2f3fc16cfb2606"
+        }
+      ]
+    },
+    "protobuf-7.36.2-cp310-abi3-macosx_10_9_universal2.whl": {
+      "sha256": "cbc70b17ee27e28894c7fee8bb04be1abead49e936bc70eb60052531eee2079e",
+      "notices": [
+        {
+          "member": "protobuf-7.36.2.dist-info/LICENSE",
+          "member_sha256": "6e5e117324afd944dcf67f36cf329843bc1a92229a8cd9bb573d7a83130fea7d",
+          "snapshot": "packaging/licenses/macos-x86_64/6e5e117324afd944dcf67f36cf329843bc1a92229a8cd9bb573d7a83130fea7d.txt",
+          "snapshot_sha256": "6e5e117324afd944dcf67f36cf329843bc1a92229a8cd9bb573d7a83130fea7d"
+        }
+      ]
+    },
+    "pygments-2.20.0-py3-none-any.whl": {
+      "sha256": "81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176",
+      "notices": [
+        {
+          "member": "pygments-2.20.0.dist-info/licenses/AUTHORS",
+          "member_sha256": "0db603a5f4499f690c4425477ff664c166da325d3acc3b5a8d4de3db072443d0",
+          "snapshot": "packaging/licenses/wheels/0db603a5f4499f690c4425477ff664c166da325d3acc3b5a8d4de3db072443d0.txt",
+          "snapshot_sha256": "0db603a5f4499f690c4425477ff664c166da325d3acc3b5a8d4de3db072443d0"
+        },
+        {
+          "member": "pygments-2.20.0.dist-info/licenses/LICENSE",
+          "member_sha256": "a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17",
+          "snapshot": "packaging/licenses/wheels/a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17.txt",
+          "snapshot_sha256": "a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17"
+        }
+      ]
+    },
+    "pyinstaller-6.21.0-py3-none-macosx_10_13_universal2.whl": {
+      "sha256": "327d132389f37912609e01be62810cf96b5aa95b613903e4b8692e0d12fb0eda",
+      "notices": [
+        {
+          "member": "pyinstaller-6.21.0.dist-info/licenses/COPYING.txt",
+          "member_sha256": "dcf75fdb959db1e3b41c0f8505069d2ece781b5ec6b3d0a4d30975cfc6580245",
+          "snapshot": "packaging/licenses/wheels/dcf75fdb959db1e3b41c0f8505069d2ece781b5ec6b3d0a4d30975cfc6580245.txt",
+          "snapshot_sha256": "dcf75fdb959db1e3b41c0f8505069d2ece781b5ec6b3d0a4d30975cfc6580245"
+        }
+      ]
+    },
+    "pyinstaller_hooks_contrib-2026.6-py3-none-any.whl": {
+      "sha256": "fd13b8ac126b35361175edacd41a0d97080b75dd5f4b594ecefefff969509dd3",
+      "notices": [
+        {
+          "member": "pyinstaller_hooks_contrib-2026.6.dist-info/licenses/LICENSE",
+          "member_sha256": "91d0baaff00773038e72c0a1fc9d5d2d38706b7a2b9c04f34296608f931b9cd0",
+          "snapshot": "packaging/licenses/wheels/91d0baaff00773038e72c0a1fc9d5d2d38706b7a2b9c04f34296608f931b9cd0.txt",
+          "snapshot_sha256": "91d0baaff00773038e72c0a1fc9d5d2d38706b7a2b9c04f34296608f931b9cd0"
+        }
+      ]
+    },
+    "pyqt6_sip-13.11.1-cp311-cp311-macosx_10_9_universal2.whl": {
+      "sha256": "c0ec2128c174db352bec1c8d23a437e970e8d5a78ac50315d8dfc671fcf7a7da",
+      "notices": [
+        {
+          "member": "pyqt6_sip-13.11.1.dist-info/licenses/LICENSE",
+          "member_sha256": "3e6f5b427c36f94ecf86bc01698af7030a1ed6eb3748110d5dbb8d142d804611",
+          "snapshot": "packaging/licenses/PyQt6_sip-BSD-2-Clause.txt",
+          "snapshot_sha256": "3e6f5b427c36f94ecf86bc01698af7030a1ed6eb3748110d5dbb8d142d804611"
+        }
+      ]
+    },
+    "pytest-9.1.1-py3-none-any.whl": {
+      "sha256": "37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c",
+      "notices": [
+        {
+          "member": "pytest-9.1.1.dist-info/licenses/LICENSE",
+          "member_sha256": "ca836a5f9ecca3b2f350230faa20a48fb8b145653b5568d784862df864706b9b",
+          "snapshot": "packaging/licenses/wheels/ca836a5f9ecca3b2f350230faa20a48fb8b145653b5568d784862df864706b9b.txt",
+          "snapshot_sha256": "ca836a5f9ecca3b2f350230faa20a48fb8b145653b5568d784862df864706b9b"
+        }
+      ]
+    },
+    "pytest_qt-4.5.0-py3-none-any.whl": {
+      "sha256": "ed21ea9b861247f7d18090a26bfbda8fb51d7a8a7b6f776157426ff2ccf26eff",
+      "notices": [
+        {
+          "member": "pytest_qt-4.5.0.dist-info/licenses/LICENSE",
+          "member_sha256": "ddb94f90ceb2ebb3d88d5354fa635c1d7404d6624b15ed1954a14255f348f119",
+          "snapshot": "packaging/licenses/macos-x86_64/ddb94f90ceb2ebb3d88d5354fa635c1d7404d6624b15ed1954a14255f348f119.txt",
+          "snapshot_sha256": "ddb94f90ceb2ebb3d88d5354fa635c1d7404d6624b15ed1954a14255f348f119"
+        }
+      ]
+    },
+    "rawpy-0.24.0-cp311-cp311-macosx_10_9_x86_64.whl": {
+      "sha256": "4c684fa8766055ec5e0af1e5cc83cf1959f72b730eaed9baa4b1e57bc50f202f",
+      "notices": [
+        {
+          "member": "rawpy-0.24.0.dist-info/LICENSE",
+          "member_sha256": "2cc0e98a169e1a9927dee3c82d59dfac898a2aad5a1fcdd295db40c2f2fed516",
+          "snapshot": "packaging/licenses/wheels/2cc0e98a169e1a9927dee3c82d59dfac898a2aad5a1fcdd295db40c2f2fed516.txt",
+          "snapshot_sha256": "2cc0e98a169e1a9927dee3c82d59dfac898a2aad5a1fcdd295db40c2f2fed516"
+        },
+        {
+          "member": "rawpy-0.24.0.dist-info/LICENSE.LibRaw",
+          "member_sha256": "eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449",
+          "snapshot": "packaging/licenses/wheels/eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449.txt",
+          "snapshot_sha256": "eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449"
+        }
+      ]
+    },
+    "setuptools-84.1.0-py3-none-any.whl": {
+      "sha256": "5231689c6ac8156cd155cfb98c3fd6fb252c3e7e9bd3d78b64d3c55f132624c9",
+      "notices": [
+        {
+          "member": "setuptools-84.1.0.dist-info/licenses/LICENSE",
+          "member_sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+          "snapshot": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+          "snapshot_sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741"
+        },
+        {
+          "member": "setuptools/_vendor/autocommand-2.2.2.dist-info/LICENSE",
+          "member_sha256": "ade78d04982d69972d444a8e14a94f87a2334dd3855cc80348ea8e240aa0df2d",
+          "snapshot": "packaging/licenses/macos-x86_64/ade78d04982d69972d444a8e14a94f87a2334dd3855cc80348ea8e240aa0df2d.txt",
+          "snapshot_sha256": "ade78d04982d69972d444a8e14a94f87a2334dd3855cc80348ea8e240aa0df2d"
+        },
+        {
+          "member": "setuptools/_vendor/backports.tarfile-1.2.0.dist-info/LICENSE",
+          "member_sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+          "snapshot": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+          "snapshot_sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741"
+        },
+        {
+          "member": "setuptools/_vendor/importlib_metadata-8.7.1.dist-info/licenses/LICENSE",
+          "member_sha256": "458502e12d97bbf64438606a20044aa85eb05fb0a8a807bb35dbec253fd1fc04",
+          "snapshot": "packaging/licenses/macos-x86_64/458502e12d97bbf64438606a20044aa85eb05fb0a8a807bb35dbec253fd1fc04.txt",
+          "snapshot_sha256": "458502e12d97bbf64438606a20044aa85eb05fb0a8a807bb35dbec253fd1fc04"
+        },
+        {
+          "member": "setuptools/_vendor/jaraco.text-4.0.0.dist-info/LICENSE",
+          "member_sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+          "snapshot": "packaging/licenses/wheels/86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741.txt",
+          "snapshot_sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741"
+        },
+        {
+          "member": "setuptools/_vendor/jaraco_context-6.1.0.dist-info/licenses/LICENSE",
+          "member_sha256": "9755a18519666e5f0f4cae3daad3d7012bcae48a600b31237d75e9fe134e6683",
+          "snapshot": "packaging/licenses/macos-x86_64/9755a18519666e5f0f4cae3daad3d7012bcae48a600b31237d75e9fe134e6683.txt",
+          "snapshot_sha256": "9755a18519666e5f0f4cae3daad3d7012bcae48a600b31237d75e9fe134e6683"
+        },
+        {
+          "member": "setuptools/_vendor/jaraco_functools-4.4.0.dist-info/licenses/LICENSE",
+          "member_sha256": "5a57cb4db85e2a2dd88c290628908add57e3451449e0a9a71fdfb38776fd759d",
+          "snapshot": "packaging/licenses/macos-x86_64/5a57cb4db85e2a2dd88c290628908add57e3451449e0a9a71fdfb38776fd759d.txt",
+          "snapshot_sha256": "5a57cb4db85e2a2dd88c290628908add57e3451449e0a9a71fdfb38776fd759d"
+        },
+        {
+          "member": "setuptools/_vendor/more_itertools-10.8.0.dist-info/licenses/LICENSE",
+          "member_sha256": "09f1c8c9e941af3e584d59641ea9b87d83c0cb0fd007eb5ef391a7e2643c1a46",
+          "snapshot": "packaging/licenses/wheels/09f1c8c9e941af3e584d59641ea9b87d83c0cb0fd007eb5ef391a7e2643c1a46.txt",
+          "snapshot_sha256": "09f1c8c9e941af3e584d59641ea9b87d83c0cb0fd007eb5ef391a7e2643c1a46"
+        },
+        {
+          "member": "setuptools/_vendor/packaging-26.0.dist-info/licenses/LICENSE",
+          "member_sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48",
+          "snapshot": "packaging/licenses/wheels/cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48.txt",
+          "snapshot_sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48"
+        },
+        {
+          "member": "setuptools/_vendor/packaging-26.0.dist-info/licenses/LICENSE.APACHE",
+          "member_sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+          "snapshot": "packaging/licenses/wheels/0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594.txt",
+          "snapshot_sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+        },
+        {
+          "member": "setuptools/_vendor/packaging-26.0.dist-info/licenses/LICENSE.BSD",
+          "member_sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5",
+          "snapshot": "packaging/licenses/wheels/b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5.txt",
+          "snapshot_sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5"
+        },
+        {
+          "member": "setuptools/_vendor/platformdirs-4.4.0.dist-info/licenses/LICENSE",
+          "member_sha256": "29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6",
+          "snapshot": "packaging/licenses/wheels/29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6.txt",
+          "snapshot_sha256": "29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6"
+        },
+        {
+          "member": "setuptools/_vendor/tomli-2.4.0.dist-info/licenses/LICENSE",
+          "member_sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe",
+          "snapshot": "packaging/licenses/wheels/b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe.txt",
+          "snapshot_sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe"
+        },
+        {
+          "member": "setuptools/_vendor/wheel-0.46.3.dist-info/licenses/LICENSE.txt",
+          "member_sha256": "30c23618679108f3e8ea1d2a658c7ca417bdfc891c98ef1a89fa4ff0c9828654",
+          "snapshot": "packaging/licenses/wheels/30c23618679108f3e8ea1d2a658c7ca417bdfc891c98ef1a89fa4ff0c9828654.txt",
+          "snapshot_sha256": "30c23618679108f3e8ea1d2a658c7ca417bdfc891c98ef1a89fa4ff0c9828654"
+        },
+        {
+          "member": "setuptools/_vendor/zipp-3.23.0.dist-info/licenses/LICENSE",
+          "member_sha256": "5a57cb4db85e2a2dd88c290628908add57e3451449e0a9a71fdfb38776fd759d",
+          "snapshot": "packaging/licenses/macos-x86_64/5a57cb4db85e2a2dd88c290628908add57e3451449e0a9a71fdfb38776fd759d.txt",
+          "snapshot_sha256": "5a57cb4db85e2a2dd88c290628908add57e3451449e0a9a71fdfb38776fd759d"
+        },
+        {
+          "member": "setuptools/config/NOTICE",
+          "member_sha256": "2dddf08818297a3b89d43d95ff659d8da85741108c9136dfa3a4d856c0623bd8",
+          "snapshot": "packaging/licenses/wheels/2dddf08818297a3b89d43d95ff659d8da85741108c9136dfa3a4d856c0623bd8.txt",
+          "snapshot_sha256": "2dddf08818297a3b89d43d95ff659d8da85741108c9136dfa3a4d856c0623bd8"
+        },
+        {
+          "member": "setuptools/config/_validate_pyproject/NOTICE",
+          "member_sha256": "09c9bcea95ca086f8bc5bed174e40bc835b297d40fb5f86bbbb570fe0a5581a7",
+          "snapshot": "packaging/licenses/macos-x86_64/09c9bcea95ca086f8bc5bed174e40bc835b297d40fb5f86bbbb570fe0a5581a7.txt",
+          "snapshot_sha256": "09c9bcea95ca086f8bc5bed174e40bc835b297d40fb5f86bbbb570fe0a5581a7"
+        }
+      ]
+    },
+    "sympy-1.14.0-py3-none-any.whl": {
+      "sha256": "e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5",
+      "notices": [
+        {
+          "member": "sympy-1.14.0.dist-info/licenses/AUTHORS",
+          "member_sha256": "82b1038521b0696c63c90b31ed4a0a2c9c4c16871c648b157b07ca44b6f18f8d",
+          "snapshot": "packaging/licenses/macos-x86_64/82b1038521b0696c63c90b31ed4a0a2c9c4c16871c648b157b07ca44b6f18f8d.txt",
+          "snapshot_sha256": "82b1038521b0696c63c90b31ed4a0a2c9c4c16871c648b157b07ca44b6f18f8d"
+        },
+        {
+          "member": "sympy-1.14.0.dist-info/licenses/LICENSE",
+          "member_sha256": "07a5e9819f727b4986ad2829c7a29a6320d42575f720eb24d71b7fef573a0286",
+          "snapshot": "packaging/licenses/macos-x86_64/07a5e9819f727b4986ad2829c7a29a6320d42575f720eb24d71b7fef573a0286.txt",
+          "snapshot_sha256": "07a5e9819f727b4986ad2829c7a29a6320d42575f720eb24d71b7fef573a0286"
+        },
+        {
+          "member": "sympy/parsing/latex/LICENSE.txt",
+          "member_sha256": "007bc30a58fa40a996e772047120de4eaf31f5110e4f9c3b5f93fcdfbe2eaca1",
+          "snapshot": "packaging/licenses/macos-x86_64/007bc30a58fa40a996e772047120de4eaf31f5110e4f9c3b5f93fcdfbe2eaca1.txt",
+          "snapshot_sha256": "007bc30a58fa40a996e772047120de4eaf31f5110e4f9c3b5f93fcdfbe2eaca1"
+        }
+      ]
+    },
+    "typing_extensions-4.16.0-py3-none-any.whl": {
+      "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+      "notices": [
+        {
+          "member": "typing_extensions-4.16.0.dist-info/licenses/LICENSE",
+          "member_sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
+          "snapshot": "packaging/licenses/runtime/CPython-3.11.15-LICENSE.txt",
+          "snapshot_sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf"
+        }
+      ]
+    },
+    "wheel-0.48.0-py3-none-any.whl": {
+      "sha256": "3217dcc807155e45db462d7ef2431f5ddda0d7273b700d05a67b271ceb1287ab",
+      "notices": [
+        {
+          "member": "wheel-0.48.0.dist-info/licenses/LICENSE.txt",
+          "member_sha256": "30c23618679108f3e8ea1d2a658c7ca417bdfc891c98ef1a89fa4ff0c9828654",
+          "snapshot": "packaging/licenses/wheels/30c23618679108f3e8ea1d2a658c7ca417bdfc891c98ef1a89fa4ff0c9828654.txt",
+          "snapshot_sha256": "30c23618679108f3e8ea1d2a658c7ca417bdfc891c98ef1a89fa4ff0c9828654"
+        }
+      ]
+    }
+  }
+}

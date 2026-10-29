@@ -110,3 +110,37 @@ def test_notice_change_must_be_staged_for_clean_wheel(tmp_path):
     (tmp_path / "LICENSE").write_text("unstaged change")
     with pytest.raises(build_wheel.CleanWheelBuildError, match="unstaged release input"):
         build_wheel.build_clean_wheel(tmp_path / "dist", repo_root=tmp_path)
+
+
+def test_intel_receipt_reuses_exact_hashed_legal_texts_not_a_new_payload_type():
+    root = Path(__file__).resolve().parents[1]
+    receipt_path = root / "packaging/macos-x86_64-wheel-notices.json"
+    assert receipt_path.is_file(), "Intel wheel notice receipt required"
+    receipt = json.loads(receipt_path.read_text())
+    manifest = json.loads((root / "packaging/notice-manifest.json").read_text())
+    payload = build_wheel.notice_payload(root)
+    assert receipt["rights_status"] == "unreviewed"
+    assert manifest["release_status"] == "blocked"
+    assert len(receipt["wheel_files"]) == 28
+    assert "packaging/macos-x86_64-wheel-notices.json" not in payload
+    for wheel, entry in receipt["wheel_files"].items():
+        for notice in entry["notices"]:
+            snapshot = notice["snapshot"]
+            actual = hashlib.sha256((root / snapshot).read_bytes()).hexdigest()
+            assert actual == notice["member_sha256"] == notice["snapshot_sha256"]
+            assert manifest["files"][snapshot] == actual
+            assert payload[snapshot] == (root / snapshot).read_bytes()
+            assert any(origin["wheel"] == wheel
+                       and origin["wheel_sha256"] == entry["sha256"]
+                       and origin["member"] == notice["member"]
+                       and origin["sha256"] == actual
+                       and origin["path"] == snapshot
+                       for origin in manifest["wheel_origins"])
+
+
+def test_intel_lock_keeps_arm64_package_versions():
+    import re
+    root = Path(__file__).resolve().parents[1]
+    pins = lambda name: re.findall(r"^([a-z0-9-]+)==([^\s]+)",
+                                   (root / "packaging" / name).read_text(), re.MULTILINE)
+    assert pins("requirements-macos-x86_64.lock") == pins("requirements-macos-arm64.lock")
