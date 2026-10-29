@@ -1,5 +1,9 @@
 # 当前依赖审查 / Current dependency review
 
+范围调整（2026-10-29）：项目改以源码分享和用户自行构建为主。以下保留历史核验和已知缺口，不再作为当前开发任务队列；深度二进制溯源、签名、公证与商店准备暂缓，上游询问已撤回，不再等待回复。基本许可证、第三方声明和源码安全整理继续；未完成的二进制发行事项不标记为通过。
+
+Scope update: this project now prioritizes source sharing and user builds. The evidence and gaps below are retained as history, not an active release-engineering checklist. Deep binary tracing, signing, notarization and store preparation are deferred. The upstream inquiry was withdrawn and will not be pursued. Preserve licenses and notices; no outstanding redistribution gate is declared cleared.
+
 检查日期：2026-10-28（Asia/Shanghai）。这是当前构建输入的工程核验，不是整体法律或安全放行。既有安装包仍以各自验证报告记录的源码、哈希为准；本次源码更新不会追溯改变旧二进制。
 
 ## 本轮实际推进

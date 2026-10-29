@@ -8,15 +8,11 @@
 
 XuanPian（选片）是一款注重隐私的桌面照片筛选助手。它可以帮助摄影师导入照片文件夹、对比连拍照片、查看对焦与曝光提示、标记保留照片并导出选片结果，全程无需将照片上传到云端。
 
-0.1.0 是面向 Apple 芯片 Mac 的测试版本。分析结果仅用于辅助人工复查，不会自动判定一张照片是否可用。
+项目当前以**分享源码、供感兴趣的人自行运行和修改**为目标，不以上架商店、销售或提供安装包为前提。分析结果仅用于辅助人工复查，不会自动判定一张照片是否可用。
 
 开发分支的 `technical-v8` 已采用 ONNX Runtime CPU、YuNet 和 YOLOX-Nano，模型随源码内置，完全离线运行。跨平台目标为 macOS 12+（Intel / Apple Silicon）及 Windows 10 22H2 / Windows 11 x64；各目标的正式交付与干净桌面验收仍需分别完成，当前 Release 的支持范围仍以下方安装说明为准。迁移说明见 [ONNX 分析记录](docs/onnx-analysis.md)。
 
-Windows x64 已有通过原生 CI 安装、运行和卸载验证的未签名候选，尚非正式 Release。详见 [Windows 构建说明](docs/building-windows.md) 与 [验证记录](docs/verification/windows-installer.md)。
-
-Intel Mac 已有通过原生 `macos-15-intel` CI 构建、包内运行及中文路径迁移验证的 macOS 12 目标候选（x86_64、本地 ad-hoc 签名）。它不是正式 Release，临时 CI 产物仅保留 7 天；macOS 12 干净机器验收、Developer ID 签名及公证仍未完成。详见 [Intel Mac 候选验证记录](docs/verification/macos-intel-installer.md)。
-
-各平台进度、暂缓事项和下一步见 [当前交付状态](docs/release-status.md)。
+建议从下方[源码运行步骤](#从源码运行)开始。打包是可选的进阶操作；已有候选构建和系统验收边界保留在 [当前交付状态](docs/release-status.md)，不应理解为所有目标系统均已通过真机验证。
 
 安全提示：开发分支已升级到 Pillow 13.0.0 安全版本；现有 Release 尚未包含此更新，请勿使用旧包处理不可信来源的图片。新候选包仍需完成发布验收。
 
@@ -28,13 +24,7 @@ Intel Mac 已有通过原生 `macos-15-intel` CI 构建、包内运行及中文�
 - 使用本地项目保存复查状态，关闭后可继续处理。
 - 标记保存在本地项目中，标记不会移动原始文件；只有明确选择“移动文件”导出时才会改变文件位置。
 - 导出前会显示照片数量与文件名示例；移动文件或覆盖同名文件需要再次确认。
-- 内置分析模型和元数据运行环境，无需账号或首次启动下载。
-
-### 下载与安装
-
-请从 [GitHub Releases](https://github.com/zhouz1995-svg/xuanpian/releases) 下载当前 `.dmg` 和对应的 SHA-256 校验文件。安装包仅支持 Apple 芯片（`arm64`），不支持 Intel Mac 和 Windows。
-
-当前测试版使用本地临时签名，**尚未经过 Apple 公证**，macOS 可能显示安全警告。请勿关闭 Gatekeeper 或其他系统级安全保护。校验文件和拖入“应用程序”文件夹的具体步骤请参阅[安装指南](docs/installation.md)。
+- 分析模型随源码提供，运行无需账号或下载模型；源码模式的 AF 元数据支持另见下文。
 
 ### 分析范围与限制
 
@@ -46,21 +36,39 @@ Intel Mac 已有通过原生 `macos-15-intel` CI 构建、包内运行及中文�
 
 ### 从源码运行
 
-项目需要 Python 3.11，并采用 [GPL-3.0-only](LICENSE) 许可证。在 arm64 Mac 上安装锁定并校验哈希的依赖，然后运行测试：
+项目采用 [GPL-3.0-only](LICENSE) 许可证。下载或克隆**本 README 所在分支**的完整源码，在仓库根目录操作；推荐原生架构的 64 位 Python 3.11，不要把某个平台的 `.venv` 复制到另一个平台。安装依赖需要联网，正常分析不上传照片。
+
+macOS（Apple Silicon）：
 
 ```bash
 python3.11 -m venv .venv
-.venv/bin/python -m pip install --require-hashes -r packaging/requirements-macos-arm64.lock
-QT_QPA_PLATFORM=offscreen .venv/bin/python -m pytest -q
-```
-
-启动开发版本：
-
-```bash
+.venv/bin/python -m pip install --only-binary :all: --require-hashes -r packaging/requirements-macos-arm64.lock
+.venv/bin/python -m pip check
 .venv/bin/python -m src.main
 ```
 
-独立应用和 DMG 的构建流程请参阅 [macOS 构建说明](docs/building-macos.md)。参与贡献前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)；提交问题时请勿附带私人照片或元数据。
+macOS（Intel）：上述步骤的依赖锁改为 `packaging/requirements-macos-x86_64.lock`，其余命令相同。请使用原生 Intel Python，不通过 Rosetta 混装架构。
+
+Windows x64（PowerShell，不要求激活虚拟环境）：
+
+```powershell
+py -3.11 -m venv .venv
+.venv\Scripts\python.exe -m pip install --only-binary :all: --require-hashes -r packaging/requirements-windows-x64.lock
+.venv\Scripts\python.exe -m pip check
+.venv\Scripts\python.exe -m src.main
+```
+
+三份现有锁包含运行、测试和可选打包工具，安装包较大；不必执行打包脚本即可运行应用。Windows 10/11 真机试用仍未完成。安装失败时先检查 Python 版本、架构及所选锁，勿随意删除哈希校验或升级单个依赖。
+
+源码模式下，安装当前受支持的 ExifTool 并保证终端执行 `exiftool -ver` 成功，才可读取受支持 JPEG 的 AF 元数据。没有该工具或读取失败时会使用图像 fallback，不阻止基本选片。它不是通过 pip 安装的 Python 依赖，打包版的内置运行时与源码环境不同。
+
+运行测试与贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)。独立应用、DMG 和 Windows 安装器仅为可选进阶路径，见 [macOS 构建说明](docs/building-macos.md) / [Windows 构建说明](docs/building-windows.md)；这些打包配方可能要求特定编译工具链，不是从源码启动界面的前置条件。
+
+### 可选：历史安装包
+
+[GitHub Releases](https://github.com/zhouz1995-svg/xuanpian/releases) 中的历史 `.dmg` 和 SHA-256 文件仅对应当时的 Apple 芯片（`arm64`）测试版，不包含当前源码的全部修正，也不是本项目当前推荐的入门路径。
+
+历史测试版使用本地临时签名，**尚未经过 Apple 公证**，macOS 可能显示安全警告。请勿关闭 Gatekeeper 或其他系统级安全保护。历史步骤见[安装指南](docs/installation.md)。
 
 ### 发布说明
 
@@ -74,15 +82,11 @@ XuanPian 0.1.0 是早期公开测试版，仅供 Apple 芯片 Mac 评估使用�
 
 XuanPian is a privacy-friendly desktop photo-review assistant. It helps photographers import a folder, compare likely bursts, review focus and exposure cues, mark keepers, and export a selection without uploading photos to a cloud service.
 
-Version 0.1.0 is a beta for Apple Silicon Macs. Analysis results are review aids, not an automatic decision about whether a photo is usable.
+The current goal is to share source for interested users to run and modify themselves, not to require store publication, sales or prebuilt installers. Analysis results are review aids, not an automatic decision about whether a photo is usable.
 
 The development branch uses ONNX Runtime CPU with bundled YuNet and YOLOX-Nano models (`technical-v8`). The target platforms are macOS 12+ (Intel / Apple Silicon) and Windows 10 22H2 / Windows 11 x64. Formal delivery and clean-desktop acceptance remain separate gates for each target; the existing Release keeps its documented support limits. See [the migration notes](docs/onnx-analysis.md).
 
-An unsigned Windows x64 candidate has passed native CI installation, runtime and uninstall checks. It is not a Release. See [Windows build instructions](docs/building-windows.md) and [verification evidence](docs/verification/windows-installer.md).
-
-An Intel Mac candidate targeting macOS 12 (native x86_64, locally ad-hoc signed) passed packaging, frozen runtime and Chinese-path relocation checks on `macos-15-intel`. It is not a Release; CI artifacts are retained for only 7 days. macOS 12 clean-machine acceptance, Developer ID signing and notarization remain open. See [Intel Mac candidate evidence](docs/verification/macos-intel-installer.md).
-
-See [current delivery status](docs/release-status.md) for platform progress, deferred acceptance and next steps.
+Start with [running from source](#build-from-source). Packaging is optional. Historical candidates and platform acceptance limits remain in [current delivery status](docs/release-status.md); they do not prove clean-machine acceptance on every target OS.
 
 Security: the development branch uses the Pillow 13.0.0 security release. Existing Releases do not include this update; do not use older packages for untrusted images. New candidates still require release acceptance.
 
@@ -94,13 +98,7 @@ Security: the development branch uses the Pillow 13.0.0 security release. Existi
 - Persistent local project state, so a review can be closed and reopened.
 - Marks are local project metadata. Marks do not move original files; file locations change only through an explicit move export.
 - Export shows the photo count and a filename example; move and overwrite operations require a second confirmation.
-- Bundled models and metadata runtime, with no account or first-run model download.
-
-### Download and install
-
-Download the current `.dmg` and its SHA-256 checksum from [GitHub Releases](https://github.com/zhouz1995-svg/xuanpian/releases). The packaged beta supports Apple Silicon (`arm64`) only; Intel Macs and Windows are not supported.
-
-This beta is locally ad-hoc signed and is **not Apple-notarized**. macOS may display a security warning. Do not disable Gatekeeper or other system-wide security protections. See the [installation guide](docs/installation.md) for the checksum and drag-to-Applications steps.
+- Models included with source, with no account or first-run model download. Source-mode AF metadata support is described below.
 
 ### Analysis scope and limitations
 
@@ -112,21 +110,35 @@ The current release provides three project-local marks, but does not yet impleme
 
 ### Build from source
 
-The project requires Python 3.11 and is licensed under [GPL-3.0-only](LICENSE). On an arm64 Mac, install the hash-pinned dependencies and run the test suite:
+Licensed under [GPL-3.0-only](LICENSE). Download or clone the complete source from the branch containing this README and work from its root. Use native 64-bit Python 3.11; never copy virtual environments between platforms. Dependency installation requires network access; photo analysis does not upload photos. On Apple Silicon macOS:
 
 ```bash
 python3.11 -m venv .venv
-.venv/bin/python -m pip install --require-hashes -r packaging/requirements-macos-arm64.lock
-QT_QPA_PLATFORM=offscreen .venv/bin/python -m pytest -q
-```
-
-Run the development app with:
-
-```bash
+.venv/bin/python -m pip install --only-binary :all: --require-hashes -r packaging/requirements-macos-arm64.lock
+.venv/bin/python -m pip check
 .venv/bin/python -m src.main
 ```
 
-For the standalone application and DMG workflow, see [building for macOS](docs/building-macos.md). Contributions should follow [CONTRIBUTING.md](CONTRIBUTING.md); bug reports must not include private photos or metadata.
+On Intel macOS, use `packaging/requirements-macos-x86_64.lock` instead; the other commands are unchanged. Use native Intel Python without Rosetta. On Windows x64, use PowerShell:
+
+```powershell
+py -3.11 -m venv .venv
+.venv\Scripts\python.exe -m pip install --only-binary :all: --require-hashes -r packaging/requirements-windows-x64.lock
+.venv\Scripts\python.exe -m pip check
+.venv\Scripts\python.exe -m src.main
+```
+
+The existing locks include runtime, test and optional build tools. No packaging script is required to launch the app. Windows 10/11 hands-on acceptance is still incomplete. If installation fails, check Python, architecture and lock selection rather than disabling hashes or upgrading individual dependencies.
+
+Source mode looks for `exiftool` on PATH. Install a supported ExifTool separately and verify `exiftool -ver` to enable supported JPEG AF metadata; missing/failed metadata uses the image-based fallback and does not prevent basic review. The packaged metadata runtime is not automatically present in a source checkout.
+
+For tests and contributions, see [CONTRIBUTING.md](CONTRIBUTING.md). Standalone builds are optional: [macOS](docs/building-macos.md) / [Windows](docs/building-windows.md). Their fixed compiler/toolchain requirements are not prerequisites for launching the source app. Do not include private photos or metadata in reports.
+
+### Optional: historical installers
+
+[GitHub Releases](https://github.com/zhouz1995-svg/xuanpian/releases) contains historical Apple Silicon (`arm64`) `.dmg` builds and checksums. They do not contain every current source fix and are not the recommended starting point.
+
+These builds are locally ad-hoc signed and **not Apple-notarized**. Do not disable Gatekeeper or other system-wide protections. Historical steps are in the [installation guide](docs/installation.md).
 
 ### Release notes
 
