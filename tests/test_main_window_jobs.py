@@ -1,5 +1,9 @@
 from types import SimpleNamespace
 from uuid import uuid4
+from pathlib import Path
+from threading import Event
+
+import pytest
 
 from PyQt6.QtGui import QImage
 
@@ -31,6 +35,76 @@ def _activate_import(window: MainWindow):
     window._active_project_id = project_id
     window._active_job_ids["import"] = job_id
     return project_id, job_id
+
+
+@pytest.mark.parametrize("invalid_kind", ["missing", "file", "resolve_error", "stat_error"])
+def test_invalid_import_keeps_current_project_and_running_analysis(
+    qapp, qtbot, tmp_path, monkeypatch, invalid_kind
+):
+    from PIL import Image
+    from src.xuanpian.services.import_service import candidate_to_photo_record
+    from src.xuanpian.store.project_store import ProjectStore
+    from src.xuanpian.tasks.contracts import CancellationToken, JobHandle
+
+    class RecordingImport:
+        def __init__(self):
+            self.roots = []
+
+        def start(self, project_id, root, on_event):
+            self.roots.append(root)
+            done = Event()
+            done.set()
+            return JobHandle(uuid4(), CancellationToken(), done)
+
+    coordinator = RecordingImport()
+    window = MainWindow(import_coordinator=coordinator)
+    qtbot.addWidget(window)
+    original = tmp_path / "existing.jpg"
+    Image.new("RGB", (8, 8)).save(original)
+    candidate = PhotoCandidate("existing", original.name, jpeg_path=str(original))
+    record = candidate_to_photo_record(candidate)
+    store = ProjectStore.open(tmp_path / "project.sqlite3", root_path=tmp_path)
+    store.upsert_photos((record,))
+    store.save_mark("existing", "保留")
+    model = ImageFileModel(str(original), photo_id="existing", mark="保留")
+    window._project_store = store
+    window.thumbnail_browser.set_models([model])
+    project_id = uuid4()
+    window._active_project_id = project_id
+    done = Event()
+    analysis = JobHandle(uuid4(), CancellationToken(), done)
+    window._analysis_handle = analysis
+    window._active_job_ids["analysis"] = analysis.job_id
+    invalid = tmp_path / "unavailable"
+    if invalid_kind == "file":
+        invalid.write_text("not a directory")
+    elif invalid_kind in {"resolve_error", "stat_error"}:
+        method = "resolve" if invalid_kind == "resolve_error" else "is_dir"
+        original_method = getattr(Path, method)
+
+        def unavailable(path, *args, **kwargs):
+            if path == invalid:
+                raise OSError("synthetic filesystem access failure")
+            return original_method(path, *args, **kwargs)
+
+        monkeypatch.setattr(Path, method, unavailable)
+    try:
+        window._start_import(str(invalid))
+
+        assert window._active_project_id == project_id
+        assert window._project_store is store
+        assert window.all_models == [model]
+        assert store.get_photo("existing").mark == "保留"
+        assert window._analysis_handle is analysis
+        assert not analysis._token.is_canceled()
+        assert coordinator.roots == []
+        assert "文件夹" in window.statusBar().currentMessage()
+        assert "重新选择" in window.statusBar().currentMessage()
+        assert original.is_file()
+    finally:
+        done.set()
+        window.close()
+        store.close()
 
 
 def test_stale_import_events_do_not_mutate_models(qapp) -> None:
