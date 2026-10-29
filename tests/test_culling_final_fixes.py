@@ -7,7 +7,8 @@ from src.xuanpian.domain.culling_session import StatusFilter
 from src.xuanpian.domain.culling import PhotoMark
 from src.xuanpian.services.photo_move_service import PhotoMoveService
 from src.xuanpian.tasks.move_coordinator import MoveCoordinator
-from threading import Event, Thread
+from threading import Event, Thread, get_ident
+from PyQt6.QtCore import QTimer
 from pathlib import Path
 from time import perf_counter
 import pytest
@@ -422,12 +423,16 @@ def test_normal_close_defers_without_blocking_until_paired_move_commits(qapp, qt
 def test_slow_preflight_is_off_thread_with_immediate_pending_and_safe_close(
     qapp, qtbot, tmp_path, cancel
 ):
-    entered, release = Event(), Event()
+    entered, release, heartbeat = Event(), Event(), Event()
+    owner_thread = get_ident()
+    preflight_threads = []
 
     class SlowPreflight(PhotoMoveService):
         def _preflight(self, plan):
+            preflight_threads.append(get_ident())
+            assert get_ident() != owner_thread
             entered.set()
-            assert release.wait(1)
+            release.wait()
             super()._preflight(plan)
 
     service = SlowPreflight()
@@ -435,12 +440,13 @@ def test_slow_preflight_is_off_thread_with_immediate_pending_and_safe_close(
     window = harness.window
     window._photo_move_service = service
     try:
-        started = perf_counter()
         window.request_culling_mark("photo-0", PhotoMark.KEEP)
-        elapsed = perf_counter() - started
-        assert elapsed < 0.1
         assert window.culling_move_pending
+        QTimer.singleShot(0, heartbeat.set)
         qtbot.waitUntil(entered.is_set)
+        qtbot.waitUntil(heartbeat.is_set)
+        assert preflight_threads and preflight_threads[0] != owner_thread
+        assert not release.is_set()
         # Owner-thread reads and Qt processing remain live while storage stalls.
         assert harness.store.get_photo("photo-0").mark == "未处理"
         assert len(harness.store.list_pending_photo_moves()) == 1

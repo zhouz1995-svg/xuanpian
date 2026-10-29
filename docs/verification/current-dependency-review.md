@@ -56,6 +56,8 @@ Intel 发布证明关联的 workflow 为 `wheels.yml`，源码 commit 为 `16c3d
 
 ## 接下来的优先级
 
+2026-10-29 测试修正：上述慢预检用例经 `tests/test_culling_move_integration.py` 的夹具替换入口，覆盖的是旧文件移动流程，不是当前数据库标记入口。改用工作线程身份与预检仍阻塞时 Qt 心跳可处理的断言，保留待处理状态、存储读取、取消、关闭及文件结果检查；不再把该功能测试当作 100ms 性能基准，也不宣称已达到该性能目标。预检等待由测试显式释放，`finally` 保证异常退出时释放，不再依赖一秒自动放行。临时把预检移回主线程后两例均失败，恢复生产代码后两例通过；完整本地回归 `1589 passed, 2 skipped`（35.00 秒）。没有改动应用代码，新的原生 CI 结果仍须单独确认。
+
 进一步源码核对：x265 4.2 的官方 `source/x265.h` 声明 GPL-2.0-or-later（另有商业授权选项）；libheif 1.23.1 和 libde265 1.1.1 的公开头文件声明 LGPL-3.0-or-later。不能仅凭旧 notice 的“GPLv2”推断 x265 是 GPL-2.0-only，也不能由一个头文件推断全部源码文件或实际轮子已完成授权审查。[x265 4.2 头文件](https://bitbucket.org/multicoreware/x265_git/raw/4.2/source/x265.h)、[libheif 头文件](https://github.com/strukturag/libheif/blob/v1.23.1/libheif/api/libheif/heif.h)、[libde265 头文件](https://github.com/strukturag/libde265/blob/v1.1.1/libde265/de265.h)
 
 Windows 的固定发布脚本使用独立的 [PKGBUILD](https://github.com/bigcat88/pillow_heif/blob/16c3dd8249f56fa07ab4f1350bd73e7a20b95bb1/libheif/windows/mingw-w64-libheif/PKGBUILD)：libheif 1.23.1 源码归档指定 SHA-256 `0de0327f60fcd47de90d5654c6fe152232738d60d84fe084ec3e0f35e03b166a`，x265/libde265 则为外部 MSYS2 依赖。此处只是脚本中的预期摘要，尚非本地下载复算；不能把 macOS 构建脚本的依赖版本直接套到 Windows 轮子。
