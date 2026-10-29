@@ -56,6 +56,10 @@ Intel 发布证明关联的 workflow 为 `wheels.yml`，源码 commit 为 `16c3d
 
 ## 接下来的优先级
 
+2026-10-29 后续补齐：libheif 1.23.1 源码已完整取得（2,071,186 字节），分段合并文件及独立续传副本 SHA-256 均为 `0de0327f60fcd47de90d5654c6fe152232738d60d84fe084ec3e0f35e03b166a`，与上游 asset `458454410` 和固定 Windows 配方一致。已检查归档及 LGPL-3.0-or-later 头文件；`COPYING` 摘要为 `fa81ce652315b013359d6e8e4744335f31a50c7c192907176d3632f78a3b4596`。同时本地保存 pillow-heif commit `16c3dd8249f56fa07ab4f1350bd73e7a20b95bb1` 的 `build_libs.py`、`wheels.yml`、Windows `PKGBUILD` 和 `LICENSE.txt` 原始字节，核对 Git blob 身份并记录 SHA-256，未执行脚本。下列下载失败描述保留为历史；当前三份源码输入已备齐，但 Windows MSYS2 依赖包/工具链、修改和后处理闭包及适用发行义务仍未闭合。[libheif 上游归档](https://github.com/strukturag/libheif/releases/download/v1.23.1/libheif-1.23.1.tar.gz)
+
+The libheif download gap is now closed: two complete copies match the expected release digest. All three source archives and fixed-commit build recipes are locally preserved, without code execution. This is source-input evidence, not proof of a complete corresponding-source or reproducible binary release.
+
 2026-10-29 源码归档取证：已实际取得并校验可读取的 `x265_4.2.tar.gz`（1,833,442 字节，本地 SHA-256 `40b1ea0453e0309f0eba934e0ddf533f8f6295966679e8894e8f1c1c8d5e1210`）和 `libde265-1.1.1.tar.gz`（315,566 字节，SHA-256 `fd48a927e94ed74fc7ce8829d222b9d8599fcbfe8b6448ba66705babc56ab219`，与上游 release asset `437394668` 摘要一致）。x265 归档中的 `x265Version.txt` 记录 changeset `e444744`、tag `4.2`、distance `1`，与三平台实际轮子里的 `4.2+1-e444744` 静态字符串相符；其摘要仍只是本地观察值，没有独立签名佐证。已从归档核对许可证头及 COPYING，未执行代码。libheif 两条下载链路未完成，仅保留 partial，不记为已校验；这不修改既有构建锁、wheel notice 或发行放行状态。[x265 上游归档](https://bitbucket.org/multicoreware/x265_git/downloads/x265_4.2.tar.gz)、[libde265 上游归档](https://github.com/strukturag/libde265/releases/download/v1.1.1/libde265-1.1.1.tar.gz)
 
 Source-input evidence, not release clearance: the downloaded x265 archive embeds the same revision string observed in all three target wheels; the downloaded libde265 archive matches upstream release metadata. libheif downloads remain incomplete. Exact toolchains, multi-bit-depth recipes, post-processing, Windows MSYS2 runtime sources and applicable source/relinking duties remain separate work.
