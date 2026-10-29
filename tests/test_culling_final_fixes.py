@@ -432,7 +432,8 @@ def test_slow_preflight_is_off_thread_with_immediate_pending_and_safe_close(
             preflight_threads.append(get_ident())
             assert get_ident() != owner_thread
             entered.set()
-            release.wait()
+            # Deadlock watchdog only, not a request-latency performance target.
+            assert release.wait(10)
             super()._preflight(plan)
 
     service = SlowPreflight()
