@@ -61,7 +61,7 @@ _REVIEWED_EXEMPTIONS: dict[tuple[str, str], tuple[str, str]] = {
         "src/xuanpian/ui/preview_widget.py",
         "secret-assignment",
     ): (
-        "c0610510c378845f9f6b61f2ffca3f23a5d661cdf49111e57b8c9e1799df4687",
+        "ea9659124afe793a1de88f7f25f491f994e11036dbacdca65f30fee15de764f2",
         "Reviewed preview cancellation-token annotations and attributes, not credentials.",
     ),
     (
