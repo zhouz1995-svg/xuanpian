@@ -486,6 +486,14 @@ class ThumbnailBrowser(QWidget):
         self._sidebar.setVisible(True)
         self._loading_bar.setVisible(False)
 
+    def show_empty_import_result(self) -> None:
+        """Explain a completed scan with no imported photos, not an empty filter."""
+        if self._all_photo_ids:
+            return
+        self._show_empty_state(
+            "未找到可导入的照片\n请重新选择包含受支持照片的文件夹"
+        )
+
     def _show_grid(self) -> None:
         self._content_visible = True
         self._empty_widget.setVisible(False)

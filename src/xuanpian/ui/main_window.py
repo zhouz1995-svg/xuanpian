@@ -1381,9 +1381,15 @@ class MainWindow(QMainWindow):
                     "界面保留上次已保存状态"
                 )
             elif event.state is JobState.SUCCEEDED:
-                self._status_bar.showMessage(
-                    f"已导入 {len(all_models)} 张照片"
-                )
+                if all_models:
+                    self._status_bar.showMessage(
+                        f"已导入 {len(all_models)} 张照片"
+                    )
+                else:
+                    self._thumbnail_browser.show_empty_import_result()
+                    self._status_bar.showMessage(
+                        "未找到可导入的照片；请重新选择包含受支持照片的文件夹"
+                    )
             elif event.state is JobState.CANCELED:
                 self._status_bar.showMessage("导入已取消")
             else:
