@@ -107,6 +107,7 @@ from src.xuanpian.ui.icons import application_icon, ui_icon
 _THUMB_MIN = 110
 _THUMB_MAX = 220
 _THUMB_DEFAULT = 150
+_MARK_UNDO_LIMIT = 100
 
 logger = logging.getLogger(__name__)
 
@@ -226,7 +227,8 @@ class MainWindow(QMainWindow):
             self._photo_move_service
         )
         self._active_culling_move: _ActiveCullingMove | None = None
-        self._undo_command: UndoCommand | None = None
+        self._undo_command: UndoCommand | _MarkUndoCommand | None = None
+        self._mark_undo_history: list[_MarkUndoCommand] = []
         self._move_event_processing_enabled = True
         self._pending_thumbnail_invalidations = set()
         self._thumbnail_cleanup_error: str | None = None
@@ -621,6 +623,7 @@ class MainWindow(QMainWindow):
         self._restored_photo_ids = set()
         self._project_recovery_blocked = False
         self._undo_command = None
+        self._mark_undo_history.clear()
         self._culling_workspace.set_undo_available(False)
         self._project_store = None
         self._cancel_and_wait_handles(
@@ -2286,6 +2289,8 @@ class MainWindow(QMainWindow):
             before_mark,
             mark,
         )
+        self._mark_undo_history.append(self._undo_command)
+        del self._mark_undo_history[:-_MARK_UNDO_LIMIT]
         if self._culling_session is not None:
             self._culling_session.advance_after_mark(photo_id)
         self._refresh_or_complete_culling()
@@ -2297,7 +2302,7 @@ class MainWindow(QMainWindow):
         )
 
     def request_culling_undo(self) -> None:
-        """Restore the previous database-only culling mark once."""
+        """Restore the latest database-only mark, retaining earlier decisions."""
         command = self._undo_command
         store = self._project_store
         if (
@@ -2339,14 +2344,17 @@ class MainWindow(QMainWindow):
             command.photo_id,
             [PhotoRoles.MARK],
         )
-        self._undo_command = None
+        self._mark_undo_history.pop()
+        self._undo_command = (
+            self._mark_undo_history[-1] if self._mark_undo_history else None
+        )
         session = self._culling_session
         if session is not None:
             if command.photo_id not in session.visible_ids():
                 session.set_filters(StatusFilter.ALL, AnalysisFilter.ALL)
             session.select_photo_id(command.photo_id)
         self._refresh_or_complete_culling()
-        self._culling_workspace.set_undo_available(False)
+        self._culling_workspace.set_undo_available(self._undo_command is not None)
         self._update_status_bar()
         self._status_bar.showMessage(
             "已撤销照片标记；原文件未移动",
@@ -2663,6 +2671,7 @@ class MainWindow(QMainWindow):
         self._thumbnail_browser._view.viewport().update()
         self._update_status_bar()
 
+        self._mark_undo_history.clear()
         if context.is_undo:
             if self._undo_command == context.undo_command:
                 self._undo_command = None
