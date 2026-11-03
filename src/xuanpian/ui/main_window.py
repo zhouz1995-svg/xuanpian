@@ -554,6 +554,49 @@ class MainWindow(QMainWindow):
                 8000,
             )
             return
+        next_store = None
+        if (
+            self._project_path_resolver is not None
+            and self._project_store_factory is not None
+        ):
+            try:
+                database_path = (
+                    Path(self._project_path_resolver(root)).expanduser().resolve()
+                )
+                current = self._project_store
+                if (
+                    isinstance(current, ProjectStore)
+                    and current.database_path == database_path
+                ):
+                    if Path(current.root_path) != root:
+                        raise ValueError("current database belongs to another photo folder")
+                    next_store = current
+                else:
+                    next_store = self._project_store_factory(database_path, root)
+            except ProjectDatabaseLockedError:
+                self._status_bar.showMessage(
+                    "项目已在另一个窗口打开；关闭另一个窗口后重试",
+                    8000,
+                )
+                QMessageBox.warning(
+                    self,
+                    "项目已打开",
+                    "该照片项目已在另一个窗口打开。请关闭另一个窗口后重试。",
+                )
+                return
+            except Exception as error:
+                logger.exception("Failed to open selected project")
+                self._status_bar.showMessage(
+                    "无法打开所选项目；当前项目未切换，请检查项目文件或访问权限",
+                    8000,
+                )
+                QMessageBox.warning(
+                    self,
+                    "无法打开项目",
+                    "无法打开所选项目，当前项目保持不变。"
+                    f"\n\n{type(error).__name__}: {error}",
+                )
+                return
         if self._stack.currentWidget() is self._culling_workspace:
             self.exit_culling()
         self._flush_thumbnail_invalidations()
@@ -583,7 +626,7 @@ class MainWindow(QMainWindow):
         self._cancel_and_wait_handles(
             (old_import, old_analysis, old_export, *old_io)
         )
-        if old_store is not None:
+        if old_store is not None and old_store is not next_store:
             old_store.close()
 
         self._thumbnail_browser.set_models([])
@@ -591,30 +634,8 @@ class MainWindow(QMainWindow):
         self._analyze_btn.setEnabled(False)
         self._status_bar.showMessage("正在扫描照片…")
 
-        if (
-            self._project_path_resolver is not None
-            and self._project_store_factory is not None
-        ):
-            database_path = self._project_path_resolver(root)
-            try:
-                self._project_store = self._project_store_factory(
-                    database_path,
-                    root,
-                )
-            except ProjectDatabaseLockedError:
-                self._thumbnail_browser.hide_loading()
-                self._status_bar.showMessage(
-                    "项目已在另一个窗口打开；关闭另一个窗口后重试",
-                    8000,
-                )
-                QMessageBox.warning(
-                    self,
-                    "项目已打开",
-                    "该照片项目已在另一个窗口打开。"
-                    "请关闭另一个窗口后重试。",
-                )
-                self._refresh_culling_eligibility()
-                return
+        self._project_store = next_store
+        if next_store is not None:
             try:
                 unresolved = self._recover_pending_photo_moves()
             except Exception:

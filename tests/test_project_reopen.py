@@ -254,6 +254,126 @@ def test_store_retains_real_root_and_atomically_merges_paired_identity(
             ).fetchone() == (0,)
 
 
+@pytest.mark.parametrize("failure", ["resolver", "permission", "sqlite", "locked", "shared_database"])
+def test_failed_project_open_preserves_current_workspace(
+    qapp, qtbot, tmp_path, monkeypatch, failure
+):
+    import sqlite3
+
+    old_root, new_root = tmp_path / "old-photos", tmp_path / "new-photos"
+    old_root.mkdir()
+    new_root.mkdir()
+    source = old_root / "keep.JPG"
+    source.write_bytes(b"synthetic original")
+    old_database, new_database = tmp_path / "old.sqlite3", tmp_path / "new.sqlite3"
+    coordinator = _ImportCoordinator()
+    window = _open_window(old_database, import_coordinator=coordinator)
+    qtbot.addWidget(window)
+    warnings = []
+    monkeypatch.setattr(main_window_module.QMessageBox, "warning", lambda *args: warnings.append(args))
+    window._start_import(str(old_root))
+    project_id, job_id = window._active_project_id, window._active_job_ids["import"]
+    window._on_import_batch(ImportBatch(project_id, job_id, (_candidate("keep", jpeg=source),)))
+    _finish_import(window)
+    store = window._project_store
+    store.save_mark("keep", "保留")
+    model = window.model_for_photo_id("keep")
+    model.mark = "保留"
+    undo = object()
+    window._undo_command = undo
+    window._stack.setCurrentWidget(window._culling_workspace)
+    analysis_done = Event()
+    analysis = JobHandle(uuid4(), CancellationToken(), analysis_done)
+    window._analysis_handle = analysis
+    window._active_job_ids["analysis"] = analysis.job_id
+    owner = ProjectStore.open(new_database, root_path=new_root) if failure == "locked" else None
+
+    def resolve(_root):
+        if failure == "resolver":
+            raise OSError("synthetic project path unavailable")
+        if failure == "shared_database":
+            return old_database
+        return new_database
+
+    def open_store(path, root):
+        if failure == "permission":
+            raise PermissionError("synthetic database directory denied")
+        if failure == "sqlite":
+            raise sqlite3.OperationalError("synthetic database open failure")
+        return ProjectStore.open(path, root_path=root)
+
+    window._project_path_resolver = resolve
+    window._project_store_factory = open_store
+    try:
+        window._start_import(str(new_root))
+
+        assert window._project_store is store
+        assert window._active_project_id == project_id
+        assert window.all_models == [model]
+        assert window._stack.currentWidget() is window._culling_workspace
+        assert window._undo_command is undo
+        assert window._analysis_handle is analysis
+        assert not analysis._token.is_canceled()
+        assert store.get_photo("keep").mark == "保留"
+        assert source.read_bytes() == b"synthetic original"
+        assert len(coordinator.starts) == 1
+        assert warnings
+    finally:
+        analysis_done.set()
+        window.close()
+        store.close()
+        if owner is not None:
+            owner.close()
+
+
+def test_reimport_same_project_reuses_live_store_without_lock_conflict(qapp, qtbot, tmp_path):
+    root = tmp_path / "photos"
+    root.mkdir()
+    window = _open_window(tmp_path / "project.sqlite3")
+    qtbot.addWidget(window)
+    window._start_import(str(root))
+    _finish_import(window)
+    store = window._project_store
+    try:
+        window._start_import(str(root))
+        assert window._project_store is store
+        assert window._active_job_ids["import"] is not None
+        assert store.list_photos() == []
+    finally:
+        window.close()
+
+
+def test_new_store_opens_before_old_store_is_closed(qapp, qtbot, tmp_path):
+    import sqlite3
+
+    old_root, new_root = tmp_path / "old", tmp_path / "new"
+    old_root.mkdir()
+    new_root.mkdir()
+    window = _open_window(tmp_path / "old.sqlite3")
+    qtbot.addWidget(window)
+    window._start_import(str(old_root))
+    _finish_import(window)
+    old_store = window._project_store
+    observed = []
+
+    def open_next(path, root):
+        observed.append(old_store.list_photos())
+        return ProjectStore.open(path, root_path=root)
+
+    window._project_path_resolver = lambda _root: tmp_path / "new.sqlite3"
+    window._project_store_factory = open_next
+    try:
+        window._start_import(str(new_root))
+        assert observed == [[]]
+        assert window._project_store is not old_store
+        assert window._project_store.root_path == str(new_root)
+        with pytest.raises((sqlite3.ProgrammingError, RuntimeError)):
+            old_store.list_photos()
+    finally:
+        window.close()
+        old_store.close()
+
+
 def test_locked_project_refuses_import_worker_and_can_retry(
     qapp,
     tmp_path: Path,
