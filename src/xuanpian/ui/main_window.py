@@ -1513,6 +1513,7 @@ class MainWindow(QMainWindow):
     ) -> None:
         """Apply one versioned technical result without exposing raw scores."""
         model.focus_conclusion = result.focus.conclusion.value
+        model.focus_evidence = result.focus.evidence
         model.exposure_conclusion = result.exposure.conclusion.value
         model.face_count = result.face_count
         model.portrait_assessed = result.portrait_assessed
@@ -1521,6 +1522,7 @@ class MainWindow(QMainWindow):
     def _clear_technical_result(model: ImageFileModel) -> None:
         """Clear conclusions whenever the underlying result is no longer current."""
         model.focus_conclusion = ""
+        model.focus_evidence = ()
         model.exposure_conclusion = ""
         model.face_count = 0
         model.portrait_assessed = False

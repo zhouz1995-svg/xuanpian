@@ -782,6 +782,7 @@ class PreviewWidget(QWidget):
         self._filename_value = self._add_info_block(layout, "文件名")
         self._add_section_heading(layout, "分析结果")
         self._blur_value = self._add_info_block(layout, "清晰度", "未分析")
+        self._focus_basis_value = self._add_info_block(layout, "分析依据", "未分析")
         self._exposure_value = self._add_info_block(layout, "曝光", "未分析")
         self._portrait_value = self._add_info_block(layout, "人像", "不判断")
         layout.addStretch()
@@ -1070,6 +1071,9 @@ class PreviewWidget(QWidget):
         self._top_filename.setText(model.filename)
         status = model.technical_status
         self._blur_value.setText(_analysis_value(status, model.focus_conclusion or "—"))
+        basis, detail = model.focus_basis_info()
+        self._focus_basis_value.setText(basis)
+        self._focus_basis_value.setToolTip(detail)
         self._exposure_value.setText(_analysis_value(status, model.exposure_conclusion or "—"))
         portrait = "不判断"
         if (

@@ -458,7 +458,7 @@ def test_reopen_restores_current_success_and_failed_terminal_state(
 
     result = TechnicalAnalysisResult(
         TECHNICAL_ALGORITHM_VERSION,
-        FocusResult(FocusConclusion.CLEAR),
+        FocusResult(FocusConclusion.CLEAR, evidence=(("scene_regions", 5.0),)),
         ExposureResultV2(ExposureConclusion.NORMAL, 0.0, 0.0),
         1,
         True,
@@ -497,6 +497,8 @@ def test_reopen_restores_current_success_and_failed_terminal_state(
     assert restored_first.mark == "入选"
     assert restored_first.technical_status is AnalysisStatus.SUCCEEDED
     assert restored_first.focus_conclusion == "清晰"
+    assert restored_first.focus_evidence == (("scene_regions", 5.0),)
+    assert restored_first.focus_basis_info()[0] == "场景图像回退"
     assert restored_first.exposure_conclusion == "正常"
     assert restored_first.face_count == 1
     assert restored_first.portrait_assessed is True
