@@ -12,10 +12,46 @@ from src.xuanpian.services.export_service import (
     ExportMode,
     ExportReport,
     ExportRequest,
+    ExportUnitResult,
 )
 from src.xuanpian.ui.image_model import ImageFileModel
 from src.xuanpian.ui import main_window
 from src.xuanpian.ui.main_window import MainWindow
+
+
+@pytest.mark.parametrize("paired", [False, True])
+def test_export_failure_tooltip_identifies_photo_and_reason_then_clears(qapp, tmp_path, paired):
+    window = MainWindow()
+    model = ImageFileModel(str(tmp_path / "photo.jpg"), photo_id="p1")
+    failure = ExportItemResult(Path(model.path), None, False, "permission denied")
+    report = ExportReport(
+        (failure,), False,
+        unit_results=(ExportUnitResult("p1", (failure,), False, "permission denied"),) if paired else (),
+    )
+    try:
+        window._consume_export_report(report, ExportMode.COPY, {"p1": model}, tmp_path)
+        detail = window._status_bar.toolTip()
+        assert "photo.jpg" in detail
+        assert "permission denied" in detail
+        assert "1" in window._status_bar.currentMessage()
+        window._consume_export_report(ExportReport((), False), ExportMode.COPY, {}, tmp_path)
+        assert window._status_bar.toolTip() == ""
+    finally:
+        window.close()
+
+
+def test_export_failure_tooltip_bounds_large_failure_lists(qapp, tmp_path):
+    window = MainWindow()
+    results = tuple(ExportItemResult(tmp_path / f"photo-{i}.jpg", None, False, "denied") for i in range(25))
+    try:
+        window._consume_export_report(ExportReport(results, True), ExportMode.COPY, {}, tmp_path)
+        detail = window._status_bar.toolTip()
+        assert "photo-19.jpg" in detail
+        assert "photo-20.jpg" not in detail
+        assert "另有 5 项" in detail
+        assert "已取消" in detail
+    finally:
+        window.close()
 
 
 class _AcceptedMoveDialog:

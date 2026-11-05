@@ -2112,6 +2112,28 @@ class MainWindow(QMainWindow):
             message += "；导出完成但标记保存失败"
         self._status_bar.showMessage(message)
 
+        failure_details = []
+        for result in (unit_results or report.results):
+            if result.success:
+                continue
+            if len(failure_details) == 20:
+                break
+            if unit_results:
+                model = models_by_id.get(result.unit_id)
+                name = model.filename if model is not None else result.unit_id
+                reason = result.error or next(
+                    (item.error for item in result.results if item.error), None
+                )
+            else:
+                name = result.source.name
+                reason = result.error
+            failure_details.append(f"{name}: {reason or '未提供错误详情'}")
+        if failed > len(failure_details):
+            failure_details.append(f"另有 {failed - len(failure_details)} 项未显示")
+        self._status_bar.setToolTip(
+            "\n".join(("上次导出结果", message, *failure_details)) if failure_details else ""
+        )
+
         recovery_results = [
             result
             for result in report.results
