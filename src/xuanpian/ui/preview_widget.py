@@ -625,8 +625,8 @@ class PreviewWidget(QWidget):
         layout.setSpacing(4)
         definitions = (
             ("zoom_out", "−", "缩小", self._image_view_zoom_out, 36),
-            ("fit", "适合", "适合窗口", self._image_view_fit, 46),
-            ("actual", "1:1", "原始尺寸", self._image_view_100, 42),
+            ("fit", "适合", "适合窗口 · 0", self._image_view_fit, 46),
+            ("actual", "1:1", "1:1 预览 · Z", self._image_view_100, 42),
             ("zoom_in", "+", "放大", self._image_view_zoom_in, 36),
             ("rotate_left", "↶", "逆时针旋转 90°", lambda: self._rotate(-90), 36),
             ("rotate_right", "↷", "顺时针旋转 90°", lambda: self._rotate(90), 36),

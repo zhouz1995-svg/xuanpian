@@ -20,6 +20,7 @@ XuanPian（选片）是一款注重隐私的桌面照片筛选助手。它可以
 
 - 在本地导入和预览 JPEG 及受支持的 RAW 格式。
 - 支持快捷键选片、保留/待定/舍弃标记、筛选与连拍分组。
+- 预览与选片页可按 `Z` 查看 1:1 预览，按 `0` 回到适合窗口；1:1 针对当前解码预览，不保证是 RAW 全分辨率图像。
 - 选片模式可用“撤销”或 Command/Ctrl + Z 连续撤销最近 100 次标记；历史仅在当前打开的项目中保留，重新导入或关闭应用后清空。
 - 提供主体优先的清晰度、曝光和人像复查提示。
 - 使用本地项目保存复查状态，关闭后可继续处理。
@@ -95,6 +96,7 @@ Security: the development branch uses the Pillow 13.0.0 security release. Existi
 
 - Local JPEG and supported RAW import and preview.
 - Fast keyboard-driven culling, keep/maybe/discard marks, filters, and burst grouping.
+- In preview and culling, press `Z` for 1:1 preview and `0` to fit the window. This uses the decoded preview, not necessarily a full-resolution RAW image.
 - In culling mode, Undo or Command/Ctrl + Z restores up to the latest 100 marks. History stays in memory for the open project and is cleared on reimport or app close.
 - Subject-aware focus, exposure, and portrait-review cues.
 - Persistent local project state, so a review can be closed and reopened.
