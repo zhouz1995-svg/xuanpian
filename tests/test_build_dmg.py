@@ -8,6 +8,61 @@ import sys
 import pytest
 
 from scripts import build_dmg
+from scripts import verify_macos_bundle as gate
+
+
+def test_intel_dmg_rejects_universal_main_before_staging(tmp_path, monkeypatch):
+    app = tmp_path / "选片APP.app"
+    binary = app / "Contents/MacOS/选片APP"
+    binary.parent.mkdir(parents=True)
+    binary.write_bytes(b"\xcf\xfa\xed\xfe")
+    monkeypatch.setattr(gate, "_native_metadata", lambda path, architecture="arm64":
+                        gate.NativeInfo((), (), "arm64 x86_64", "12.0"))
+    monkeypatch.setattr(build_dmg, "inspect_bundle", lambda path, *, architecture="arm64":
+                        gate._inspect_native_dependencies(path, binary, [binary], architecture=architecture))
+    monkeypatch.setattr(build_dmg.subprocess, "run",
+                        lambda *args, **kwargs: pytest.fail("must not stage a universal main executable"))
+    output = tmp_path / "Intel.dmg"
+    with pytest.raises(ValueError, match="failed bundle inspection"):
+        build_dmg.build_dmg(app, output, architecture="x86_64")
+    assert not output.exists()
+
+
+def test_intel_dmg_passes_requested_architecture_to_inspection(tmp_path, monkeypatch):
+    app = tmp_path / "选片APP.app"
+    app.mkdir()
+    def inspect(path, *, architecture="arm64"):
+        assert architecture == "x86_64"
+        return [{"kind": "architecture", "detail": "synthetic rejected Intel input"}]
+    monkeypatch.setattr(build_dmg, "inspect_bundle", inspect)
+    with pytest.raises(ValueError, match="failed bundle inspection"):
+        build_dmg.build_dmg(app, tmp_path / "intel.dmg", architecture="x86_64")
+    assert not (tmp_path / "intel.dmg").exists()
+
+
+def test_intel_dmg_preserves_existing_output(tmp_path):
+    app = tmp_path / "选片APP.app"
+    app.mkdir()
+    output = tmp_path / "intel.dmg"
+    output.write_bytes(b"existing image")
+    with pytest.raises(FileExistsError):
+        build_dmg.build_dmg(app, output, architecture="x86_64")
+    assert output.read_bytes() == b"existing image"
+
+
+def test_dmg_rejects_unsupported_architecture(tmp_path):
+    with pytest.raises(ValueError, match="architecture"):
+        build_dmg.build_dmg(tmp_path / "missing.app", tmp_path / "intel.dmg", architecture="universal2")
+
+
+def test_dmg_cli_passes_requested_architecture(tmp_path, monkeypatch):
+    monkeypatch.setattr(sys, "argv", ["build_dmg", "--app", str(tmp_path / "candidate.app"),
+                                     "--output", str(tmp_path / "intel.dmg"), "--architecture", "x86_64"])
+    def build(app, output, *, architecture="arm64"):
+        assert architecture == "x86_64"
+        return output
+    monkeypatch.setattr(build_dmg, "build_dmg", build)
+    assert build_dmg.main() == 0
 
 
 def test_dmg_requires_app(tmp_path):
@@ -45,7 +100,7 @@ def test_dmg_stages_app_and_writes_digest(tmp_path, monkeypatch):
     executable.chmod(0o755)
     (app / "link").symlink_to("Contents/MacOS/选片APP")
     output = tmp_path / "选片APP-candidate.dmg"
-    monkeypatch.setattr(build_dmg, "inspect_bundle", lambda _app: [])
+    monkeypatch.setattr(build_dmg, "inspect_bundle", lambda _app, architecture="arm64": [])
 
     def fake_run(argv, **_kwargs):
         if argv[0] == "/usr/bin/ditto":

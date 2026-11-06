@@ -1,4 +1,4 @@
-"""Build an isolated arm64 macOS candidate without replacing prior output."""
+"""Build an isolated native macOS candidate without replacing prior output."""
 
 from __future__ import annotations
 
@@ -17,9 +17,23 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
+from scripts.build_metadata_runtime import _require_native_host  # noqa: E402
+
 SPEC = ROOT / "packaging" / "xuanpian.spec"
 LOCK = ROOT / "packaging" / "requirements-macos-arm64.lock"
 APP_NAME = "选片APP.app"
+
+
+def macos_lock(architecture: str) -> Path:
+    if architecture not in {"arm64", "x86_64"}:
+        raise ValueError(f"unsupported macOS architecture: {architecture}")
+    return LOCK if architecture == "arm64" else ROOT / "packaging/requirements-macos-x86_64.lock"
+
+
+def macos_runtime_sources(architecture: str) -> Path:
+    macos_lock(architecture)
+    name = "runtime-sources.json" if architecture == "arm64" else "runtime-sources-macos-x86_64.json"
+    return ROOT / "packaging" / name
 
 
 def _sha256(path: Path) -> str:
@@ -95,15 +109,18 @@ def refresh_runtime_manifest(root: Path) -> None:
     )
 
 
-def _preflight(runtime_root: Path, output: Path) -> None:
+def _preflight(runtime_root: Path, output: Path, architecture: str = "arm64") -> None:
+    source_manifest = macos_runtime_sources(architecture)
     if output.exists() or output.is_symlink():
         raise FileExistsError(f"output already exists: {output}")
     if not runtime_root.is_dir() or runtime_root.is_symlink():
         raise ValueError("runtime is missing or is not a regular directory")
-    if platform.system() != "Darwin" or platform.machine() != "arm64":
-        raise RuntimeError("macOS arm64 host required")
+    _require_native_host(architecture)
     _regular_runtime_files(runtime_root)
     _verify_input_runtime(runtime_root)
+    manifest = json.loads((runtime_root / "manifest.json").read_text(encoding="utf-8"))
+    if manifest["source_manifest_sha256"] != _sha256(source_manifest):
+        raise ValueError(f"runtime source manifest does not match {architecture} profile")
 
 
 def _verify_input_runtime(runtime_root: Path) -> None:
@@ -136,7 +153,8 @@ def _runtime_destination(app: Path) -> Path:
     return app / "Contents" / "Resources" / "metadata-runtime"
 
 
-def _provenance(app: Path, runtime: Path) -> None:
+def _provenance(app: Path, runtime: Path, architecture: str = "arm64") -> None:
+    lock = macos_lock(architecture)
     revision = subprocess.run(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, check=True, capture_output=True, text=True,
     ).stdout.strip()
@@ -154,10 +172,10 @@ def _provenance(app: Path, runtime: Path) -> None:
         "source_revision": revision,
         "source_tree_dirty": dirty,
         "python_version": platform.python_version(),
-        "architecture": "arm64",
+        "architecture": architecture,
         "macos_sdk": sdk,
-        "requirements_lock": "packaging/requirements-macos-arm64.lock",
-        "requirements_lock_sha256": _sha256(LOCK),
+        "requirements_lock": f"packaging/requirements-macos-{architecture}.lock",
+        "requirements_lock_sha256": _sha256(lock),
         "runtime_source_manifest_sha256": manifest["source_manifest_sha256"],
         "runtime_final_manifest_sha256": _sha256(runtime / "manifest.json"),
         "signing": "local-ad-hoc",
@@ -167,11 +185,11 @@ def _provenance(app: Path, runtime: Path) -> None:
     )
 
 
-def build_app(*, runtime_root: Path, output: Path) -> Path:
+def build_app(*, runtime_root: Path, output: Path, architecture: str = "arm64") -> Path:
     """Build and return a new candidate .app in ``output``."""
     runtime_root = Path(runtime_root)
     output = Path(output)
-    _preflight(runtime_root, output)
+    _preflight(runtime_root, output, architecture=architecture)
     output.parent.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory(prefix=".xuanpian-app-build-", dir=output.parent) as temporary:
@@ -205,7 +223,7 @@ def build_app(*, runtime_root: Path, output: Path) -> Path:
 
         from src.xuanpian.engine.metadata_runtime import resolve_metadata_runtime
         resolve_metadata_runtime(bundle_root=app / "Contents" / "Resources", development_executable=None)
-        _provenance(app, resource_runtime)
+        _provenance(app, resource_runtime, architecture=architecture)
         _run(["/usr/bin/codesign", "--force", "--sign", "-", str(app)])
         _run(["/usr/bin/codesign", "--verify", "--deep", "--strict", str(app)])
         # Outer sealing must not rewrite runtime payload; prove it after signing.
@@ -226,8 +244,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--runtime", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--architecture", choices=("arm64", "x86_64"), default="arm64")
     args = parser.parse_args()
-    print(build_app(runtime_root=args.runtime, output=args.output))
+    print(build_app(runtime_root=args.runtime, output=args.output, architecture=args.architecture))
     return 0
 
 

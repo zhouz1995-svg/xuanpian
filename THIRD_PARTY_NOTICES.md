@@ -4,6 +4,35 @@ This is an evidence inventory, **not** a statement that the application or DMG m
 
 ## Evidence already located
 
+### Current build-tool security review (2026-10-28)
+
+Current platform locks select setuptools 84.1.0, with the same application-runtime
+versions. This addresses the upstream [Unicode sdist exclusion advisory](https://github.com/pypa/setuptools/security/advisories/GHSA-h35f-9h28-mq5c)
+and [Windows legacy-wheel path advisory](https://github.com/pypa/setuptools/security/advisories/GHSA-xmj3-9gf7-h52w).
+The Python security database's PYSEC-2026-3447 entry aliases the first issue;
+these are two issues, not three. The exact new wheel and vendored notice members
+are preserved in the Intel receipt. Older wheel-origin records and texts remain
+historical evidence. See the [current dependency review](docs/verification/current-dependency-review.md)
+for scope, remaining source/native-library obligations and security limits.
+
+### Intel macOS candidate inputs (2026-10-27)
+
+`packaging/macos-x86_64-wheel-notices.json` records the exact 28 selected
+macOS-12-compatible Intel build/test wheel filenames and archive SHA-256 values,
+with every discovered license/notice member and its raw source snapshot digest.
+The stdlib-only wheel-input gate checks archive, member and snapshot bytes before
+offline installation. Identical existing snapshots are reused; unmatched texts
+under `packaging/licenses/macos-x86_64/` retain original bytes, including CRLF.
+The receipt is a public build input, not an additional bundled legal document.
+The actual text snapshots remain in the existing hashed legal payload.
+
+This covers notice preservation, not legal clearance or proof of complete
+corresponding-source/relinking materials. The selected PyQt6 and FlatBuffers
+wheels have no standalone license-text member; existing evidence and unresolved
+review boundaries remain applicable. Build/test-only notices do not imply those
+packages ship in the frozen app. Native HEIF/Qt/runtime and final-bundle rights
+remain unreviewed; release status stays BLOCKED.
+
 ### Windows candidate inputs (2026-10-26)
 
 The Windows x64 ExifTool 13.59 input is fixed by archive SHA-256 in
@@ -83,7 +112,14 @@ native-closure duties remain open.
 - Perl 5.44.0 and ExifTool 13.59 have hashed upstream source references in [runtime-sources.json](packaging/runtime-sources.json). The local r5 candidate includes Perl Artistic/Copying and ExifTool README files in its metadata runtime. Those build-local files are not yet a source-repository notice set or proof of final DMG compliance.
 - The [OpenCV wheel project](https://github.com/opencv/opencv-python) points to third-party notices for bundled FFmpeg and other native libraries. The actual pinned 5.0.0.93 macOS wheel/app carries a larger native set, including `libx264` and `libx265`; do not treat generic README text calling FFmpeg LGPL as a determination for this binary. The pinned `pillow_heif` 1.5.0 bundled-license file describes GPLv2 wheel conditions but names older library source versions than the current candidate's `libheif.1.23.1` and `libx265.216`. The exact grants and obligations of these binaries remain unresolved. A current [x265 source header](https://github.com/videolan/x265/blob/master/source/x265.cpp) uses GPL-2.0-or-later wording; that alone does not identify the source or terms of either bundled x265 build.
 
-## Unresolved gates before any public source or binary publication
+## Historical r5 audit gates — not the current asset list
+
+The following numbered observations describe the earlier r5 audit. In particular,
+the three MediaPipe blobs and OpenCV runtime mentioned below are absent from the
+current source package; the current model list has two ONNX assets. Retaining
+these historical findings does not make removed components current dependencies.
+Current unresolved release work is tracked in the dependency review linked above;
+release status remains BLOCKED.
 
 1. **Exact model weights.** The [model provenance record](docs/model-provenance.md) ties all three checked-in files to fixed Google Storage objects. The official task pages and linked model cards provide artifact-specific Apache-2.0 evidence for BlazeFace short-range and the Pose Landmarker Lite bundle, so those two rows are reviewed and reuse the preserved MediaPipe Apache-2.0 text. EfficientDet-Lite0 float32 remains unresolved: the official task page and object identity are verified, but the Apache-2.0 label located for a related TensorFlow/Kaggle variation does not identify the exact 13,836,895-byte MediaPipe object. Obtain an exact upstream grant or remove/replace that asset through an approved product change.
 2. **Native closure.** Attribute each observed `.dylib`, `.so`, and Qt framework binary in the r5 candidate to its exact wheel/source/version and determine license compatibility, corresponding-source, dynamic-linking/relinking, patent, and notice duties. The inventory lists 277 `.dylib`/`.so` paths and 7 Qt framework executables as unresolved observations, not legal classifications. Audit any remaining embedded data, fonts, Python archive content, and native files not captured by those suffixes. In particular, resolve the OpenCV/FFmpeg and HEIF/x265 builds rather than copying stale wheel notices as if they described current bytes.

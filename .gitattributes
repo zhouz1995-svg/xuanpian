@@ -4,3 +4,5 @@
 *.icns binary
 *.onnx binary
 *.zip binary
+# Exact raw vendor wheel notices (including original CRLF/EOF bytes).
+packaging/licenses/macos-x86_64/*.txt -text

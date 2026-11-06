@@ -625,8 +625,8 @@ class PreviewWidget(QWidget):
         layout.setSpacing(4)
         definitions = (
             ("zoom_out", "−", "缩小", self._image_view_zoom_out, 36),
-            ("fit", "适合", "适合窗口", self._image_view_fit, 46),
-            ("actual", "1:1", "原始尺寸", self._image_view_100, 42),
+            ("fit", "适合", "适合窗口 · 0", self._image_view_fit, 46),
+            ("actual", "1:1", "1:1 预览 · Z", self._image_view_100, 42),
             ("zoom_in", "+", "放大", self._image_view_zoom_in, 36),
             ("rotate_left", "↶", "逆时针旋转 90°", lambda: self._rotate(-90), 36),
             ("rotate_right", "↷", "顺时针旋转 90°", lambda: self._rotate(90), 36),
@@ -782,6 +782,7 @@ class PreviewWidget(QWidget):
         self._filename_value = self._add_info_block(layout, "文件名")
         self._add_section_heading(layout, "分析结果")
         self._blur_value = self._add_info_block(layout, "清晰度", "未分析")
+        self._focus_basis_value = self._add_info_block(layout, "分析依据", "未分析")
         self._exposure_value = self._add_info_block(layout, "曝光", "未分析")
         self._portrait_value = self._add_info_block(layout, "人像", "不判断")
         layout.addStretch()
@@ -1070,6 +1071,9 @@ class PreviewWidget(QWidget):
         self._top_filename.setText(model.filename)
         status = model.technical_status
         self._blur_value.setText(_analysis_value(status, model.focus_conclusion or "—"))
+        basis, detail = model.focus_basis_info()
+        self._focus_basis_value.setText(basis)
+        self._focus_basis_value.setToolTip(detail)
         self._exposure_value.setText(_analysis_value(status, model.exposure_conclusion or "—"))
         portrait = "不判断"
         if (

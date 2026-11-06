@@ -47,6 +47,22 @@ class KeyboardManager:
         _add(QKeySequence.StandardKey.SelectAll, self._on_select_all)
         _add(QKeySequence.StandardKey.Undo, self._on_undo)
         _add(Qt.Key.Key_Escape, self._on_escape)
+        _add(Qt.Key.Key_Z, lambda: self._zoom_active_photo(actual=True))
+        _add(Qt.Key.Key_0, lambda: self._zoom_active_photo(actual=False))
+
+    def _zoom_active_photo(self, *, actual: bool) -> None:
+        if self._text_control_has_focus() or self._mw.culling_move_pending:
+            return
+        if self._in_culling():
+            view = self._mw._culling_workspace._image_view
+        elif self._in_preview():
+            view = self._mw._preview_widget._image_view
+        else:
+            return
+        if actual:
+            view.zoom_to_100()
+        else:
+            view.zoom_to_fit()
 
     # ---- helpers ----
 

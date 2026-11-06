@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=77"]
+requires = ["setuptools>=84.1.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -21,7 +21,7 @@ dependencies = [
 [project.optional-dependencies]
 formats = ["pillow-heif"]
 test = ["pytest", "pytest-qt"]
-build = ["pip", "wheel", "setuptools>=77", "pyinstaller==6.21.0"]
+build = ["pip", "wheel", "setuptools>=84.1.0", "pyinstaller==6.21.0"]
 
 [project.scripts]
 xuanpian = "src.main:main"

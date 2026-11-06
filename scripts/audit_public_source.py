@@ -61,7 +61,7 @@ _REVIEWED_EXEMPTIONS: dict[tuple[str, str], tuple[str, str]] = {
         "src/xuanpian/ui/preview_widget.py",
         "secret-assignment",
     ): (
-        "c0610510c378845f9f6b61f2ffca3f23a5d661cdf49111e57b8c9e1799df4687",
+        "0873a79c807ae8f05d57de83156ae540972bd367229d624af90e567f42324bf8",
         "Reviewed preview cancellation-token annotations and attributes, not credentials.",
     ),
     (
@@ -82,7 +82,7 @@ _REVIEWED_EXEMPTIONS: dict[tuple[str, str], tuple[str, str]] = {
         "tests/test_macos_bundle.py",
         "user-path",
     ): (
-        "bf93125e22656930dd19e83fcad7fc69213e10a83cc0ae25133b6fde9e191616",
+        "dfa703503155f1f0108971196a54ede578d22f3c1247c1c04d54c691bca9ad46",
         "Reviewed synthetic mock dependency/runpath paths; owner is synthetic-test-user.",
     ),
 }

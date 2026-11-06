@@ -1,0 +1,109 @@
+name: Intel macOS candidate
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/macos-intel-package.yml"
+      - ".gitattributes"
+      - "src/**"
+      - "scripts/**"
+      - "tests/**"
+      - "assets/**"
+      - "packaging/**"
+      - "pyproject.toml"
+      - "setup.py"
+      - "requirements.txt"
+      - "LICENSE"
+      - "THIRD_PARTY_NOTICES.md"
+      - "docs/building-macos.md"
+      - "docs/superpowers/specs/2026-10-27-macos-intel-installer-design.md"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: macos-intel-package-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  package:
+    name: Native Intel macOS 12 target
+    runs-on: macos-15-intel
+    timeout-minutes: 90
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+      MACOSX_DEPLOYMENT_TARGET: "12.0"
+      QT_QPA_PLATFORM: offscreen
+      PYTHONUTF8: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9
+        with:
+          version: "0.11.7"
+      - name: Prepare fresh native Python build paths
+        run: |
+          set -euo pipefail
+          task_root="$(mktemp -d "${RUNNER_TEMP}/xuanpian-intel.XXXXXX")"
+          echo "INTEL_TASK_ROOT=$task_root" >> "$GITHUB_ENV"
+          echo "CANDIDATE_PYTHON=$task_root/build-env/bin/python" >> "$GITHUB_ENV"
+          uv python install 3.11.15
+          uv venv --python 3.11.15 "$task_root/downloader"
+          uv venv --python 3.11.15 "$task_root/build-env"
+          # Bootstrap only the downloader from pinned CPython's bundled ensurepip.
+          # No selected application/build dependency is installed before receipt verification.
+          "$task_root/downloader/bin/python" -m ensurepip
+          "$task_root/build-env/bin/python" -c 'import platform; from scripts.build_metadata_runtime import _require_native_host; _require_native_host("x86_64"); assert platform.python_version() == "3.11.15"'
+      - name: Download target wheels and verify exact raw notice receipt
+        run: |
+          set -euo pipefail
+          "$INTEL_TASK_ROOT/downloader/bin/python" -m pip download \
+            --platform macosx_12_0_x86_64 --only-binary=:all: --require-hashes \
+            -r packaging/requirements-macos-x86_64.lock -d "$INTEL_TASK_ROOT/wheels"
+          "$CANDIDATE_PYTHON" -I -S scripts/verify_macos_wheel_inputs.py \
+            --wheels "$INTEL_TASK_ROOT/wheels" \
+            --receipt packaging/macos-x86_64-wheel-notices.json
+      - name: Install verified closure offline and check consistency
+        run: |
+          set -euo pipefail
+          uv pip install --python "$CANDIDATE_PYTHON" --offline --no-index \
+            --find-links "$INTEL_TASK_ROOT/wheels" --only-binary :all: --require-hashes \
+            -r packaging/requirements-macos-x86_64.lock
+          "$CANDIDATE_PYTHON" -m pip check
+      - name: Run native tests before building runtime
+        run: '"$CANDIDATE_PYTHON" -m pytest -q'
+      - name: Build fixed-source Perl and ExifTool with both upstream suites
+        run: |
+          set -euo pipefail
+          "$CANDIDATE_PYTHON" scripts/build_metadata_runtime.py \
+            --manifest packaging/runtime-sources-macos-x86_64.json --architecture x86_64 \
+            --output "$INTEL_TASK_ROOT/metadata-runtime"
+      - name: Build and inspect native x86_64 app
+        run: |
+          set -euo pipefail
+          "$CANDIDATE_PYTHON" scripts/build_macos.py --architecture x86_64 \
+            --runtime "$INTEL_TASK_ROOT/metadata-runtime" \
+            --output "$INTEL_TASK_ROOT/candidate"
+          "$CANDIDATE_PYTHON" scripts/verify_macos_bundle.py --architecture x86_64 \
+            "$INTEL_TASK_ROOT/candidate/选片APP.app"
+      - name: Build new locally ad-hoc-signed candidate DMG
+        run: |
+          set -euo pipefail
+          "$CANDIDATE_PYTHON" scripts/build_dmg.py --architecture x86_64 \
+            --app "$INTEL_TASK_ROOT/candidate/选片APP.app" \
+            --output "$INTEL_TASK_ROOT/candidate/XuanPian-0.1.0-macos12-x86_64-local-ad-hoc.dmg"
+      - name: Verify frozen engine and detached Chinese-path relocated copy
+        timeout-minutes: 12
+        run: '"$CANDIDATE_PYTHON" scripts/check_macos_candidate.py --architecture x86_64 "$INTEL_TASK_ROOT/candidate"'
+      - name: Upload verified candidate only (not a Release)
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: XuanPian-macos12-x86_64-local-ad-hoc-${{ github.sha }}
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            ${{ env.INTEL_TASK_ROOT }}/candidate/XuanPian-0.1.0-macos12-x86_64-local-ad-hoc.dmg
+            ${{ env.INTEL_TASK_ROOT }}/candidate/XuanPian-0.1.0-macos12-x86_64-local-ad-hoc.dmg.sha256
+            ${{ env.INTEL_TASK_ROOT }}/candidate/verification.json
+            ${{ env.INTEL_TASK_ROOT }}/candidate/选片APP.app/Contents/Resources/build-provenance.json

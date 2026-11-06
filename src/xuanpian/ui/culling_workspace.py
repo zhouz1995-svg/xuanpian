@@ -269,8 +269,8 @@ class CullingWorkspace(QWidget):
         self._tool_buttons: dict[str, QPushButton] = {}
         for key, icon_name, tooltip, slot in (
             ("zoom_out", "zoom_out", "缩小", self._image_view.zoom_out),
-            ("fit", "fit", "适合窗口", self._image_view.zoom_to_fit),
-            ("actual", "actual", "原始尺寸", self._image_view.zoom_to_100),
+            ("fit", "fit", "适合窗口 · 0", self._image_view.zoom_to_fit),
+            ("actual", "actual", "1:1 预览 · Z", self._image_view.zoom_to_100),
             ("zoom_in", "zoom_in", "放大", self._image_view.zoom_in),
             (
                 "rotate_left",
@@ -376,6 +376,7 @@ class CullingWorkspace(QWidget):
                 ("filename", "文件名"),
                 ("exif", "EXIF"),
                 ("focus", "清晰度"),
+                ("focus_basis", "分析依据"),
                 ("exposure", "曝光"),
                 ("portrait", "人像"),
             )
@@ -587,10 +588,13 @@ class CullingWorkspace(QWidget):
             portrait = (
                 "检测到人像" if model.face_count > 0 else "未检测到人像"
             )
+        basis, detail = model.focus_basis_info()
+        self._information_values["focus_basis"].setToolTip(detail)
         values = {
             "filename": model.filename,
             "exif": exif,
             "focus": self._analysis_value(model, model.focus_conclusion),
+            "focus_basis": basis,
             "exposure": self._analysis_value(
                 model, model.exposure_conclusion
             ),
@@ -687,6 +691,7 @@ class CullingWorkspace(QWidget):
         self._progress_label.setText("0 / 0")
         for label in self._information_values.values():
             label.setText("—")
+            label.setToolTip("")
         self.invalidate_preview_requests()
         self._image_view.clear_image(message)
 

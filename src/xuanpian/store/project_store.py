@@ -183,6 +183,13 @@ class ProjectStore:
         self.close()
 
     @property
+    def database_path(self) -> Path:
+        """Identify the owned main database without reopening its lifecycle lock."""
+        self._ensure_open_on_owner_thread()
+        rows = self._connection.execute("PRAGMA database_list")
+        return Path(next(row[2] for row in rows if row[1] == "main"))
+
+    @property
     def root_path(self) -> str:
         self._ensure_open_on_owner_thread()
         return self._root_path

@@ -107,6 +107,7 @@ from src.xuanpian.ui.icons import application_icon, ui_icon
 _THUMB_MIN = 110
 _THUMB_MAX = 220
 _THUMB_DEFAULT = 150
+_MARK_UNDO_LIMIT = 100
 
 logger = logging.getLogger(__name__)
 
@@ -226,7 +227,8 @@ class MainWindow(QMainWindow):
             self._photo_move_service
         )
         self._active_culling_move: _ActiveCullingMove | None = None
-        self._undo_command: UndoCommand | None = None
+        self._undo_command: UndoCommand | _MarkUndoCommand | None = None
+        self._mark_undo_history: list[_MarkUndoCommand] = []
         self._move_event_processing_enabled = True
         self._pending_thumbnail_invalidations = set()
         self._thumbnail_cleanup_error: str | None = None
@@ -544,10 +546,62 @@ class MainWindow(QMainWindow):
                 8000,
             )
             return
+        try:
+            root = Path(folder).expanduser().resolve()
+            if not root.is_dir():
+                raise ValueError("import source is not a directory")
+        except (OSError, RuntimeError, ValueError):
+            self._status_bar.showMessage(
+                "所选文件夹不存在或无法访问；请重新选择，当前项目未切换",
+                8000,
+            )
+            return
+        next_store = None
+        if (
+            self._project_path_resolver is not None
+            and self._project_store_factory is not None
+        ):
+            try:
+                database_path = (
+                    Path(self._project_path_resolver(root)).expanduser().resolve()
+                )
+                current = self._project_store
+                if (
+                    isinstance(current, ProjectStore)
+                    and current.database_path == database_path
+                ):
+                    if Path(current.root_path) != root:
+                        raise ValueError("current database belongs to another photo folder")
+                    next_store = current
+                else:
+                    next_store = self._project_store_factory(database_path, root)
+            except ProjectDatabaseLockedError:
+                self._status_bar.showMessage(
+                    "项目已在另一个窗口打开；关闭另一个窗口后重试",
+                    8000,
+                )
+                QMessageBox.warning(
+                    self,
+                    "项目已打开",
+                    "该照片项目已在另一个窗口打开。请关闭另一个窗口后重试。",
+                )
+                return
+            except Exception as error:
+                logger.exception("Failed to open selected project")
+                self._status_bar.showMessage(
+                    "无法打开所选项目；当前项目未切换，请检查项目文件或访问权限",
+                    8000,
+                )
+                QMessageBox.warning(
+                    self,
+                    "无法打开项目",
+                    "无法打开所选项目，当前项目保持不变。"
+                    f"\n\n{type(error).__name__}: {error}",
+                )
+                return
         if self._stack.currentWidget() is self._culling_workspace:
             self.exit_culling()
         self._flush_thumbnail_invalidations()
-        root = Path(folder).expanduser().resolve()
         old_import = self._import_handle
         old_analysis = self._analysis_handle
         old_export = self._export_handle
@@ -569,12 +623,13 @@ class MainWindow(QMainWindow):
         self._restored_photo_ids = set()
         self._project_recovery_blocked = False
         self._undo_command = None
+        self._mark_undo_history.clear()
         self._culling_workspace.set_undo_available(False)
         self._project_store = None
         self._cancel_and_wait_handles(
             (old_import, old_analysis, old_export, *old_io)
         )
-        if old_store is not None:
+        if old_store is not None and old_store is not next_store:
             old_store.close()
 
         self._thumbnail_browser.set_models([])
@@ -582,30 +637,8 @@ class MainWindow(QMainWindow):
         self._analyze_btn.setEnabled(False)
         self._status_bar.showMessage("正在扫描照片…")
 
-        if (
-            self._project_path_resolver is not None
-            and self._project_store_factory is not None
-        ):
-            database_path = self._project_path_resolver(root)
-            try:
-                self._project_store = self._project_store_factory(
-                    database_path,
-                    root,
-                )
-            except ProjectDatabaseLockedError:
-                self._thumbnail_browser.hide_loading()
-                self._status_bar.showMessage(
-                    "项目已在另一个窗口打开；关闭另一个窗口后重试",
-                    8000,
-                )
-                QMessageBox.warning(
-                    self,
-                    "项目已打开",
-                    "该照片项目已在另一个窗口打开。"
-                    "请关闭另一个窗口后重试。",
-                )
-                self._refresh_culling_eligibility()
-                return
+        self._project_store = next_store
+        if next_store is not None:
             try:
                 unresolved = self._recover_pending_photo_moves()
             except Exception:
@@ -1372,9 +1405,15 @@ class MainWindow(QMainWindow):
                     "界面保留上次已保存状态"
                 )
             elif event.state is JobState.SUCCEEDED:
-                self._status_bar.showMessage(
-                    f"已导入 {len(all_models)} 张照片"
-                )
+                if all_models:
+                    self._status_bar.showMessage(
+                        f"已导入 {len(all_models)} 张照片"
+                    )
+                else:
+                    self._thumbnail_browser.show_empty_import_result()
+                    self._status_bar.showMessage(
+                        "未找到可导入的照片；请重新选择包含受支持照片的文件夹"
+                    )
             elif event.state is JobState.CANCELED:
                 self._status_bar.showMessage("导入已取消")
             else:
@@ -1477,6 +1516,7 @@ class MainWindow(QMainWindow):
     ) -> None:
         """Apply one versioned technical result without exposing raw scores."""
         model.focus_conclusion = result.focus.conclusion.value
+        model.focus_evidence = result.focus.evidence
         model.exposure_conclusion = result.exposure.conclusion.value
         model.face_count = result.face_count
         model.portrait_assessed = result.portrait_assessed
@@ -1485,6 +1525,7 @@ class MainWindow(QMainWindow):
     def _clear_technical_result(model: ImageFileModel) -> None:
         """Clear conclusions whenever the underlying result is no longer current."""
         model.focus_conclusion = ""
+        model.focus_evidence = ()
         model.exposure_conclusion = ""
         model.face_count = 0
         model.portrait_assessed = False
@@ -2071,6 +2112,28 @@ class MainWindow(QMainWindow):
             message += "；导出完成但标记保存失败"
         self._status_bar.showMessage(message)
 
+        failure_details = []
+        for result in (unit_results or report.results):
+            if result.success:
+                continue
+            if len(failure_details) == 20:
+                break
+            if unit_results:
+                model = models_by_id.get(result.unit_id)
+                name = model.filename if model is not None else result.unit_id
+                reason = result.error or next(
+                    (item.error for item in result.results if item.error), None
+                )
+            else:
+                name = result.source.name
+                reason = result.error
+            failure_details.append(f"{name}: {reason or '未提供错误详情'}")
+        if failed > len(failure_details):
+            failure_details.append(f"另有 {failed - len(failure_details)} 项未显示")
+        self._status_bar.setToolTip(
+            "\n".join(("上次导出结果", message, *failure_details)) if failure_details else ""
+        )
+
         recovery_results = [
             result
             for result in report.results
@@ -2248,6 +2311,8 @@ class MainWindow(QMainWindow):
             before_mark,
             mark,
         )
+        self._mark_undo_history.append(self._undo_command)
+        del self._mark_undo_history[:-_MARK_UNDO_LIMIT]
         if self._culling_session is not None:
             self._culling_session.advance_after_mark(photo_id)
         self._refresh_or_complete_culling()
@@ -2259,7 +2324,7 @@ class MainWindow(QMainWindow):
         )
 
     def request_culling_undo(self) -> None:
-        """Restore the previous database-only culling mark once."""
+        """Restore the latest database-only mark, retaining earlier decisions."""
         command = self._undo_command
         store = self._project_store
         if (
@@ -2301,14 +2366,17 @@ class MainWindow(QMainWindow):
             command.photo_id,
             [PhotoRoles.MARK],
         )
-        self._undo_command = None
+        self._mark_undo_history.pop()
+        self._undo_command = (
+            self._mark_undo_history[-1] if self._mark_undo_history else None
+        )
         session = self._culling_session
         if session is not None:
             if command.photo_id not in session.visible_ids():
                 session.set_filters(StatusFilter.ALL, AnalysisFilter.ALL)
             session.select_photo_id(command.photo_id)
         self._refresh_or_complete_culling()
-        self._culling_workspace.set_undo_available(False)
+        self._culling_workspace.set_undo_available(self._undo_command is not None)
         self._update_status_bar()
         self._status_bar.showMessage(
             "已撤销照片标记；原文件未移动",
@@ -2625,6 +2693,7 @@ class MainWindow(QMainWindow):
         self._thumbnail_browser._view.viewport().update()
         self._update_status_bar()
 
+        self._mark_undo_history.clear()
         if context.is_undo:
             if self._undo_command == context.undo_command:
                 self._undo_command = None

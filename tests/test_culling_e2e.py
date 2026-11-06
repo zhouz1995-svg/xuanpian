@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import time
+import pytest
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
@@ -14,6 +15,7 @@ from PyQt6.QtGui import QImage
 
 from src.xuanpian.domain.analysis import AnalysisStatus
 from src.xuanpian.domain.culling import PhotoMark
+from src.xuanpian.domain.culling_session import AnalysisFilter, StatusFilter
 from src.xuanpian.domain.photo import (
     AssetKind,
     FileFingerprint,
@@ -263,6 +265,176 @@ def test_culling_mark_store_failure_keeps_model_session_and_files(
         assert all(Path(path).is_file() for path in original_paths)
         assert window._active_culling_move is None
         assert window._undo_command is None
+    finally:
+        window.close()
+        qapp.processEvents()
+
+
+def test_culling_undo_replays_multiple_marks_in_reverse_without_moving_files(qapp, tmp_path):
+    project = _make_project(tmp_path)
+    window = _window(project)
+    try:
+        window.enter_culling()
+        window._culling_workspace.set_filters(StatusFilter.ALL, AnalysisFilter.ALL)
+        window.request_culling_mark("pair", PhotoMark.KEEP)
+        window._culling_session.select_photo_id("pair")
+        window._culling_workspace.refresh_current()
+        window.request_culling_mark("pair", PhotoMark.HOLD)
+        window.request_culling_mark("raw-only", PhotoMark.DISCARD)
+        for photo_id, expected in (
+            ("raw-only", PhotoMark.UNPROCESSED),
+            ("pair", PhotoMark.KEEP),
+            ("pair", PhotoMark.UNPROCESSED),
+        ):
+            assert window._culling_workspace._undo_btn.isEnabled()
+            window._culling_workspace._undo_btn.click()
+            assert project.store.get_photo(photo_id).mark == expected.value
+            assert project.models[photo_id].mark == expected.value
+            assert window._culling_session.current_id == photo_id
+        assert not window._culling_workspace._undo_btn.isEnabled()
+        assert window._undo_command is None
+        _assert_persisted_hashes(project, project.store)
+        assert project.store.list_pending_photo_moves() == ()
+    finally:
+        window.close()
+        qapp.processEvents()
+
+
+def test_culling_can_undo_all_marks_after_filtered_session_completion(qapp, tmp_path):
+    project = _make_project(tmp_path)
+    window = _window(project)
+    try:
+        window.enter_culling()
+        window._culling_workspace.set_filters(StatusFilter.UNPROCESSED, AnalysisFilter.ALL)
+        for mark in (PhotoMark.KEEP, PhotoMark.HOLD, PhotoMark.DISCARD):
+            _submit_current(qapp, window, mark)
+        assert not window._culling_workspace._summary.isHidden()
+        for photo_id in ("jpeg-only", "raw-only", "pair"):
+            window._culling_workspace._undo_btn.click()
+            assert project.store.get_photo(photo_id).mark == PhotoMark.UNPROCESSED.value
+            assert window._culling_session.current_id == photo_id
+            assert not window._culling_workspace._body.isHidden()
+        assert not window._culling_workspace._undo_btn.isEnabled()
+    finally:
+        window.close()
+        qapp.processEvents()
+
+
+@pytest.mark.parametrize("operation", ["mark", "undo"])
+def test_culling_failed_database_write_retains_entire_undo_history(qapp, tmp_path, monkeypatch, operation):
+    project = _make_project(tmp_path)
+    window = _window(project)
+    monkeypatch.setattr("src.xuanpian.ui.main_window.QMessageBox.warning", lambda *_: None)
+    try:
+        window.enter_culling()
+        _submit_current(qapp, window, PhotoMark.KEEP)
+        _submit_current(qapp, window, PhotoMark.HOLD)
+        project.store._connection.execute("""
+            CREATE TEMP TRIGGER reject_mark BEFORE UPDATE OF mark ON photos
+            BEGIN SELECT RAISE(ABORT, 'synthetic mark write failure'); END
+        """)
+        if operation == "undo":
+            window.request_culling_undo()
+        else:
+            window.request_culling_mark("jpeg-only", PhotoMark.DISCARD)
+        assert project.store.get_photo("raw-only").mark == PhotoMark.HOLD.value
+        assert project.store.get_photo("jpeg-only").mark == PhotoMark.UNPROCESSED.value
+        project.store._connection.execute("DROP TRIGGER reject_mark")
+        for photo_id in ("raw-only", "pair"):
+            window.request_culling_undo()
+            assert project.store.get_photo(photo_id).mark == PhotoMark.UNPROCESSED.value
+        assert window._undo_command is None
+    finally:
+        window.close()
+        qapp.processEvents()
+
+
+def test_culling_undo_retains_only_the_latest_100_successful_marks(qapp, tmp_path):
+    project = _make_project(tmp_path)
+    window = _window(project)
+    try:
+        window.enter_culling()
+        window._culling_workspace.set_filters(StatusFilter.ALL, AnalysisFilter.ALL)
+        for index in range(102):
+            window._culling_session.select_photo_id("pair")
+            window._culling_workspace.refresh_current()
+            window.request_culling_mark("pair", PhotoMark.KEEP if index % 2 == 0 else PhotoMark.HOLD)
+        for _ in range(100):
+            assert window._culling_workspace._undo_btn.isEnabled()
+            window.request_culling_undo()
+        assert project.store.get_photo("pair").mark == PhotoMark.HOLD.value
+        assert not window._culling_workspace._undo_btn.isEnabled()
+        window.request_culling_undo()
+        assert project.store.get_photo("pair").mark == PhotoMark.HOLD.value
+        _assert_persisted_hashes(project, project.store)
+    finally:
+        window.close()
+        qapp.processEvents()
+
+
+def test_new_mark_after_undo_preserves_earlier_history_not_the_undone_action(qapp, tmp_path):
+    project = _make_project(tmp_path)
+    window = _window(project)
+    try:
+        window.enter_culling()
+        _submit_current(qapp, window, PhotoMark.KEEP)
+        _submit_current(qapp, window, PhotoMark.HOLD)
+        window.request_culling_undo()
+        window.request_culling_mark("raw-only", PhotoMark.DISCARD)
+        window.request_culling_undo()
+        assert project.store.get_photo("raw-only").mark == PhotoMark.UNPROCESSED.value
+        window.request_culling_undo()
+        assert project.store.get_photo("pair").mark == PhotoMark.UNPROCESSED.value
+        assert window._undo_command is None
+    finally:
+        window.close()
+        qapp.processEvents()
+
+
+def test_culling_history_survives_exit_and_failed_project_switch(qapp, tmp_path):
+    project = _make_project(tmp_path)
+    window = _window(project)
+    try:
+        window.enter_culling()
+        _submit_current(qapp, window, PhotoMark.KEEP)
+        _submit_current(qapp, window, PhotoMark.HOLD)
+        window.exit_culling()
+        window._start_import(str(tmp_path / "missing-folder"))
+        window.enter_culling()
+        for photo_id in ("raw-only", "pair"):
+            window.request_culling_undo()
+            assert project.store.get_photo(photo_id).mark == PhotoMark.UNPROCESSED.value
+        assert window._undo_command is None
+    finally:
+        window.close()
+        qapp.processEvents()
+
+
+def test_reimport_clears_history_before_new_marks(qapp, tmp_path):
+    project = _make_project(tmp_path)
+    window = _window(
+        project,
+        project_path_resolver=lambda _root: project.database,
+        project_store_factory=lambda path, root: ProjectStore.open(path, root_path=root),
+    )
+    try:
+        window.enter_culling()
+        _submit_current(qapp, window, PhotoMark.KEEP)
+        _submit_current(qapp, window, PhotoMark.HOLD)
+        window._start_import(str(project.root))
+        _wait(qapp, lambda: window._active_job_ids["import"] is None)
+        models = window.thumbnail_browser.all_models()
+        for model in models:
+            model.technical_status = AnalysisStatus.SUCCEEDED
+        window.enter_culling()
+        assert not window._culling_workspace._undo_btn.isEnabled()
+        current = window._culling_session.current_id
+        assert current is not None
+        window.request_culling_mark(current, PhotoMark.DISCARD)
+        window.request_culling_undo()
+        assert not window._culling_workspace._undo_btn.isEnabled()
+        assert window._undo_command is None
+        assert not window._mark_undo_history
     finally:
         window.close()
         qapp.processEvents()

@@ -282,7 +282,8 @@ def test_switching_projects_does_not_prompt_for_source_file_moves(
         qapp.processEvents()
 
 
-def test_starting_a_new_import_leaves_culling_for_browse(qapp) -> None:
+@pytest.mark.parametrize("folder_exists", [True, False])
+def test_only_valid_new_import_leaves_culling_for_browse(qapp, tmp_path, folder_exists) -> None:
     class _ImportCoordinator:
         def start(self, *_args):
             return SimpleNamespace(
@@ -296,12 +297,20 @@ def test_starting_a_new_import_leaves_culling_for_browse(qapp) -> None:
     window.thumbnail_browser.set_models([_model("p1")])
     window.enter_culling()
     assert window._stack.currentWidget() is window._culling_workspace
+    previous_models = window.all_models
+    folder = tmp_path / "new-project"
+    if folder_exists:
+        folder.mkdir()
 
     try:
-        window._start_import("/generated/new-project")
+        window._start_import(str(folder))
 
-        assert window._stack.currentWidget() is window.thumbnail_browser
-        assert window._culling_workspace.preview_pending_count == 0
+        if folder_exists:
+            assert window._stack.currentWidget() is window.thumbnail_browser
+            assert window._culling_workspace.preview_pending_count == 0
+        else:
+            assert window._stack.currentWidget() is window._culling_workspace
+            assert window.all_models == previous_models
     finally:
         window.close()
         qapp.processEvents()

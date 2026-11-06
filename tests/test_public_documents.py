@@ -120,9 +120,25 @@ def test_bundled_models_only_clear_when_exact_official_evidence_is_recorded() ->
 
 
 def test_spdx_metadata_requires_a_compatible_builder() -> None:
+    from packaging.requirements import Requirement
+    from packaging.version import Version
+    import re
+
     config = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     assert config["project"]["license"] == "GPL-3.0-only"
-    assert "setuptools>=77" in config["build-system"]["requires"]
+    requirements = [
+        next(Requirement(value) for value in values if Requirement(value).name == "setuptools")
+        for values in (config["build-system"]["requires"], config["project"]["optional-dependencies"]["build"])
+    ]
+    for requirement in requirements:
+        assert "79.0.1" not in requirement.specifier
+        assert "84.0.0" not in requirement.specifier
+    for name in ("macos-arm64", "macos-x86_64", "windows-x64"):
+        lock = (ROOT / f"packaging/requirements-{name}.lock").read_text()
+        versions = re.findall(r"(?m)^setuptools==([^\s\\]+)", lock)
+        assert len(versions) == 1
+        assert Version(versions[0]) >= Version("84.1.0")
+        assert all(versions[0] in requirement.specifier for requirement in requirements)
 
 
 def test_public_contribution_docs_match_the_open_repository() -> None:

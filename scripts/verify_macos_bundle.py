@@ -1,4 +1,4 @@
-"""Inspect a relocatable, locally ad-hoc-signed arm64 macOS app."""
+"""Inspect a relocatable, locally ad-hoc-signed native macOS app."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-from scripts.build_macos import LOCK, project_version  # noqa: E402
+from scripts.build_macos import macos_lock, macos_runtime_sources, project_version  # noqa: E402
 from scripts.build_wheel import CleanWheelBuildError, notice_payload  # noqa: E402
 from src.xuanpian.engine.metadata_runtime import RuntimeUnavailable, resolve_metadata_runtime  # noqa: E402
 
@@ -34,10 +34,11 @@ class NativeInfo:
     minos: str
 
 
-def _native_metadata(path: Path) -> NativeInfo:
-    libraries = subprocess.run(["/usr/bin/otool", "-L", str(path)], check=True,
+def _native_metadata(path: Path, architecture: str = "arm64") -> NativeInfo:
+    macos_lock(architecture)
+    libraries = subprocess.run(["/usr/bin/otool", "-arch", architecture, "-L", str(path)], check=True,
                                capture_output=True, text=True).stdout.splitlines()[1:]
-    commands = subprocess.run(["/usr/bin/otool", "-l", str(path)], check=True,
+    commands = subprocess.run(["/usr/bin/otool", "-arch", architecture, "-l", str(path)], check=True,
                               capture_output=True, text=True).stdout
     architectures = subprocess.run(["/usr/bin/lipo", "-archs", str(path)], check=True,
                                    capture_output=True, text=True).stdout.strip()
@@ -117,19 +118,24 @@ def _unique(violations: list[dict[str, str]]) -> list[dict[str, str]]:
     return list({(item["kind"], item["path"], item["detail"]): item for item in violations}.values())
 
 
-def _inspect_native_dependencies(app: Path, executable: Path, objects: list[Path]) -> list[dict[str, str]]:
+def _inspect_native_dependencies(app: Path, executable: Path, objects: list[Path],
+                                 architecture: str = "arm64") -> list[dict[str, str]]:
+    macos_lock(architecture)
     violations: list[dict[str, str]] = []
     info: dict[Path, NativeInfo] = {}
     original = {path.resolve(): path for path in objects}
     for path in objects:
         try:
-            info[path.resolve()] = _native_metadata(path)
+            info[path.resolve()] = _native_metadata(path, architecture=architecture)
         except (OSError, subprocess.CalledProcessError, ValueError) as error:
             violations.append(_issue("native_metadata", app, path, str(error)))
     for resolved, item in info.items():
         path = original[resolved]
-        if "arm64" not in item.architectures.split():
-            violations.append(_issue("architecture", app, path, f"missing arm64 slice: {item.architectures}"))
+        if architecture not in item.architectures.split():
+            violations.append(_issue("architecture", app, path, f"missing {architecture} slice: {item.architectures}"))
+        elif resolved == executable.resolve() and item.architectures.split() != [architecture]:
+            violations.append(_issue("architecture", app, path,
+                                     f"main executable must contain only {architecture}: {item.architectures}"))
         if not item.minos:
             violations.append(_issue("minimum_os", app, path, "missing macOS deployment target"))
     reached: set[Path] = set()
@@ -254,7 +260,8 @@ def _inspect_notices(app: Path) -> list[dict[str, str]]:
     return []
 
 
-def inspect_bundle(app: Path) -> list[dict[str, str]]:
+def inspect_bundle(app: Path, *, architecture: str = "arm64") -> list[dict[str, str]]:
+    macos_lock(architecture)
     app = Path(app)
     if app.is_symlink() or not app.is_dir() or app.suffix != ".app":
         return [_issue("bundle", app, app, "missing regular .app directory")]
@@ -287,14 +294,14 @@ def inspect_bundle(app: Path) -> list[dict[str, str]]:
             if stream.read(4) in MAGICS:
                 native.append(path)
     if executable in native and os.access(executable, os.X_OK):
-        violations.extend(_inspect_native_dependencies(app, executable, native))
+        violations.extend(_inspect_native_dependencies(app, executable, native, architecture=architecture))
     else:
         violations.append(_issue("executable", app, executable, "missing executable Mach-O"))
     violations.extend(_inspect_scripts(app))
     perl = app / RUNTIME / "perl/bin/perl"
     if perl.is_file() and os.access(perl, os.X_OK):
         violations.extend(_inspect_perl_paths(app, perl))
-    violations.extend(_inspect_identity(app, native))
+    violations.extend(_inspect_identity(app, native, architecture=architecture))
     return _unique(violations)
 
 
@@ -330,7 +337,9 @@ def _version(value: str) -> tuple[int, ...]:
     return tuple(int(part) for part in value.split("."))
 
 
-def _inspect_identity(app: Path, native: list[Path]) -> list[dict[str, str]]:
+def _inspect_identity(app: Path, native: list[Path], architecture: str = "arm64") -> list[dict[str, str]]:
+    lock = macos_lock(architecture)
+    sources = macos_runtime_sources(architecture)
     violations = []
     plist_path = app / "Contents/Info.plist"
     provenance_path = app / "Contents/Resources/build-provenance.json"
@@ -347,17 +356,24 @@ def _inspect_identity(app: Path, native: list[Path]) -> list[dict[str, str]]:
         else:
             for path in native:
                 try:
-                    minos = _native_metadata(path).minos
+                    minos = _native_metadata(path, architecture=architecture).minos
                     if minos and _version(minos) > _version(floor):
                         violations.append(_issue("minimum_os", app, path, f"native minOS {minos} > bundle {floor}"))
                 except (OSError, subprocess.CalledProcessError, ValueError):
                     pass  # Reported by the native metadata pass.
         if provenance.get("source_tree_dirty") is not False or not re.fullmatch(r"[0-9a-f]{40}", str(provenance.get("source_revision", ""))):
             violations.append(_issue("provenance", app, provenance_path, "source must be a clean commit"))
-        if provenance.get("signing") != "local-ad-hoc" or provenance.get("architecture") != "arm64":
-            violations.append(_issue("provenance", app, provenance_path, "not arm64 local ad-hoc"))
-        if provenance.get("requirements_lock_sha256") != _sha256(LOCK):
+        if provenance.get("signing") != "local-ad-hoc" or provenance.get("architecture") != architecture:
+            violations.append(_issue("provenance", app, provenance_path, f"not {architecture} local ad-hoc"))
+        if provenance.get("requirements_lock") != f"packaging/requirements-macos-{architecture}.lock":
+            violations.append(_issue("provenance", app, provenance_path, "lock identity mismatch"))
+        if provenance.get("requirements_lock_sha256") != _sha256(lock):
             violations.append(_issue("provenance", app, provenance_path, "lock digest mismatch"))
+        runtime_manifest = json.loads((app / RUNTIME / "manifest.json").read_text(encoding="utf-8"))
+        source_digest = _sha256(sources)
+        if (provenance.get("runtime_source_manifest_sha256") != source_digest
+                or runtime_manifest.get("source_manifest_sha256") != source_digest):
+            violations.append(_issue("provenance", app, provenance_path, "runtime source manifest identity mismatch"))
         if provenance.get("runtime_final_manifest_sha256") != _sha256(app / RUNTIME / "manifest.json"):
             violations.append(_issue("provenance", app, provenance_path, "final runtime digest mismatch"))
         for key, value in provenance.items():
@@ -380,8 +396,9 @@ def _inspect_identity(app: Path, native: list[Path]) -> list[dict[str, str]]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("app", type=Path)
+    parser.add_argument("--architecture", choices=("arm64", "x86_64"), default="arm64")
     args = parser.parse_args()
-    violations = inspect_bundle(args.app)
+    violations = inspect_bundle(args.app, architecture=args.architecture)
     print(json.dumps({"status": "FAIL" if violations else "PASS", "violations": violations},
                      indent=2, ensure_ascii=False))
     return 1 if violations else 0

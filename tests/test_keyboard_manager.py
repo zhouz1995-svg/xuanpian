@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import sys
+import pytest
 
 from PyQt6.QtCore import Qt, qInstallMessageHandler
-from PyQt6.QtGui import QImage, QKeySequence, QShortcut
+from PyQt6.QtGui import QImage, QKeySequence, QShortcut, QPixmap
 from PyQt6.QtTest import QTest
 from PyQt6.QtWidgets import QLineEdit
 
@@ -76,6 +77,44 @@ def _press(
     target.setFocus()
     QTest.keyClick(target, key, modifier)
     qapp.processEvents()
+
+
+@pytest.mark.parametrize("mode", ["preview", "culling"])
+def test_zoom_keys_route_only_to_active_photo_view(qapp, qtbot, tmp_path, mode):
+    window, models = _window(qapp, tmp_path)
+    try:
+        if mode == "preview":
+            window.enter_preview_photo("photo-0")
+            active = window._preview_widget
+            qtbot.waitUntil(lambda: active.loaded_photo_id == "photo-0")
+        else:
+            window.enter_culling()
+            active = window._culling_workspace
+            qtbot.waitUntil(lambda: active._loaded_photo_id == "photo-0")
+        image = QPixmap(2000, 1500)
+        image.fill(Qt.GlobalColor.darkCyan)
+        active._image_view.set_pixmap(image)
+        assert active._image_view.zoom_level < 1
+        _press(qapp, active, Qt.Key.Key_Z)
+        assert active._image_view.zoom_level == 1
+        _press(qapp, active, Qt.Key.Key_0)
+        assert 0 < active._image_view.zoom_level < 1
+        assert all(model.mark == "" for model in models)
+        editor = QLineEdit(active)
+        editor.show()
+        _press(qapp, editor, Qt.Key.Key_Z)
+        assert editor.text() == "z"
+        assert active._image_view.zoom_level < 1
+        editor.hide()
+        if mode == "culling":
+            window._active_culling_move = object()
+            _press(qapp, active, Qt.Key.Key_Z)
+            assert active._image_view.zoom_level < 1
+            window._active_culling_move = None
+    finally:
+        window._active_culling_move = None
+        window.close()
+        qapp.processEvents()
 
 
 def test_production_keyboard_has_one_unambiguous_shortcut_per_key_and_routes_navigation(

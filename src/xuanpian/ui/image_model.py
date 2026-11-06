@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from math import isfinite
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -82,6 +83,75 @@ class ImageFileModel:
 
     # View-only rotation in degrees.
     rotation: int = 0
+    focus_evidence: tuple[tuple[str, float], ...] = ()
+
+    def focus_basis_info(self) -> tuple[str, str]:
+        """Describe recorded evidence, never infer a camera AF point from a subject."""
+        if self.technical_status is not AnalysisStatus.SUCCEEDED:
+            return {
+                AnalysisStatus.RUNNING: "分析中",
+                AnalysisStatus.FAILED: "分析未完成",
+                AnalysisStatus.CANCELED: "分析未完成",
+            }.get(self.technical_status, "未分析"), ""
+        if not self.focus_evidence:
+            return "未记录依据", "此记录未保存可解释的分析依据，可重新分析或人工复查。"
+        data = dict(self.focus_evidence)
+        insufficient = ("依据不足", "现有记录不足以明确说明分析依据，请人工复查；不能据此确定实际对焦点。")
+
+        def valid_region(prefix: str) -> bool:
+            values = [data.get(prefix + key) for key in ("x", "y", "width", "height")]
+            if not all(
+                isinstance(v, (int, float)) and not isinstance(v, bool)
+                and isfinite(v) and 0 <= v <= 1 for v in values
+            ):
+                return False
+            x, y, width, height = values
+            return width > 0 and height > 0 and x + width <= 1 and y + height <= 1
+
+        af = data.get("af_used") == 1
+        subject = any(key.startswith("subject_roi_") for key in data)
+        scene = data.get("scene_regions", 0) > 0 or data.get("scene_insufficient_texture") == 1
+        if sum((af, subject, scene)) > 1:
+            return insufficient
+        if af:
+            if not valid_region("af_"):
+                return insufficient
+            reasons = {
+                "af_review_subject_conflict": "AF 区域与检测主体位置不一致。",
+                "af_review_region_too_small": "AF 区域过小，细节信息不足。",
+                "af_review_scale_disagreement": "不同尺度的清晰度结果不一致。",
+                "af_review_low_texture": "AF 区域纹理不足。",
+                "af_review_insufficient_sharpness": "AF 区域未提供充分的清晰证据。",
+            }
+            detail = next((text for flag, text in reasons.items() if data.get(flag) == 1), "")
+            return "AF 区域校验", detail + "依据受支持的相机 AF 元数据进行区域校验，不保证眼部或主体一定清晰。"
+        if data.get("subject_capability_unavailable") == 1:
+            return "依据不足", "主体检测能力不可用，请人工复查；不据此判断相机实际对焦点。"
+        if data.get("subject_ambiguous_or_unavailable") == 1:
+            return "依据不足", "未能确定可靠的主要主体，请人工复查。"
+        if data.get("roi_too_small") == 1:
+            return "主体区域信息不足", "检测到的主体区域过小，不能据此可靠判断清晰度。"
+        if subject and valid_region("subject_roi_"):
+            label = "主体区域"
+            detail = "根据检测主体的局部图像评估，不代表相机实际对焦点。"
+        elif scene:
+            label = "场景图像回退"
+            detail = "依据场景图像区域进行保守评估，不代表相机实际对焦点；纹理不足时仍需人工复查。"
+        else:
+            return insufficient
+        for flag, reason in (
+            ("metadata_runtime_missing", "元数据工具不可用，未采用 AF 信息。"),
+            ("raw_mapping_unavailable", "RAW 暂无受支持的 AF 坐标映射。"),
+            ("unsupported_camera", "此相机的 AF 元数据映射暂不支持。"),
+            ("unsupported_af_version", "此 AF 元数据版本暂不支持。"),
+            ("metadata_missing", "未取得所需 AF 元数据。"),
+            ("metadata_timeout", "AF 元数据读取超时。"),
+            ("metadata_read_error", "AF 元数据读取失败。"),
+        ):
+            if data.get("af_unavailable_" + flag) == 1:
+                detail += reason
+                break
+        return label, detail
 
     def __post_init__(self) -> None:
         if not self.filename:
