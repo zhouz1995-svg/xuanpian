@@ -361,7 +361,7 @@ class ThumbnailBrowser(QWidget):
         empty_layout.addWidget(self._empty_hint)
         self._empty_import_btn = QPushButton("导入照片", self._empty_widget)
         self._empty_import_btn.setAccessibleName("导入照片文件夹")
-        self._empty_import_btn.clicked.connect(self.import_requested)
+        self._empty_import_btn.clicked.connect(self._on_empty_action)
         empty_layout.addWidget(
             self._empty_import_btn,
             0,
@@ -471,6 +471,9 @@ class ThumbnailBrowser(QWidget):
     ) -> None:
         self._content_visible = False
         self._empty_label.setText(message)
+        self._empty_import_btn.setText("导入照片")
+        self._empty_import_btn.setAccessibleName("导入照片文件夹")
+        self._empty_hint.setText("支持 JPEG / HEIC / 常见 RAW 配对导入")
         self._empty_widget.setVisible(True)
         self._view.setVisible(False)
         self._list_view.setVisible(False)
@@ -480,11 +483,21 @@ class ThumbnailBrowser(QWidget):
     def _show_filtered_empty(self, message: str) -> None:
         self._content_visible = False
         self._empty_label.setText(message)
+        self._empty_import_btn.setText("显示全部照片")
+        self._empty_import_btn.setAccessibleName("清除筛选并显示全部照片")
+        self._empty_hint.setText("照片仍在当前项目中，可清除筛选后继续浏览")
         self._empty_widget.setVisible(True)
         self._view.setVisible(False)
         self._list_view.setVisible(False)
         self._sidebar.setVisible(True)
         self._loading_bar.setVisible(False)
+
+    def _on_empty_action(self) -> None:
+        if self._all_photo_ids:
+            self._set_group("all")
+            self.selection_changed.emit()
+        else:
+            self.import_requested.emit()
 
     def show_empty_import_result(self) -> None:
         """Explain a completed scan with no imported photos, not an empty filter."""

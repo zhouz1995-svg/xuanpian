@@ -89,6 +89,44 @@ def test_successful_import_preserves_filtered_empty_message(qapp, qtbot):
     assert "3" in window.statusBar().currentMessage()
 
 
+@pytest.mark.parametrize("group", ["all", "review", "burst"])
+def test_filtered_empty_action_restores_all_photos_without_import(qapp, qtbot, group):
+    window = MainWindow()
+    qtbot.addWidget(window)
+    browser = window.thumbnail_browser
+    models = _models()
+    if group == "burst":
+        for model in models:
+            model.date_taken = "2026:11:07 12:00:00"
+    browser.set_models(models)
+    if group == "burst":
+        assert models[0].burst_group_id
+        browser.set_burst_group(models[0].burst_group_id)
+        browser.toggle_picks_only()
+    elif group == "all":
+        browser.toggle_picks_only()
+    else:
+        browser._set_group(group)
+    assert browser.current_photo_ids() == []
+    before_marks = [model.mark for model in models]
+    requested = []
+    browser.import_requested.disconnect(window._on_import)
+    browser.import_requested.connect(lambda: requested.append(True))
+    assert browser._empty_import_btn.text() == "显示全部照片"
+    browser._empty_import_btn.click()
+    assert browser.current_photo_ids() == [model.photo_id for model in models]
+    assert not browser.picks_only
+    assert browser._current_burst_group is None
+    assert browser._group_bar._current == "all"
+    assert window._status_filter_label.text() == "筛选：全部"
+    assert [model.mark for model in models] == before_marks
+    assert requested == []
+    browser.set_models([])
+    assert browser._empty_import_btn.text() == "导入照片"
+    browser._empty_import_btn.click()
+    assert requested == [True]
+
+
 def test_stale_empty_import_does_not_replace_current_welcome(qapp, qtbot):
     window = MainWindow()
     qtbot.addWidget(window)
